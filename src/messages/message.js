@@ -1,4 +1,6 @@
 var EventEmitter = require('events').EventEmitter;
+const constants = require( './../utils/string-resources' )
+const ValidationHelper = require( './../utils/validation-helper' )
 
 /*
 * Provides access to properties needed to define typical HSMS message.
@@ -9,8 +11,15 @@ class Message extends EventEmitter {
     super();
     
     if (new.target === Message) {
-      throw new TypeError("Cannot construct Message instances directly");
+      throw new TypeError( constants.CANNOT_CONSTRUCT_DIRECTLY );
     }
+
+    device = ValidationHelper.getNumberInRange( 
+      device, 0, constants.MAX_USHORT, "Device" );
+
+    context = ValidationHelper.getNumberInRange( 
+      context, 0, constants.MAX_UINT, "Context" );
+
 
     // A 15-bit field in the message header used
     // to identify a subentity within the equipment
@@ -27,7 +36,7 @@ class Message extends EventEmitter {
     Object.defineProperty(this, "context", {
       get: function () { return context; },
       enumerable: true,
-      configurable: true,
+      configurable: false,
     });
 
     const time = new Date();

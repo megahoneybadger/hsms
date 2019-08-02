@@ -1,4 +1,5 @@
 const Message = require( './../message' );
+const constants = require( './../../utils/string-resources' )
 
 /**
  * Base abstract class for all control messages.
@@ -9,11 +10,7 @@ class ControlMessage extends Message{
     super( dev, cont );
 
     if (new.target === ControlMessage) {
-      throw new TypeError("Cannot construct Message instances directly");
-    }
-
-    if (new.target === ControlMessage) {
-      throw new TypeError("Cannot construct ControlMessage instances directly");
+      throw new TypeError( constants.CANNOT_CONSTRUCT_DIRECTLY );
     }
 
     if ('function' !== typeof this.kind ) {

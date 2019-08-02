@@ -1,9 +1,11 @@
 const ControlMessage = require( './control-message' );
 const Message = require( './../message' );
-var ByteBuffer = require("bytebuffer");
+const ValidationHelper = require( './../../utils/validation-helper' )
+const ByteBuffer = require("bytebuffer");
+const constants = require( './../../utils/string-resources' )
 
 /**
- * Represents request for initiation of Select procedure.
+ * Represents a request for initiation of Select procedure.
  * The Select procedure is used to establish HSMS communications on a TCP/IP
  * connection using the Select.req and Select.rsp messages in a control transaction.
  * 
@@ -17,16 +19,19 @@ var ByteBuffer = require("bytebuffer");
  */
 class SelectReq extends ControlMessage{
 
-  constructor( dev, cont, status = 0 ){
+  constructor( dev, cont ){
     super( dev, cont );
   }
 
+  /**
+   * Gets the message type.
+   */
   kind(){
     return Message.Type.SelectReq;
   }
 
   /**
-   *  Encodes message content into a binary stream.
+   * Encodes the message content into a binary stream.
    */
   encode(){
     let b = new ByteBuffer();
@@ -54,8 +59,7 @@ class SelectReq extends ControlMessage{
     b.writeUint32( this.context );
     b.LE();
 
-    //return b.buffer.slice( 0, b.offset );
-    return 'test1';
+    return b.buffer.slice( 0, b.offset );
   }
 
   decode(){
