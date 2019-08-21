@@ -32,7 +32,7 @@ describe('Select Req', () => {
   });
 
   it('should not allow to delete device and context', () => {
-    sr =  new SelectReq( 11, 22, 55 );
+    sr =  new SelectReq( 11, 22 );
 
     delete sr.device;
     delete sr.context;
@@ -82,6 +82,13 @@ describe('Select Req', () => {
       const sr =  new SelectReq( 65535, 172671261526512 );
     })
     .to.throw( TypeError, Constants.getErrUIntNotInRange( "Context" ));
+  });
+
+  it('should throw an exception if passing too many params', () => {
+    expect( () => {
+      const sr =  new SelectReq( 1,2, 4, 123 );
+    })
+    .to.throw( TypeError, Constants.TOO_MANY_CONSTRUCT_PARAMS );
   });
 
   it('kind must be SelectReq', () => {

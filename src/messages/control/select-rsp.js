@@ -29,6 +29,10 @@ class SelectRsp extends ControlMessage{
   constructor( dev, cont, status = 0 ){
     super( dev, cont );
 
+    if( arguments.length > 3 ){
+      throw new TypeError(constants.TOO_MANY_CONSTRUCT_PARAMS);
+    }
+
     status =  ValidationHelper.getNumberInRange( 
       status, 0, constants.MAX_UBYTE, "Status" );
 

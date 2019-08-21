@@ -111,6 +111,13 @@ describe('Select Rqp', () => {
     .to.throw( TypeError, Constants.getErrUByteNotInRange( "Status" ));
   });
 
+  it('should throw an exception if passing too many params', () => {
+    expect( () => {
+      const sr =  new SelectRsp( 1,2, 4, 123 );
+    })
+    .to.throw( TypeError, Constants.TOO_MANY_CONSTRUCT_PARAMS );
+  });
+
   it('kind must be SelectReq', () => {
     expect( sr.kind() ).to.be.equal( Message.Type.SelectRsp );
   });

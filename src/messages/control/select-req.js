@@ -21,6 +21,10 @@ class SelectReq extends ControlMessage{
 
   constructor( dev, cont ){
     super( dev, cont );
+
+    if( arguments.length > 2 ){
+      throw new TypeError(constants.TOO_MANY_CONSTRUCT_PARAMS);
+    }
   }
 
   /**
