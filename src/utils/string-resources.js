@@ -5,7 +5,11 @@ module.exports = Object.freeze({
 
 	CANNOT_CONSTRUCT_DIRECTLY: 'Cannot construct instance directly',
 	CANNOT_CONSTRUCT_WITHOUT_BUILDER: 'Cannot construct an instance without a builder',
-  TOO_MANY_CONSTRUCT_PARAMS: `Too many parameters for the constructor`,
+	TOO_MANY_CONSTRUCT_PARAMS: `Too many parameters for the constructor`,
+
+	INVALID_ENUM_VALUE: "Invalid enum value",
+	
+
 
   getErrNumberNotInRange( p, low, up ){
     return `${p} must be a number between ${low} and ${up}`;
@@ -28,10 +32,7 @@ module.exports = Object.freeze({
 	},
 
 	
-	isString( s ){
-		return ( typeof s === 'string' || s instanceof String );
-	}
+	
 
 });
 
-//create_PARAM_MUST_BE_NON_NEGATIVE_NUMBER_LESS
