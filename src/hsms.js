@@ -14,7 +14,7 @@ module.exports = {
   SelectReq,
   SelectRsp,
   Constants,
-  DataItem
+  DataItem,
   DeselectReq,
   Constants,
   Encoder
