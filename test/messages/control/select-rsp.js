@@ -2,9 +2,15 @@ var assert = require('assert');
 var expect = require('chai').expect;
 var should = require('chai').should();
 
-const { SelectRsp,  Message, Constants } = require( '../../../src/hsms' )
+const { 
+  SelectRsp,
+  Message,
+  Constants,
+  Encoder } = require( '../../../src/hsms' )
 
-describe('Select Rqp', () => {
+
+
+describe('Select Rsp', () => {
   let sr;
 
   beforeEach(function() {
@@ -119,11 +125,11 @@ describe('Select Rqp', () => {
   });
 
   it('kind must be SelectReq', () => {
-    expect( sr.kind() ).to.be.equal( Message.Type.SelectRsp );
+    expect( sr.kind ).to.be.equal( Message.Type.SelectRsp );
   });
 
   it('encode must return valid binary stream #1', () => {
-    const encodedArray = sr.encode();
+    const encodedArray = Encoder.encode( sr );
     const expectedArray = Buffer.from( [ 00, 00, 00, 0x0a, 00, 01, 00, 00, 00, 02, 00, 00, 00, 02 ] )
 
     // console.log( encodedArray );
@@ -135,7 +141,7 @@ describe('Select Rqp', () => {
   it('encode must return valid binary stream #2', () => {
     const sr =  new SelectRsp( 37, 23 );
 
-    const encodedArray = sr.encode();
+    const encodedArray = Encoder.encode( sr );
     const expectedArray = Buffer.from( [ 00, 00, 00, 0x0a, 00, 0x25, 00, 00, 00, 02, 00, 00, 00, 0x17 ] )
     
     expect( Buffer.compare( encodedArray, expectedArray ) ).equal( 0 );
@@ -144,7 +150,7 @@ describe('Select Rqp', () => {
   it('encode must return valid binary stream #3', () => {
     const sr =  new SelectRsp( 2781, 37541 );
 
-    const encodedArray = sr.encode();
+    const encodedArray = Encoder.encode(sr);
     const expectedArray = Buffer.from( [ 00, 00, 00, 0x0a, 0xa, 0xdd, 00, 00, 00, 02, 00, 00, 0x92, 0xa5 ] )
     
     expect( Buffer.compare( encodedArray, expectedArray ) ).equal( 0 );

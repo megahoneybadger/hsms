@@ -1,3 +1,6 @@
+
+const Encoder = require( './src/coding/encoder' );
+
 const { 
 	Message,
 	DataItem } = require( './src/hsms' )

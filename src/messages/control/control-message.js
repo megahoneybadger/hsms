@@ -13,17 +13,9 @@ class ControlMessage extends Message{
       throw new TypeError( constants.CANNOT_CONSTRUCT_DIRECTLY );
     }
 
-    if ('function' !== typeof this.kind ) {
-      throw new TypeError("Must override method [kind]");
-    }
-
-    if ('function' !== typeof this.encode ) {
-      throw new TypeError("Must override method [encode]");
-    }
-
-    if ('function' !== typeof this.decode ) {
-      throw new TypeError("Must override method [decode]");
-    }
+    // if ('function' !== typeof this.kind ) {
+    //   throw new TypeError("Must override method [kind]");
+    // }
   }
 
   isPrimary(){
