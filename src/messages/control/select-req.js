@@ -30,44 +30,8 @@ class SelectReq extends ControlMessage{
   /**
    * Gets the message type.
    */
-  kind(){
+  get kind(){
     return Message.Type.SelectReq;
-  }
-
-  /**
-   * Encodes the message content into a binary stream.
-   */
-  encode(){
-    let b = new ByteBuffer();
-
-    b.BE();
-
-    b.writeUint32( 10 );
-    b.writeUint16( this.device );
-
-    b.LE();
-
-    // byte #2
-    b.writeUInt8( 0 )
-
-    // byte #3
-    b.writeUInt8( 0 )
-
-    // PType
-    b.writeUInt8( 0 )
-
-    // SType
-    b.writeUInt8( this.kind() )
-
-    b.BE();
-    b.writeUint32( this.context );
-    b.LE();
-
-    return b.buffer.slice( 0, b.offset );
-  }
-
-  decode(){
-
   }
 
   toString(){

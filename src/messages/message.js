@@ -55,20 +55,6 @@ class Message extends EventEmitter {
   static get Type() {
     return MessageType;
   }
-  
-  /**
-   * Encodes message content into a binary stream.
-   */
-  encode(){
-    return undefined;
-  }
-
-  /**
-   * Decodes message content from a binary stream.
-   */
-  decode(){
-
-  }
 
   toLongString(){
     return this.toString();
