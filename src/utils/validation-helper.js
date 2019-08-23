@@ -1,9 +1,10 @@
 const constants = require( './string-resources' )
 
+//https://webbjocke.com/javascript-check-data-types/
 class ValidationHelper{
 
   static getUShortInRange( v, name ){
-    return ValidationHelper( v, 0, constants.MAX_USHORT, name );
+    return ValidationHelper.getNumberInRange( v, 0, constants.MAX_USHORT, name );
   }
 
   static getNumberInRange( v, low, up, name ){
@@ -13,6 +14,30 @@ class ValidationHelper{
     } else  {
       throw new TypeError( constants.getErrNumberNotInRange( name, low, up ) );
     }
+	}
+	
+	static isString( s ){
+		return ( typeof s === 'string' || s instanceof String );
+	}
+
+	static isUndefined(f){
+		return typeof f === "undefined"
+	}
+
+	static getEnumValue( enumType, f ){
+    if( !enumType || ValidationHelper.isUndefined( f ) ){
+      throw new TypeError( constants.INVALID_ENUM_VALUE );
+    }
+
+    if( ValidationHelper.isString( f ) &&  enumType.hasOwnProperty( f ) ){
+      f = enumType[ f ];
+    }
+
+    if( !( Number.isInteger( f ) && Object.values( enumType ).indexOf( f ) > -1 )){
+      throw new TypeError( constants.INVALID_ENUM_VALUE );
+    } 
+
+    return f;
   }
 }
 
