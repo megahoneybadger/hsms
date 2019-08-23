@@ -4,6 +4,7 @@ module.exports = Object.freeze({
   MAX_UINT: 0xffffffff,
 
   CANNOT_CONSTRUCT_DIRECTLY: 'Cannot construct instance directly',
+  NOT_SUPPORTED_OBJECT_TYPE: 'Not supported object type',
 
   getErrNumberNotInRange( p, low, up ){
     return `${p} must be a number between ${low} and ${up}`;
