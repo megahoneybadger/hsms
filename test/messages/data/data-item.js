@@ -267,6 +267,123 @@ describe('Data Item', () => {
 		item.should.have.property( 'size' ).equal( 5423 );
 	});
 
+	it('should be created with correct value I1 (number)', () => {
+		const item = DataItem
+			.builder
+			.format( DataItem.format.I1 )
+			.size( 123 )
+			.value( 7 )
+			.build();
+
+		item.should.not.have.property( 'size' );
+		item.should.have.property( 'value' ).equal( 7 );
+		item.should.have.property( 'format' ).equal( DataItem.format.I1 );
+	});
+
+	it('should be created with correct value I1 (string)', () => {
+		const item = DataItem
+			.builder
+			.format( DataItem.format.I1 )
+			.value( "117" )
+			.build();
+
+		item.should.not.have.property( 'size' );
+		item.should.have.property( 'value' ).equal( 117 );
+		item.should.have.property( 'format' ).equal( DataItem.format.I1 );
+	});
+
+	it('should be created with correct value I1 (0)', () => {
+		const item = DataItem
+			.builder
+			.format( DataItem.format.I1 )
+			.value( 0 )
+			.build();
+
+		item.should.not.have.property( 'size' );
+		item.should.have.property( 'value' ).equal( 0 );
+		item.should.have.property( 'format' ).equal( DataItem.format.I1 );
+	});
+
+	it('should be created with undefined value I1 (not set)', () => {
+		const item = DataItem
+			.builder
+			.format( DataItem.format.I1 )
+			.build();
+
+		item.should.not.have.property( 'size' );
+		item.should.have.property( 'value' ).to.be.undefined;
+		item.should.have.property( 'format' ).equal( DataItem.format.I1 );
+	});
+
+
+	it('should throw an exception if passing invalid I1 value (null)', () => {
+    expect( () => {
+      DataItem
+				.builder
+				.format( DataItem.format.I1 )
+				.value( null )
+				.build();
+    })
+    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+	});
+
+	it('should throw an exception if passing invalid I1 value (object)', () => {
+    expect( () => {
+      DataItem
+				.builder
+				.format( DataItem.format.I1 )
+				.value( { name: "error" } )
+				.build();
+    })
+    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+	});
+
+	it('should throw an exception if passing invalid I1 value (to big value)', () => {
+    expect( () => {
+      DataItem
+				.builder
+				.format( DataItem.format.I1 )
+				.value( 1232434351 )
+				.build();
+    })
+    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+	});
+
+	it('should throw an exception if passing invalid I1 value (to small value)', () => {
+    expect( () => {
+      DataItem
+				.builder
+				.format( DataItem.format.I1 )
+				.value( -190 )
+				.build();
+    })
+    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+	});
+
+	it('should throw an exception if passing invalid I1 value (to big string value)', () => {
+    expect( () => {
+      DataItem
+				.builder
+				.format( DataItem.format.I1 )
+				.value( "1232" )
+				.build();
+    })
+    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+	});
+
+	it('should throw an exception if passing invalid I1 value (to small string value)', () => {
+    expect( () => {
+      DataItem
+				.builder
+				.format( DataItem.format.I1 )
+				.value( "-190" )
+				.build();
+    })
+    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+	});
+
+
+
 
   
 });

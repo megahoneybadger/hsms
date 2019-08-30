@@ -1,6 +1,7 @@
 var ByteBuffer = require("bytebuffer");
 const constants = require('./../../utils/string-resources')
 const validator = require('./../../utils/validation-helper')
+const ItemFormat = require('./item-format')
 
 module.exports = (function () {
 	/**
@@ -47,6 +48,16 @@ module.exports = (function () {
           enumerable: true,
           configurable: false,
         });
+			}
+			
+			if (this.format !== ItemFormat.List) {
+        const value = builder.value();
+
+        Object.defineProperty(this, "value", {
+          get: function () { return value; },
+          enumerable: true,
+          configurable: false,
+        });
       }
 
 		}
@@ -65,39 +76,6 @@ module.exports = (function () {
 			return new Builder();
 		}
 	}
-
-
-	/**
-	 * Represents available item formats where every value containts format code.
-	*/
-	const ItemFormat = Object.freeze({
-		List: 0, // List(length in elements)
-		Bin: 32, // Binary
-		Bool: 36,// Boolean
-		A: 64,   // ASCII
-		I8: 96,  // 8 byte integer (signed)
-		I4: 112, // 4 byte integer (signed)
-		I2: 104, // 2 byte integer (signed)
-		I1: 100, // 1 byte integer (signed)
-		F8: 128, // 8 byte floating point
-		F4: 144, // 5 byte floating point
-		U8: 160, // 8 byte integer
-		U4: 176, // 4 byte integer
-		U2: 168, // 2 byte integer
-		U1: 164, // 1 byte integer
-
-		isSizeable(n) {
-      switch (n) {
-        case this.Bin:
-        case this.A:
-          return true;
-
-        default:
-          return false;
-      }
-    },
-	})
-
 
 	// https://css-tricks.com/implementing-private-variables-in-javascript/
 	// Hide builder fields from users.
@@ -162,6 +140,32 @@ module.exports = (function () {
 
 			props.get(this).size = 
 				(ItemFormat.isSizeable(props.get(this).format)) ?	size : undefined;
+
+			return this;
+		}
+		value( v ){
+			if (validator.isUndefined( v )) {
+				return props.get(this).value;
+			}
+
+			let value;
+			let format = props.get(this).format;
+			let size = props.get(this).size;
+			const isArray = v instanceof Array;
+
+			if( isArray && 1 == v.length ){
+				value = validator.getItemValue( v[ 0 ], format, size );
+			} else if( isArray && 1 < v.length ){
+				value = [];
+
+				for( let i = 0; i < v.length; ++i ){
+					value.push( validator.getItemValue( v[ i ], format, size ));
+				}
+			} else if( !isArray ) {
+				value = validator.getItemValue( v, format, size );
+			}
+
+			props.get(this).value = value;
 
 			return this;
 		}

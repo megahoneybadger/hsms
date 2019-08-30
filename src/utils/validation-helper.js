@@ -1,7 +1,12 @@
-const constants = require( './string-resources' )
+const constants = require( './string-resources' );
+const ItemFormat = require( '../messages/data/item-format' );
 
 //https://webbjocke.com/javascript-check-data-types/
 class ValidationHelper{
+
+	static getByteInRange( v, name ){
+    return ValidationHelper.getNumberInRange( v, constants.MIN_BYTE, constants.MAX_BYTE, name );
+  }
 
   static getUShortInRange( v, name ){
     return ValidationHelper.getNumberInRange( v, 0, constants.MAX_USHORT, name );
@@ -38,7 +43,112 @@ class ValidationHelper{
     } 
 
     return f;
-  }
+	}
+	
+	static getItemValue(value, format, size) {
+		if (ValidationHelper.isUndefined( value ) || ValidationHelper.isUndefined( format )) {
+			throw new TypeError(constants.INVALID_ITEM_VALUE_OR_FORMAT);
+		}
+
+		format = ValidationHelper.getEnumValue(ItemFormat, format);
+		let res;
+
+		if( ItemFormat.isInteger( format ) ){
+			let piv = parseInt(value);
+			if (!isNaN(piv)) {
+				res = piv;
+			}
+		}
+
+		try{
+			switch (format) {
+				case ItemFormat.I1:
+					res = ValidationHelper.getByteInRange( res );
+					break;
+			}
+		}
+		catch{
+			res = undefined;
+		}
+
+	
+		switch (format) {
+			case ItemFormat.I1:
+				
+				break;
+
+
+			case ItemFormat.I2:
+			case ItemFormat.I4:
+			case ItemFormat.I8:
+			case ItemFormat.U1:
+			case ItemFormat.U2:
+			case ItemFormat.U4:
+			case ItemFormat.U8:
+				
+				break;
+
+			// case ItemFormat.F4:
+			// case ItemFormat.F8:
+			// 	let pfv = parseFloat(value);
+			// 	if (!isNaN(pfv) && isFinite(value)) {
+			// 		res = pfv;
+			// 	}
+			// 	break;
+
+			// case ItemFormat.Bool:
+			// 	if (typeof (value) == typeof (true)) {
+			// 		res = value;
+			// 	}
+			// 	break;
+
+			// case ItemFormat.A:
+			// 	if (typeof size === "undefined" || !Number.isInteger(size)) {
+			// 		throw new TypeError("Correct size was not specified");
+			// 	}
+
+			// 	if (!Number.isInteger(size) || size <= 0) {
+			// 		throw new TypeError("Size must be a positive and non zero number");
+			// 	}
+
+			// 	if ((typeof value === 'string' || value instanceof String)) {
+			// 		res = value;
+			// 	}
+
+			// 	let psv = parseFloat(value);
+
+			// 	if (!isNaN(psv) && isFinite(psv)) {
+			// 		res = psv.toString();
+			// 	}
+
+			// 	if (typeof value == 'undefined' || null === value) {
+			// 		res = '';
+			// 	}
+
+				
+
+			// 	if ((typeof res === 'string' || res instanceof String)) {
+			// 		res = res.substring(0, size);
+			// 	}
+
+			// 	if( typeof res === 'undefined' ){
+			// 		res = '';
+			// 	}
+
+			// 	if ( res.length < size) {
+			// 		res = res.padEnd(size, ' ');
+			// 	}
+
+			// 	break;
+
+		}
+
+		if (ValidationHelper.isUndefined( res )) {
+			throw new TypeError(constants.INVALID_ITEM_VALUE_OR_FORMAT);
+		}
+
+		return res;
+	}
 }
 
 module.exports = ValidationHelper;
