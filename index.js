@@ -6,22 +6,12 @@ const {
 	DataItem } = require( './src/hsms' )
 
 	//const m = new Message( 0, 1 );
-	var builder = DataItem
-		.builder
-		.name( "fuck" )
-		.size( "ffuck" )
-		.build()
+	var builder = DataItem.i1( "humidity", ["0", "7", "-12"]  );
 
 		//builder.name( "fuck" );
 
 	
 
 	
-	console.log( builder.name() );
-
-	var builder = DataItem.builder;
-
 	
-	console.log( builder.name() );
-
 	console.log( "end" );

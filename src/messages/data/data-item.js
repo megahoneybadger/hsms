@@ -61,14 +61,29 @@ module.exports = (function () {
       }
 
 		}
-
 		/**
-		 * Returns available item formats.
+		 * Creates numeric data item.
+		 * @param {ItemFormat} f Item format.
+		 * @param {String} name Item name.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric values or numeric arrays can be passed.
 		 */
-		static get format() {
-			return ItemFormat;
+		static numeric(f = ItemFormat.I2, name = "", ...values ) {
+      return DataItem
+        .builder
+        .format(f)
+        .value(( 0 == values.length ) ? 0 : values  )
+        .name(name)
+        .build();
 		}
-
+		/**
+		 * Creates I1 data item.
+		 * @param {String} name Item name.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric values or numeric arrays can be passed.
+		 */
+		static i1(name = "", ...values) {
+			var x = [...values];
+      return DataItem.numeric(ItemFormat.I1, name, ...values);
+    }
 		/**
 		 * Returns builder's instance.
 		 */
