@@ -4,111 +4,140 @@ var should = require('chai').should();
 
 const { DataItem, ItemFormat, Constants } = require( '../../../src/hsms' )
 
-describe('Data Item I1', () => {
+describe('Data Item I2', () => {
 	it('should be created with a correct value (number)', () => {
 		const item = DataItem
 			.builder
-			.format( ItemFormat.I1 )
 			.size( 123 )
-			.value( 7 )
+			.format( ItemFormat.I2 )
+			.value( 7224 )
 			.build();
 
 		item.should.not.have.property( 'size' );
-		item.should.have.property( 'value' ).equal( 7 );
-		item.should.have.property( 'format' ).equal( ItemFormat.I1 );
+		item.should.have.property( 'value' ).equal( 7224 );
+		item.should.have.property( 'format' ).equal( ItemFormat.I2 );
 	});
-
+	
 	it('should be created with a correct value (set value before setting a format)', () => {
 		const item = DataItem
 			.builder
-			.size( 123 )
-			.value( 72 )
-			.format( ItemFormat.I1 )
+			.size( 1233 )
+			.format( ItemFormat.I2 )
+			.value( 7123 )
 			.build();
 
 		item.should.not.have.property( 'size' );
-		item.should.have.property( 'value' ).equal( 72 );
-		item.should.have.property( 'format' ).equal( ItemFormat.I1 );
+		item.should.have.property( 'value' ).equal( 7123 );
+		item.should.have.property( 'format' ).equal( ItemFormat.I2 );
 	});
 
 	it('should be created with a correct value (neg number)', () => {
 		const item = DataItem
 			.builder
-			.format( ItemFormat.I1 )
+			.format( ItemFormat.I2 )
 			.size( 123 )
-			.value( -72 )
+			.value( -720 )
 			.build();
 
 		item.should.not.have.property( 'size' );
-		item.should.have.property( 'value' ).equal( -72 );
-		item.should.have.property( 'format' ).equal( ItemFormat.I1 );
+		item.should.have.property( 'value' ).equal( -720 );
+		item.should.have.property( 'format' ).equal( ItemFormat.I2 );
 	});
 
-	it('should be created with a correct value (string)', () => {
+	it('should be created with a correct value (neg string)', () => {
 		const item = DataItem
 			.builder
-			.format( ItemFormat.I1 )
-			.value( "117" )
+			.format( ItemFormat.I2 )
+			.value( "-2117" )
 			.build();
 
 		item.should.not.have.property( 'size' );
-		item.should.have.property( 'value' ).equal( 117 );
-		item.should.have.property( 'format' ).equal( ItemFormat.I1 );
+		item.should.have.property( 'value' ).equal( -2117 );
+		item.should.have.property( 'format' ).equal( ItemFormat.I2 );
 	});
 
-	it('should be created with correct value (0)', () => {
+	it('should be created with a correct value (0)', () => {
 		const item = DataItem
 			.builder
-			.format( ItemFormat.I1 )
+			.format( ItemFormat.I2 )
 			.value( 0 )
 			.build();
 
 		item.should.not.have.property( 'size' );
 		item.should.have.property( 'value' ).equal( 0 );
-		item.should.have.property( 'format' ).equal( ItemFormat.I1 );
+		item.should.have.property( 'format' ).equal( ItemFormat.I2 );
+	});
+
+	it('should be created with correct value (0 as string)', () => {
+		const item = DataItem
+			.builder
+			.format( ItemFormat.I2 )
+			.value( "0" )
+			.build();
+
+		item.should.not.have.property( 'size' );
+		item.should.have.property( 'value' ).equal( 0 );
+		item.should.have.property( 'format' ).equal( ItemFormat.I2 );
 	});
 
 	it('should be created with a correct value (single element array)', () => {
 		const item = DataItem
 			.builder
-			.format( ItemFormat.I1 )
-			.value( [ "-12" ] )
+			.format( ItemFormat.I2 )
+			.value( [ "-12384" ] )
 			.build();
 
 		item.should.not.have.property( 'size' );
-		item.should.have.property( 'value' ).equal( -12 );
-		item.should.have.property( 'format' ).equal( ItemFormat.I1 );
+		item.should.have.property( 'value' ).equal( -12384 );
+		item.should.have.property( 'format' ).equal( ItemFormat.I2 );
 	});
 
-	it('should be created with default value', () => {
+	it('should be created with a default value', () => {
 		const item = DataItem
 			.builder
-			.format( ItemFormat.I1 )
+			.format( ItemFormat.I2 )
 			.build();
 
 		item.should.not.have.property( 'size' );
 		item.should.have.property( 'value' ).equal( 0 );
 		item.should.have.property( 'name' ).equal('');
-		item.should.have.property( 'format' ).equal(ItemFormat.I1 );
+		item.should.have.property( 'format' ).equal(ItemFormat.I2 );
 	});
 
 	it('should be created with a default value via static method', () => {
-		const item = DataItem.i1( 'temper' );
+		const item = DataItem.i2( 'temper' );
 
 		item.should.not.have.property( 'size' );
 		item.should.have.property( 'value' ).equal( 0 );
 		item.should.have.property( 'name' ).equal('temper');
-		item.should.have.property( 'format' ).equal(ItemFormat.I1 );
+		item.should.have.property( 'format' ).equal(ItemFormat.I2 );
 	});
-
 
 	it('should throw an exception if passing an invalid value (null)', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
+				.format(ItemFormat.I2 )
 				.value( null )
 				.build();
+    })
+    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+	});
+
+	it('should throw an exception if passing an invalid value (array of nulls)', () => {
+    expect( () => {
+      DataItem
+				.builder
+				.format(ItemFormat.I2 )
+				.value( [null, null] )
+				.build();
+    })
+    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+	});
+
+	it('should throw an exception if passing an invalid value (undefined via static method)', () => {
+		expect( () => {
+      DataItem.i2( "humidity", null );
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
 	});
@@ -117,19 +146,19 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
 				.value( { name: "error" } )
+				.format(ItemFormat.I2 )
 				.build();
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
 	});
 
-	it('should throw an exception if passing invalid value before setting a format', () => {
+	it('should throw an exception if passing an invalid value before setting a format', () => {
     expect( () => {
       DataItem
 				.builder
-				.value( 1232 )
-				.format( ItemFormat.I1 )
+				.value( 12324345 )
+				.format(ItemFormat.I2 )
 				.build();
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
@@ -139,7 +168,7 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
+				.format(ItemFormat.I2 )
 				.value( 1232434351 )
 				.build();
     })
@@ -150,8 +179,8 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
-				.value( -190 )
+				.format(ItemFormat.I2 )
+				.value( -191234 )
 				.build();
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
@@ -161,8 +190,8 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
-				.value( "1232" )
+				.format(ItemFormat.I2 )
+				.value( "123212345" )
 				.build();
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
@@ -172,84 +201,88 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
-				.value( "-190" )
+				.format(ItemFormat.I2 )
+				.value( "-197890" )
 				.build();
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
 	});
 
-
 	it('should be created with a correct value (single value number array)', () => {
 		const item = DataItem
 			.builder
-			.format(ItemFormat.I1 )
-			.size( 123 )
-			.value( [17] )
+			.format(ItemFormat.I2 )
+			.size( 12312 )
+			.name( "pressure" )
+			.value( [17123] )
 			.build();
 
 		item.should.not.have.property( 'size' );
-		item.should.have.property( 'value' ).equal( 17 );
-		item.should.have.property( 'format' ).equal(ItemFormat.I1 );
+		item.should.have.property( 'value' ).equal( 17123 );
+		item.should.have.property( 'name' ).equal( "pressure" );
+		item.should.have.property( 'format' ).equal(ItemFormat.I2 );
 	});
 
-
 	it('should be created with a correct value (single value number array via static method )', () => {
-		const item = DataItem.i1( "pressure", [17] );
+		const item = DataItem.i2( "pressure", [17123] );
 			
 
 		item.should.not.have.property( 'size' );
-		item.should.have.property( 'value' ).equal( 17 );
+		item.should.have.property( 'value' ).equal( 17123 );
 		item.should.have.property( 'name' ).equal( "pressure" );
-		item.should.have.property( 'format' ).equal(ItemFormat.I1 );
+		item.should.have.property( 'format' ).equal(ItemFormat.I2 );
 	});
 
 	it('should be created with a correct value (single value string array)', () => {
 		const arr = new Array();
-		arr.push( "13" )
+		arr.push( "1312" )
 
 		const item = DataItem
 			.builder
-			.format(ItemFormat.I1 )
+			.format(ItemFormat.I2 )
 			.value( arr )
+			.name( "temp" )
 			.build();
 
 		item.should.not.have.property( 'size' );
-		item.should.have.property( 'value' ).equal( 13 );
-		item.should.have.property( 'format' ).equal(ItemFormat.I1 );
+		item.should.have.property( 'value' ).equal( 1312 );
+		item.should.have.property( 'name' ).equal( "temp" );
+		item.should.have.property( 'format' ).equal(ItemFormat.I2 );
 	});
 
 	it('should be created with a correct value (single value string array via static method)', () => {
 		const arr = new Array();
-		arr.push( "13" )
+		arr.push( "1312" )
 
-		const item = DataItem.i1( "temp", arr );
+		const item = DataItem.i2( "temp", arr );
 
 		item.should.not.have.property( 'size' );
-		item.should.have.property( 'value' ).equal( 13 );
+		item.should.have.property( 'value' ).equal( 1312 );
 		item.should.have.property( 'name' ).equal( "temp" );
-		item.should.have.property( 'format' ).equal(ItemFormat.I1 );
+		item.should.have.property( 'format' ).equal(ItemFormat.I2 );
 	});
 
 	it('should be created with a correct value (single value number array with 0)', () => {
 		const item = DataItem
 			.builder
-			.format(ItemFormat.I1 )
+			.format(ItemFormat.I2 )
+			.name( "test1" )
 			.value( [0] )
 			.build();
 
 		item.should.not.have.property( 'size' );
 		item.should.have.property( 'value' ).equal( 0 );
-		item.should.have.property( 'format' ).equal(ItemFormat.I1 );
+		item.should.have.property( 'name' ).equal( "test1" );
+		item.should.have.property( 'format' ).equal(ItemFormat.I2 );
 	});
 
 	it('should be created with a correct value (single value number array with 0 via static method)', () => {
-		const item = DataItem.i1( "test1", [0] );
+		const item = DataItem.i2( "test1", [0] );
 
 		item.should.not.have.property( 'size' );
 		item.should.have.property( 'value' ).equal( 0 );
 		item.should.have.property( 'name' ).equal( "test1" );
-		item.should.have.property( 'format' ).equal(ItemFormat.I1 );
+		item.should.have.property( 'format' ).equal(ItemFormat.I2 );
 	});
 
 
@@ -257,7 +290,7 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
+				.format(ItemFormat.I2 )
 				.value( [null] )
 				.build();
     })
@@ -268,7 +301,7 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
+				.format(ItemFormat.I2 )
 				.value( [undefined] )
 				.build();
     })
@@ -279,7 +312,7 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
+				.format(ItemFormat.I2 )
 				.value( { name: "error" } )
 				.build();
     })
@@ -290,7 +323,7 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
+				.format(ItemFormat.I2 )
 				.value( [1232434351] )
 				.build();
     })
@@ -299,17 +332,17 @@ describe('Data Item I1', () => {
 
 	it('should throw an exception if passing an invalid value (single value array with too big value via static method)', () => {
     expect( () => {
-      DataItem.i1( "test2", [1232434351] );
+      DataItem.i2( "test2", [1232434351] );
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
 	});
 
-	it('should throw an exception if passing invalid value (single value array with too small value)', () => {
+	it('should throw an exception if passing an invalid value (single value array with too small value)', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
-				.value( [-190] )
+				.format(ItemFormat.I2 )
+				.value( [-199078] )
 				.build();
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
@@ -317,7 +350,7 @@ describe('Data Item I1', () => {
 
 	it('should throw an exception if passing an invalid value (single value array with too small value via static method)', () => {
     expect( () => {
-      DataItem.i1( "test1", [-199] )
+      DataItem.i2( "test1", [-199078] )
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
 	});
@@ -326,8 +359,8 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
-				.value( ["1232"] )
+				.format(ItemFormat.I2 )
+				.value( ["1232234"] )
 				.build();
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
@@ -337,8 +370,8 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
-				.value( ["-190"] )
+				.format(ItemFormat.I2 )
+				.value( ["-1986556"] )
 				.build();
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
@@ -347,52 +380,57 @@ describe('Data Item I1', () => {
 	it('should be created with a correct value (array of numbers)', () => {
 		const item = DataItem
 			.builder
-			.format(ItemFormat.I1 )
+			.format(ItemFormat.I2 )
 			.size( 123 )
-			.value( [123, 18, 90] )
+			.name( "pressure" )
+			.value( [12354, 181, 9120] )
 			.build();
 
 		item.should.not.have.property( 'size' );
 		item.should.have.property( 'value' );
 
-		expect(item.value ).to.have.ordered.members([123, 18, 90])
+		expect(item.value ).to.have.ordered.members([12354, 181, 9120])
 		
-		item.should.have.property( 'format' ).equal(ItemFormat.I1 );
+		item.should.have.property( 'format' ).equal(ItemFormat.I2 );
+		item.should.have.property( 'name' ).equal( "pressure" );
 	});
 
 	it('should be created with a correct value (array of numbers via static method)', () => {
-		const item = DataItem.i1( 'pressure', 1, [123, 18, 91], "13" )
+		const item = DataItem.i2( 'pressure', 1, [12354, 181, 9120], "13243" )
 
 		item.should.not.have.property( 'size' );
 		item.should.have.property( 'value' );
 
-		expect(item.value ).to.have.ordered.members([1, 123, 18, 91, 13])
+		expect(item.value ).to.have.ordered.members([1, 12354, 181, 9120, 13243])
 		
-		item.should.have.property( 'format' ).equal(ItemFormat.I1 );
+		item.should.have.property( 'format' ).equal(ItemFormat.I2 );
 		item.should.have.property( 'name' ).equal( "pressure" );
 	});
 
 	it('should be created with a correct value (array of strings)', () => {
 		const item = DataItem
 			.builder
-			.format(ItemFormat.I1 )
+			.name( "pressure" )
+			.format(ItemFormat.I2 )
+			.value( ["18123", '0x232', "-1231"] )
 			.size( 123 )
-			.value( ["78", '0x23', "-123"] )
 			.build();
 
 		item.should.not.have.property( 'size' );
 		item.should.have.property( 'value' );
 
-		expect(item.value ).to.have.ordered.members([78, 0x23, -123])
+		expect(item.value ).to.have.ordered.members([18123, 0x232, -1231])
 		
-		item.should.have.property( 'format' ).equal(ItemFormat.I1 );
+		item.should.have.property( 'format' ).equal(ItemFormat.I2 );
+		item.should.have.property( 'name' ).equal( "pressure" );
 	});
 
 	it('should be created with a correct value (array of zeros)', () => {
 		const item = DataItem
 			.builder
-			.format(ItemFormat.I1 )
+			.format(ItemFormat.I2 )
 			.size( 123 )
+			.name( "pressure" )
 			.value( ["0", '0x0', 0] )
 			.build();
 
@@ -401,38 +439,39 @@ describe('Data Item I1', () => {
 
 		expect(item.value ).to.have.ordered.members([0, 0, 0])
 		
-		item.should.have.property( 'format' ).equal(ItemFormat.I1 );
+		item.should.have.property( 'format' ).equal(ItemFormat.I2 );
+		item.should.have.property( 'name' ).equal( "pressure" );
 	});
 
 	it('should be created with a correct value (array of zeros via static method)', () => {
-		const item = DataItem.i1( "pressure", 0, ["0", '0x0', 0], 0  )
+		const item = DataItem.i2( "pressure", 0, ["0", '0x0', 0], 0  )
 
 		item.should.not.have.property( 'size' );
 		item.should.have.property( 'value' );
 
 		expect(item.value ).to.have.ordered.members([0, 0, 0, 0, 0])
 		
-		item.should.have.property( 'format' ).equal(ItemFormat.I1 );
+		item.should.have.property( 'format' ).equal(ItemFormat.I2 );
 		item.should.have.property( 'name' ).equal( "pressure" );
 	});
 
 
-  it('should throw an exception if passing invalid value (array with null)', () => {
+	it('should throw an exception if passing an invalid value (array with null)', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
+				.format(ItemFormat.I2 )
 				.value( [1, 8, null] )
 				.build();
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
 	});
 
-	it('should throw an exception if passing invalid value (array with undefined)', () => {
+	it('should throw an exception if passing an invalid value (array with undefined)', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
+				.format(ItemFormat.I2 )
 				.value( [1, undefined,  8] )
 				.build();
     })
@@ -443,8 +482,8 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
-				.value( [ 64, 21, () => {}, { name: "error" } ] )
+				.format(ItemFormat.I2 )
+				.value( [ 6412, 211, () => {}, { name: "error 1" } ] )
 				.build();
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
@@ -454,9 +493,16 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
-				.value( [1, 3, 4, 453 ] )
+				.format(ItemFormat.I2 )
+				.value( [11234, 312343, 412, 453 ] )
 				.build();
+    })
+    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+	});
+
+	it('should throw an exception if passing an invalid value (array of too big values via static method)', () => {
+    expect( () => {
+      DataItem.i2( 'pressure', 11234, 312343, 412, 453 );
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
 	});
@@ -465,9 +511,16 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
-				.value( [-1, -6, -190] )
+				.format(ItemFormat.I2 )
+				.value( [-1, -6, -192340] )
 				.build();
+    })
+    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+	});
+
+	it('should throw an exception if passing an invalid value (array of too small value via static method)', () => {
+    expect( () => {
+      DataItem.i2( "pres", [-1, -6, -192340] );
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
 	});
@@ -476,9 +529,16 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
-				.value( ["12", "0", "1232"] )
+				.format(ItemFormat.I2 )
+				.value( ["12", "0", "123212"] )
 				.build();
+    })
+    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+	});
+
+	it('should throw an exception if passing an invalid value (array of too big string value via static method)', () => {
+    expect( () => {
+      DataItem.i2( "pres", ["12", "0", "123212"] )
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
 	});
@@ -487,38 +547,48 @@ describe('Data Item I1', () => {
     expect( () => {
       DataItem
 				.builder
-				.format(ItemFormat.I1 )
-				.value( [ "-4", "-190"] )
+				.format(ItemFormat.I2 )
+				.value( [ "-4", "-33122"] )
 				.build();
     })
     .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
 	});
 
+	it('should throw an exception if passing an invalid value (array of too small string value via static method)', () => {
+    expect( () => {
+      DataItem.i2( "pres", "-4", "-33122" )
+    })
+    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+	});
+
 	it('should be created with correct value via data item static method #1', () => {
-		const item = DataItem.numeric( ItemFormat.I1, "humidity", [123] );
+		const item = DataItem.numeric( ItemFormat.I2, "humidity", [123] );
 
 		item.should.not.have.property( 'size' );
 		item.should.have.property( 'value' ).equal( 123 );
-		item.should.have.property( 'format' ).equal( ItemFormat.I1 );
+		item.should.have.property( 'format' ).equal( ItemFormat.I2 );
 		item.should.have.property( 'name' ).equal( "humidity" );
 	});
 
 	it('should be created with correct value via data item static method #2', () => {
-		const item = DataItem.numeric( ItemFormat.I1, "humidity", 123, -6, "7" );
+		const item = DataItem.numeric( ItemFormat.I2, "humidity", 123, -6, "7" );
 
 		item.should.not.have.property( 'size' );
 		expect(item.value ).to.have.ordered.members([123, -6, 7 ])
-		item.should.have.property( 'format' ).equal( ItemFormat.I1 );
+		item.should.have.property( 'format' ).equal( ItemFormat.I2 );
 		item.should.have.property( 'name' ).equal( "humidity" );
 	});
 
 	it('should be created with correct value via data item static method #3', () => {
-		const item = DataItem.i1( "humidity", 34, ["0", "7", "-12"], 123, 1  );
+		const item = DataItem.i2( "humidity", [341, '0xabc'], ["0", "712", "-1212"], 123, 1111, []   );
 
 		item.should.not.have.property( 'size' );
 		
-		expect(item.value ).to.have.ordered.members([34, 0, 7, -12, 123, 1 ])
-		item.should.have.property( 'format' ).equal( ItemFormat.I1 );
+		expect(item.value ).to.have.ordered.members([341, 0xabc, 0, 712, -1212, 123, 1111 ])
+		item.should.have.property( 'format' ).equal( ItemFormat.I2 );
 		item.should.have.property( 'name' ).equal( "humidity" );
 	});
+
+
+	
 });

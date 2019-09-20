@@ -49,7 +49,15 @@ module.exports = (function () {
         default:
           return false;
       }
-    }
+		},
+		
+		default( n ){
+			if( this.isInteger( n )){
+				return 0;
+			}
+
+			return null;
+		}
 	})
 
 	return ItemFormat;

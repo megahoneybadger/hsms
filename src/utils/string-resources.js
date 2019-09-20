@@ -3,7 +3,13 @@ module.exports = Object.freeze({
 	MIN_BYTE: -128,
 	 
 	MAX_UBYTE: 0xff,
+
 	MAX_USHORT: 0xffff,
+
+	MIN_SHORT: -32768,
+	MAX_SHORT: 0x7fff,
+	
+
   MAX_UINT: 0xffffffff,
 
 	CANNOT_CONSTRUCT_DIRECTLY: 'Cannot construct instance directly',

@@ -3,10 +3,31 @@ const Encoder = require( './src/coding/encoder' );
 
 const { 
 	Message,
-	DataItem } = require( './src/hsms' )
+	DataItem,
+	ItemFormat } = require( './src/hsms' )
 
-	//const m = new Message( 0, 1 );
-	var builder = DataItem.i1( "humidity", ["0", "7", "-12"]  );
+	// try{
+		
+	// }
+	// catch( err ){
+	// 	console.log( err );
+	// }
+
+	const item = DataItem
+			.builder
+			.size( 1233 )
+			.format( ItemFormat.I2 )
+			.value( 7123, 781 )
+			.build();
+
+
+
+
+
+	
+
+
+	//var y = val.for
 
 		//builder.name( "fuck" );
 

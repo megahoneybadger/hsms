@@ -6,6 +6,10 @@ class ValidationHelper{
 
 	static getByteInRange( v, name ){
     return ValidationHelper.getNumberInRange( v, constants.MIN_BYTE, constants.MAX_BYTE, name );
+	}
+	
+	static getShortInRange( v, name ){
+    return ValidationHelper.getNumberInRange( v, constants.MIN_SHORT, constants.MAX_SHORT, name );
   }
 
   static getUShortInRange( v, name ){
@@ -64,8 +68,12 @@ class ValidationHelper{
 			switch (format) {
 				case ItemFormat.I1:
 					res = ValidationHelper.getByteInRange( res );
-					break;
-			}
+					break;			
+
+					case ItemFormat.I2:
+					res = ValidationHelper.getShortInRange( res );
+					break;			
+				}
 		}
 		catch{
 			res = undefined;

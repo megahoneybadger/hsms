@@ -65,13 +65,13 @@ module.exports = (function () {
 		 * Creates numeric data item.
 		 * @param {ItemFormat} f Item format.
 		 * @param {String} name Item name.
-		 * @param  {...any} values Item value(s) for initialization. Single numeric values or numeric arrays can be passed.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric values or numeric arrays can be passed. 
 		 */
 		static numeric(f = ItemFormat.I2, name = "", ...values ) {
       return DataItem
         .builder
         .format(f)
-        .value(( 0 == values.length ) ? 0 : values  )
+        .value(( 0 == values.length ) ? 0 : values.flat()  )
         .name(name)
         .build();
 		}
@@ -83,6 +83,15 @@ module.exports = (function () {
 		static i1(name = "", ...values) {
 			var x = [...values];
       return DataItem.numeric(ItemFormat.I1, name, ...values);
+		}
+		/**
+		 * Creates I2 data item.
+		 * @param {String} name Item name.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric values or numeric arrays can be passed.
+		 */
+		static i2(name = "", ...values) {
+			var x = [...values];
+      return DataItem.numeric(ItemFormat.I2, name, ...values);
     }
 		/**
 		 * Returns builder's instance.
@@ -140,6 +149,10 @@ module.exports = (function () {
 				props.get(this).size = undefined;
 			}
 
+			if ( !validator.isUndefined( props.get(this).value ) ) {
+				this.value( props.get(this).value );
+			}
+
 			return this;
 		}
 		/**
@@ -190,6 +203,10 @@ module.exports = (function () {
 		build() {
 			if (!props.get(this).name) {
 				props.get(this).name = '';
+			}
+
+			if ( validator.isUndefined( props.get(this).value ) ) {
+				props.get(this).value = ItemFormat.default( props.get(this).format );
 			}
 
 			return new DataItem(this);
