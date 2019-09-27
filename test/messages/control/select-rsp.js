@@ -139,10 +139,10 @@ describe('Select Rsp', () => {
   });
 
   it('encode must return valid binary stream #2', () => {
-    const sr =  new SelectRsp( 37, 23 );
+    const sr =  new SelectRsp( 37, 23, 7 );
 
     const encodedArray = Encoder.encode( sr );
-    const expectedArray = Buffer.from( [ 00, 00, 00, 0x0a, 00, 0x25, 00, 00, 00, 02, 00, 00, 00, 0x17 ] )
+    const expectedArray = Buffer.from( [ 00, 00, 00, 0x0a, 00, 0x25, 00, 7, 00, 02, 00, 00, 00, 0x17 ] )
     
     expect( Buffer.compare( encodedArray, expectedArray ) ).equal( 0 );
   });

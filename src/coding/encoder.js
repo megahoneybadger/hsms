@@ -5,6 +5,7 @@ const Message = require( "../messages/message" )
 const SelectReq = require( "../messages/control/select-req" )
 const SelectRsp = require( "../messages/control/select-rsp" )
 const DeselectReq = require( "../messages/control/deselect-req" )
+const DeselectRsp = require( "../messages/control/deselect-rsp" )
 
 module.exports = (function () {
 
@@ -26,6 +27,9 @@ module.exports = (function () {
 
 				case Message.Type.DeselectReq:
 					return encodeDeselectReq(m);
+
+				case Message.Type.DeselectRsp:
+					return encodeDeselectRsp(m);
 			}
 
 		}
@@ -118,6 +122,39 @@ module.exports = (function () {
 
 		// byte #3
 		b.writeUInt8(0)
+
+		// PType
+		b.writeUInt8(0)
+
+		// SType
+		b.writeUInt8(m.kind)
+
+		b.BE();
+		b.writeUint32(m.context);
+		b.LE();
+
+		return b.buffer.slice(0, b.offset);
+	}
+
+	function encodeDeselectRsp(m) {
+		if( !( m instanceof DeselectRsp ) ){
+			throw new TypeError( constants.NOT_SUPPORTED_OBJECT_TYPE );
+		}
+
+		let b = new ByteBuffer();
+
+		b.BE();
+
+		b.writeUint32(10);
+		b.writeUint16(m.device);
+
+		b.LE();
+
+		// byte #2
+		b.writeUInt8(0)
+
+		// byte #3
+		b.writeUInt8(m.status)
 
 		// PType
 		b.writeUInt8(0)

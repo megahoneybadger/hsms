@@ -49,6 +49,9 @@ class SelectRsp extends ControlMessage{
     return Message.Type.SelectRsp;
   }
 
+  /**
+   * Returns a string that represents the current object.
+   */
   toString(){
     return `select rsp`;
   }
