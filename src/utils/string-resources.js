@@ -1,16 +1,20 @@
 module.exports = Object.freeze({
-	MAX_BYTE: 127,
-	MIN_BYTE: -128,
-	 
-	MAX_UBYTE: 0xff,
-
-	MAX_USHORT: 0xffff,
-
-	MIN_SHORT: -32768,
-	MAX_SHORT: 0x7fff,
-	
-
+  MAX_UBYTE: 0xff,
+  MAX_USHORT: 0xffff,
   MAX_UINT: 0xffffffff,
+  MAX_ULONG: 0xffffffffffffffff,
+
+  MIN_BYTE: -128,
+  MAX_BYTE: 127,
+
+  MIN_SHORT: -32768,
+  MAX_SHORT: 32767,
+
+  MIN_INT: -2147483648,
+  MAX_INT: 2147483647,
+  
+  MIN_LONG: -9223372036854775808,
+  MAX_LONG: 9223372036854775807,
 
 	CANNOT_CONSTRUCT_DIRECTLY: 'Cannot construct instance directly',
 	CANNOT_CONSTRUCT_WITHOUT_BUILDER: 'Cannot construct an instance without a builder',
@@ -46,8 +50,6 @@ module.exports = Object.freeze({
 	getErrMustBeString( p ){
 		return `${p} must be a string`;
 	},
-
-
 
 	
 	
