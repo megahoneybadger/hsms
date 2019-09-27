@@ -13,12 +13,8 @@ const {
 	// 	console.log( err );
 	// }
 
-	const item = DataItem
-			.builder
-			.size( 1233 )
-			.format( ItemFormat.I2 )
-			.value( 7123, 781 )
-			.build();
+	const item = DataItem.a( "glass-id", "long mega string", 45 );
+			
 
 
 

@@ -23,6 +23,7 @@ module.exports = Object.freeze({
 
 	INVALID_ENUM_VALUE: "Invalid enum value",
 	INVALID_ITEM_VALUE_OR_FORMAT: "Invalid item value or format",
+	INVALID_ITEM_SIZE: "Invalid item size",
 
 	
 

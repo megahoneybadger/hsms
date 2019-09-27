@@ -78,7 +78,7 @@ module.exports = (function () {
 		/**
 		 * Creates I1 data item.
 		 * @param {String} name Item name.
-		 * @param  {...any} values Item value(s) for initialization. Single numeric values or numeric arrays can be passed.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.
 		 */
 		static i1(name = "", ...values) {
 			var x = [...values];
@@ -87,11 +87,26 @@ module.exports = (function () {
 		/**
 		 * Creates I2 data item.
 		 * @param {String} name Item name.
-		 * @param  {...any} values Item value(s) for initialization. Single numeric values or numeric arrays can be passed.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.
 		 */
 		static i2(name = "", ...values) {
 			var x = [...values];
       return DataItem.numeric(ItemFormat.I2, name, ...values);
+		}
+		/**
+		 * Creates string data item.
+		 * @param {String} name Item name.
+		 * @param {numeric} size Item size.
+		 * @param  {...any} values Item value for initialization. Single string only can be passed.
+		 */
+		static a(name = "", value, size = 0) {
+			return DataItem
+				.builder
+				.format(ItemFormat.A)
+				.size(size)
+				.value(value)
+				.name(name)
+				.build();
     }
 		/**
 		 * Returns builder's instance.
@@ -171,6 +186,9 @@ module.exports = (function () {
 
 			return this;
 		}
+		/**
+		 * Gets or sets data item's value.
+		 */
 		value( v ){
 			if (validator.isUndefined( v )) {
 				return props.get(this).value;

@@ -1,4 +1,5 @@
 const constants = require( './string-resources' );
+const InvalidItemSizeError = require( './errors/size-error' );
 const ItemFormat = require( '../messages/data/item-format' );
 
 //https://webbjocke.com/javascript-check-data-types/
@@ -70,12 +71,54 @@ class ValidationHelper{
 					res = ValidationHelper.getByteInRange( res );
 					break;			
 
-					case ItemFormat.I2:
+				case ItemFormat.I2:
 					res = ValidationHelper.getShortInRange( res );
-					break;			
-				}
+					break;	
+					
+				case ItemFormat.A:
+					if ( ValidationHelper.isUndefined( size ) || !Number.isInteger(size)) {
+						throw new InvalidItemSizeError();
+					}
+
+				// if (!Number.isInteger(size) || size <= 0) {
+				// 	throw new TypeError("Size must be a positive and non zero number");
+				// }
+
+				// if ((typeof value === 'string' || value instanceof String)) {
+				// 	res = value;
+				// }
+
+				// let psv = parseFloat(value);
+
+				// if (!isNaN(psv) && isFinite(psv)) {
+				// 	res = psv.toString();
+				// }
+
+				// if (typeof value == 'undefined' || null === value) {
+				// 	res = '';
+				// }
+
+				
+
+				// if ((typeof res === 'string' || res instanceof String)) {
+				// 	res = res.substring(0, size);
+				// }
+
+				// if( typeof res === 'undefined' ){
+				// 	res = '';
+				// }
+
+				// if ( res.length < size) {
+				// 	res = res.padEnd(size, ' ');
+				// }
+					break;
+			}
 		}
-		catch{
+		catch( e ){
+			if (e instanceof InvalidItemSizeError) {
+				throw( e );
+			}
+
 			res = undefined;
 		}
 
@@ -111,41 +154,7 @@ class ValidationHelper{
 			// 	break;
 
 			// case ItemFormat.A:
-			// 	if (typeof size === "undefined" || !Number.isInteger(size)) {
-			// 		throw new TypeError("Correct size was not specified");
-			// 	}
-
-			// 	if (!Number.isInteger(size) || size <= 0) {
-			// 		throw new TypeError("Size must be a positive and non zero number");
-			// 	}
-
-			// 	if ((typeof value === 'string' || value instanceof String)) {
-			// 		res = value;
-			// 	}
-
-			// 	let psv = parseFloat(value);
-
-			// 	if (!isNaN(psv) && isFinite(psv)) {
-			// 		res = psv.toString();
-			// 	}
-
-			// 	if (typeof value == 'undefined' || null === value) {
-			// 		res = '';
-			// 	}
-
-				
-
-			// 	if ((typeof res === 'string' || res instanceof String)) {
-			// 		res = res.substring(0, size);
-			// 	}
-
-			// 	if( typeof res === 'undefined' ){
-			// 		res = '';
-			// 	}
-
-			// 	if ( res.length < size) {
-			// 		res = res.padEnd(size, ' ');
-			// 	}
+		
 
 			// 	break;
 
@@ -157,6 +166,8 @@ class ValidationHelper{
 
 		return res;
 	}
+
+	
 }
 
 module.exports = ValidationHelper;
