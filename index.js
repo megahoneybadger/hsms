@@ -4,31 +4,14 @@ const Encoder = require( './src/coding/encoder' );
 const { 
 	Message,
 	DataItem,
-	ItemFormat } = require( './src/hsms' )
+Config } = require( './src/hsms' )
 
-	// try{
+	var builder = Config
+		.builder
+		.mode( Config.mode.Active )
+		.port( "7850" );
 		
-	// }
-	// catch( err ){
-	// 	console.log( err );
-	// }
-
-	const item = DataItem.a( "glass-id", "long mega string", 45 );
-			
 
 
 
-
-
-	
-
-
-	//var y = val.for
-
-		//builder.name( "fuck" );
-
-	
-
-	
-	
 	console.log( "end" );

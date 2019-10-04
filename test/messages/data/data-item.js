@@ -4,26 +4,31 @@ var should = require('chai').should();
 
 const { DataItem, Constants, ItemFormat } = require( '../../../src/hsms' )
 
+const { 
+	NoBuilderError,
+	TooManyParamsError,
+	InvalidEnumValueError } = require( '../../../src/utils/errors/custom-errors' )
+
 describe('Data Item', () => {
   it('should throw an exception if creating without a builder #1', () => {
     expect( () => {
       const m = new DataItem( 1 );
     })
-    .to.throw( TypeError, Constants.CANNOT_CONSTRUCT_WITHOUT_BUILDER );
+    .to.throw( NoBuilderError );
 	});
 
 	it('should throw an exception if creating without a builder #2', () => {
     expect( () => {
       const m = new DataItem();
     })
-    .to.throw( TypeError, Constants.CANNOT_CONSTRUCT_WITHOUT_BUILDER );
+    .to.throw( NoBuilderError );
 	});
 	
 	it('should throw an exception if passing too many params', () => {
     expect( () => {
       const m = new DataItem( DataItem.builder, 1, "error" );
     })
-    .to.throw( TypeError, Constants.TOO_MANY_CONSTRUCT_PARAMS );
+    .to.throw( TooManyParamsError );
 	});
 	
 	it('should be created with non-empty name', () => {
@@ -75,7 +80,7 @@ describe('Data Item', () => {
 				.format( "super bad value" )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ENUM_VALUE );
+    .to.throw( InvalidEnumValueError );
 	});
 
 	it('should throw an exception if passing invalid format value #2 (not existing number value)', () => {
@@ -85,7 +90,7 @@ describe('Data Item', () => {
 				.format( 1000 )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ENUM_VALUE );
+    .to.throw( InvalidEnumValueError );
 	});
 
 	it('should throw an exception if passing invalid format value #3 (null)', () => {
@@ -95,7 +100,7 @@ describe('Data Item', () => {
 				.format( null )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ENUM_VALUE );
+    .to.throw( InvalidEnumValueError );
 	});
 
 	it('should throw an exception if passing invalid format value #4 (case sensitive string value)', () => {
@@ -105,7 +110,7 @@ describe('Data Item', () => {
 				.format( "f4" )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ENUM_VALUE );
+    .to.throw( InvalidEnumValueError );
 	});
 
 	it('should be created with non-empty format even if a format was not provided', () => {

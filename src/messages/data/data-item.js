@@ -2,6 +2,7 @@ var ByteBuffer = require("bytebuffer");
 const constants = require('./../../utils/string-resources')
 const validator = require('./../../utils/validation-helper')
 const ItemFormat = require('./item-format')
+const { NoBuilderError, TooManyParamsError} = require( './../../utils/errors/custom-errors' )
 
 module.exports = (function () {
 	/**
@@ -14,11 +15,11 @@ module.exports = (function () {
 
 		constructor(builder) {
 			if (arguments.length < 1 || !(String(builder.constructor) === String(DataItem.builder.constructor))) {
-				throw new TypeError(constants.CANNOT_CONSTRUCT_WITHOUT_BUILDER);
+				throw new NoBuilderError();
 			}
 
 			if (arguments.length > 1) {
-				throw new TypeError(constants.TOO_MANY_CONSTRUCT_PARAMS);
+				throw new TooManyParamsError();
 			}
 
 			const name = builder.name();

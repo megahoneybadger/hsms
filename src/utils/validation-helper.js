@@ -2,6 +2,8 @@ const constants = require( './string-resources' );
 const InvalidItemSizeError = require( './errors/size-error' );
 const ItemFormat = require( '../messages/data/item-format' );
 
+const {InvalidEnumValueError} = require ( './errors/custom-errors' )
+
 //https://webbjocke.com/javascript-check-data-types/
 class ValidationHelper{
 
@@ -36,7 +38,7 @@ class ValidationHelper{
 
 	static getEnumValue( enumType, f ){
     if( !enumType || ValidationHelper.isUndefined( f ) ){
-      throw new TypeError( constants.INVALID_ENUM_VALUE );
+      throw new InvalidEnumValueError();
     }
 
     if( ValidationHelper.isString( f ) &&  enumType.hasOwnProperty( f ) ){
@@ -44,7 +46,7 @@ class ValidationHelper{
     }
 
     if( !( Number.isInteger( f ) && Object.values( enumType ).indexOf( f ) > -1 )){
-      throw new TypeError( constants.INVALID_ENUM_VALUE );
+      throw new InvalidEnumValueError();
     } 
 
     return f;

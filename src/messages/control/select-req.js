@@ -1,8 +1,6 @@
 const ControlMessage = require( './control-message' );
 const Message = require( './../message' );
-const ValidationHelper = require( './../../utils/validation-helper' )
-const ByteBuffer = require("bytebuffer");
-const constants = require( './../../utils/string-resources' )
+const { TooManyParamsError} = require( './../../utils/errors/custom-errors' )
 
 /**
  * Represents a request for initiation of Select procedure.
@@ -27,7 +25,7 @@ class SelectReq extends ControlMessage{
     super( dev, cont );
 
     if( arguments.length > 2 ){
-      throw new TypeError(constants.TOO_MANY_CONSTRUCT_PARAMS);
+      throw new TooManyParamsError();
     }
   }
 
