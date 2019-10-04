@@ -7,6 +7,8 @@ const DeselectRsp = require('./messages/control/deselect-rsp')
 const LinkTestReq = require('./messages/control/link-test-req')
 const LinkTestRsp = require('./messages/control/link-test-rsp')
 
+const Config = require('./connection/config')
+
 const Encoder = require('./coding/encoder')
 const SelectRsp = require('./messages/control/select-rsp')
 const Constants = require('./utils/string-resources')
@@ -28,5 +30,7 @@ module.exports = {
   DeselectRsp,
 
   Constants,
-  Encoder
+  Encoder,
+
+  Config
 };

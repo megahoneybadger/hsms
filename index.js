@@ -3,25 +3,15 @@ const Encoder = require( './src/coding/encoder' );
 
 const { 
 	Message,
-	DataItem } = require( './src/hsms' )
+	DataItem,
+Config } = require( './src/hsms' )
 
-	//const m = new Message( 0, 1 );
-	var builder = DataItem
+	var builder = Config
 		.builder
-		.name( "fuck" )
-		.size( "ffuck" )
-		.build()
+		.mode( Config.mode.Active )
+		.port( "7850" );
+		
 
-		//builder.name( "fuck" );
 
-	
-
-	
-	console.log( builder.name() );
-
-	var builder = DataItem.builder;
-
-	
-	console.log( builder.name() );
 
 	console.log( "end" );

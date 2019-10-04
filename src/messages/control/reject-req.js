@@ -1,6 +1,6 @@
 const ControlMessage = require( './control-message' );
 const Message = require( '../message' );
-const constants = require( '../../utils/string-resources' )
+const { TooManyParamsError} = require( './../../utils/errors/custom-errors' )
 
 /**
  * Represents a response for Reject procedure.
@@ -21,7 +21,7 @@ class RejectReq extends ControlMessage{
     super( dev, cont );
 
     if( arguments.length > 2 ){
-      throw new TypeError(constants.TOO_MANY_CONSTRUCT_PARAMS);
+      throw new TooManyParamsError();
     }
   }
 

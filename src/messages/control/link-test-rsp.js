@@ -1,6 +1,6 @@
 const ControlMessage = require( './control-message' );
 const Message = require( '../message' );
-const constants = require( '../../utils/string-resources' )
+const { TooManyParamsError} = require( './../../utils/errors/custom-errors' )
 
 /**
  * Represents a response for LinkTest procedure.
@@ -15,7 +15,7 @@ class LinkTestRsp extends ControlMessage{
     super( 0xFFFF, cont );
 
     if( arguments.length > 1 ){
-      throw new TypeError(constants.TOO_MANY_CONSTRUCT_PARAMS);
+      throw new TooManyParamsError();
     }
   }
 

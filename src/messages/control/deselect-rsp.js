@@ -2,6 +2,7 @@ const ControlMessage = require( './control-message' );
 const Message = require( '../message' );
 const ValidationHelper = require( './../../utils/validation-helper' )
 const constants = require( './../../utils/string-resources' )
+const { TooManyParamsError} = require( './../../utils/errors/custom-errors' )
 
 /**
  * Represents a response for Delect procedure.
@@ -29,10 +30,10 @@ class DeselectRsp extends ControlMessage{
     super( dev, cont );
 
     if( arguments.length > 3 ){
-      throw new TypeError(constants.TOO_MANY_CONSTRUCT_PARAMS);
+      throw new TooManyParamsError();
     }
 
-    status =  ValidationHelper.getNumberInRange( 
+    status = ValidationHelper.getNumberInRange( 
       status, 0, constants.MAX_UBYTE, "Status" );
 
     Object.defineProperty(this, "status", {

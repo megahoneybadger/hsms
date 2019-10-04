@@ -9,6 +9,11 @@ const {
   Constants,
   Encoder } = require('../../../src/hsms')
 
+
+const {
+  NoBuilderError,
+  TooManyParamsError } = require('../../../src/utils/errors/custom-errors')
+
 describe('Deselect Rsp', () => {
   let dr;
 
@@ -120,7 +125,7 @@ describe('Deselect Rsp', () => {
     expect(() => {
       new DeselectRsp(1, 2, 4, 123);
     })
-      .to.throw(TypeError, Constants.TOO_MANY_CONSTRUCT_PARAMS);
+      .to.throw(TooManyParamsError);
   });
 
   it('kind must be DeselectRsp', () => {
@@ -139,7 +144,7 @@ describe('Deselect Rsp', () => {
   });
 
   it('encode must return valid binary stream #2', () => {
-    dr =  new DeselectRsp( 1, 2, 3 );
+    dr = new DeselectRsp(1, 2, 3);
 
     const encodedArray = Encoder.encode(dr);
     const expectedArray = Buffer.from([00, 00, 00, 0x0a, 00, 01, 00, 03, 00, 04, 00, 00, 00, 02])
@@ -148,21 +153,21 @@ describe('Deselect Rsp', () => {
   });
 
   it('encode must return valid binary stream #2', () => {
-    dr =  new DeselectRsp( 37, 23, 7 );
+    dr = new DeselectRsp(37, 23, 7);
 
-    const encodedArray = Encoder.encode( dr );
-    const expectedArray = Buffer.from( [ 00, 00, 00, 0x0a, 00, 0x25, 00, 7, 00, 04, 00, 00, 00, 0x17 ] )
-    
-    expect( Buffer.compare( encodedArray, expectedArray ) ).equal( 0 );
+    const encodedArray = Encoder.encode(dr);
+    const expectedArray = Buffer.from([00, 00, 00, 0x0a, 00, 0x25, 00, 7, 00, 04, 00, 00, 00, 0x17])
+
+    expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
   });
 
   it('encode must return valid binary stream #3', () => {
-    dr =  new DeselectRsp( 2781, 37541 );
+    dr = new DeselectRsp(2781, 37541);
 
     const encodedArray = Encoder.encode(dr);
-    const expectedArray = Buffer.from( [ 00, 00, 00, 0x0a, 0xa, 0xdd, 00, 00, 00, 04, 00, 00, 0x92, 0xa5 ] )
-    
-    expect( Buffer.compare( encodedArray, expectedArray ) ).equal( 0 );
+    const expectedArray = Buffer.from([00, 00, 00, 0x0a, 0xa, 0xdd, 00, 00, 00, 04, 00, 00, 0x92, 0xa5])
+
+    expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
   });
 
 

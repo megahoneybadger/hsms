@@ -17,11 +17,8 @@ module.exports = Object.freeze({
   MAX_LONG: 9223372036854775807,
 
 	CANNOT_CONSTRUCT_DIRECTLY: 'Cannot construct instance directly',
-	CANNOT_CONSTRUCT_WITHOUT_BUILDER: 'Cannot construct an instance without a builder',
-	TOO_MANY_CONSTRUCT_PARAMS: `Too many parameters for the constructor`,
-  NOT_SUPPORTED_OBJECT_TYPE: 'Not supported object type',
+	NOT_SUPPORTED_OBJECT_TYPE: 'Not supported object type',
 
-	INVALID_ENUM_VALUE: "Invalid enum value",
 
   getErrNumberNotInRange( p, low, up ){
     return `${p} must be a number between ${low} and ${up}`;
