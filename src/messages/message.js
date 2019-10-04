@@ -32,11 +32,22 @@ class Message extends EventEmitter {
       configurable: false,
     });
 
-    // ?? todo
+    // Context (or system bytes) is a four-byte field occupying
+    // header bytes 6-9. It is used to identify a transaction uniquely
+    // among the set of open transactions.
     Object.defineProperty(this, "context", {
       get: function () { return context; },
       enumerable: true,
       configurable: false,
+
+      // NOTE: Context of a Primary Data Message, Select.req, Deselect.req,
+      // or Linktest.req message must be unique from those of all 
+      // other currently open transactions initiated from the same end of the connection.
+      // They must also be unique from those of the most recently completed transaction.
+
+      // The Context of a Reply Data Message must be the same as those of the corresponding
+      // Primary Message. The Context of a Select.rsp, Deselect.rsp, or Linktest.rsp must
+      // be the same as those of the respective ".req" message.
     });
 
     const time = new Date();
@@ -54,10 +65,6 @@ class Message extends EventEmitter {
   */
   static get Type() {
     return MessageType;
-  }
-
-  toLongString(){
-    return this.toString();
   }
 }
 
