@@ -82,37 +82,21 @@ class ValidationHelper{
 						throw new InvalidItemSizeError();
 					}
 
-				// if (!Number.isInteger(size) || size <= 0) {
-				// 	throw new TypeError("Size must be a positive and non zero number");
-				// }
+					if( ValidationHelper.isString( value )){
+						res = value;
+					}
+	
+				 	let psv = parseFloat(value);
 
-				// if ((typeof value === 'string' || value instanceof String)) {
-				// 	res = value;
-				// }
+					if (!isNaN(psv) && isFinite(psv)) {
+						res = psv.toString();
+					}
 
-				// let psv = parseFloat(value);
+					if (!value) {
+						res = '';
+					}
 
-				// if (!isNaN(psv) && isFinite(psv)) {
-				// 	res = psv.toString();
-				// }
-
-				// if (typeof value == 'undefined' || null === value) {
-				// 	res = '';
-				// }
-
-				
-
-				// if ((typeof res === 'string' || res instanceof String)) {
-				// 	res = res.substring(0, size);
-				// }
-
-				// if( typeof res === 'undefined' ){
-				// 	res = '';
-				// }
-
-				// if ( res.length < size) {
-				// 	res = res.padEnd(size, ' ');
-				// }
+					res = res.substring(0, size).padEnd(size, ' ');
 					break;
 			}
 		}

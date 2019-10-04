@@ -185,6 +185,14 @@ module.exports = (function () {
 			props.get(this).size = 
 				(ItemFormat.isSizeable(props.get(this).format)) ?	size : undefined;
 
+			const shoudSetValueAgain = 
+				( ItemFormat.isSizeable(props.get(this).format)	) &&
+				( !validator.isUndefined( props.get(this).value ) );
+
+			if( shoudSetValueAgain ){
+				this.value( props.get(this).value );
+			}
+
 			return this;
 		}
 		/**

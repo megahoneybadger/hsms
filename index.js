@@ -4,12 +4,27 @@ const Encoder = require( './src/coding/encoder' );
 const { 
 	Message,
 	DataItem,
+	ItemFormat,
 Config } = require( './src/hsms' )
 
-	var builder = Config
+	//var builder = DataItem.a( "glass-id", "glass1"  )
+
+	const item = DataItem
 		.builder
-		.mode( Config.mode.Active )
-		.port( "7850" );
+		.format(ItemFormat.I2)
+		.size( 2 )
+		.value( 12345 )
+		.size( 3 )
+		.format( ItemFormat.A )
+		.size( 10 )
+		.build()
+
+	// TODO: do not forget about chains i2>value>i5>value etc.
+
+		
+		
+		
+		
 		
 
 

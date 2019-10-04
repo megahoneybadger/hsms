@@ -29,5 +29,8 @@ module.exports = {
   Constants,
   Encoder,
 
-  Config
+	Config,
+	
+	DataItem,
+	ItemFormat
 };
