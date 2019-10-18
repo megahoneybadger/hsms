@@ -22,7 +22,7 @@ class Message extends EventEmitter {
 
 
     // A 15-bit field in the message header used
-    // to identify a subentity within the equipment
+    // to identify a subentity within the equipment.
     // Device ID is a property of the equipment, and can be viewed as a
     // logical identifier associated with a physical device or
     // sub-entity within the equipment. 

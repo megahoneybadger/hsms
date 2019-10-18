@@ -4,6 +4,12 @@ var should = require('chai').should();
 
 const { DataItem, ItemFormat, Constants } = require( '../../../src/hsms' )
 
+const { 
+	NoBuilderError,
+	TooManyParamsError,
+	InvalidEnumValueError,
+  InvalidFormatError } = require( '../../../src/utils/errors/custom-errors' )
+
 describe('Data Item I2', () => {
 	it('should be created with a correct value (number)', () => {
 		const item = DataItem
@@ -121,7 +127,7 @@ describe('Data Item I2', () => {
 				.value( null )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (array of nulls)', () => {
@@ -132,14 +138,14 @@ describe('Data Item I2', () => {
 				.value( [null, null] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (undefined via static method)', () => {
 		expect( () => {
       DataItem.i2( "humidity", null );
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (object)', () => {
@@ -150,7 +156,7 @@ describe('Data Item I2', () => {
 				.format(ItemFormat.I2 )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value before setting a format', () => {
@@ -161,7 +167,7 @@ describe('Data Item I2', () => {
 				.format(ItemFormat.I2 )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (too big value)', () => {
@@ -172,7 +178,7 @@ describe('Data Item I2', () => {
 				.value( 1232434351 )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (too small value)', () => {
@@ -183,7 +189,7 @@ describe('Data Item I2', () => {
 				.value( -191234 )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (too big string value)', () => {
@@ -194,7 +200,7 @@ describe('Data Item I2', () => {
 				.value( "123212345" )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (too small string value)', () => {
@@ -205,7 +211,7 @@ describe('Data Item I2', () => {
 				.value( "-197890" )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should be created with a correct value (single value number array)', () => {
@@ -294,7 +300,7 @@ describe('Data Item I2', () => {
 				.value( [null] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (single value array with undefined)', () => {
@@ -305,7 +311,7 @@ describe('Data Item I2', () => {
 				.value( [undefined] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (single value array object)', () => {
@@ -316,7 +322,7 @@ describe('Data Item I2', () => {
 				.value( { name: "error" } )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (single value array with too big value)', () => {
@@ -327,14 +333,14 @@ describe('Data Item I2', () => {
 				.value( [1232434351] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (single value array with too big value via static method)', () => {
     expect( () => {
       DataItem.i2( "test2", [1232434351] );
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (single value array with too small value)', () => {
@@ -345,14 +351,14 @@ describe('Data Item I2', () => {
 				.value( [-199078] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (single value array with too small value via static method)', () => {
     expect( () => {
       DataItem.i2( "test1", [-199078] )
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (single value array with too big string value)', () => {
@@ -363,7 +369,7 @@ describe('Data Item I2', () => {
 				.value( ["1232234"] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (single value array with too small string value)', () => {
@@ -374,7 +380,7 @@ describe('Data Item I2', () => {
 				.value( ["-1986556"] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should be created with a correct value (array of numbers)', () => {
@@ -464,7 +470,7 @@ describe('Data Item I2', () => {
 				.value( [1, 8, null] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (array with undefined)', () => {
@@ -475,7 +481,7 @@ describe('Data Item I2', () => {
 				.value( [1, undefined,  8] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (array of invalid objects)', () => {
@@ -486,7 +492,7 @@ describe('Data Item I2', () => {
 				.value( [ 6412, 211, () => {}, { name: "error 1" } ] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (array of too big values)', () => {
@@ -497,14 +503,14 @@ describe('Data Item I2', () => {
 				.value( [11234, 312343, 412, 453 ] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (array of too big values via static method)', () => {
     expect( () => {
       DataItem.i2( 'pressure', 11234, 312343, 412, 453 );
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (array of too small value)', () => {
@@ -515,14 +521,14 @@ describe('Data Item I2', () => {
 				.value( [-1, -6, -192340] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (array of too small value via static method)', () => {
     expect( () => {
       DataItem.i2( "pres", [-1, -6, -192340] );
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (array of too big string value)', () => {
@@ -533,14 +539,14 @@ describe('Data Item I2', () => {
 				.value( ["12", "0", "123212"] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (array of too big string value via static method)', () => {
     expect( () => {
       DataItem.i2( "pres", ["12", "0", "123212"] )
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (array of too small string value)', () => {
@@ -551,14 +557,14 @@ describe('Data Item I2', () => {
 				.value( [ "-4", "-33122"] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing an invalid value (array of too small string value via static method)', () => {
     expect( () => {
       DataItem.i2( "pres", "-4", "-33122" )
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should be created with correct value via data item static method #1', () => {

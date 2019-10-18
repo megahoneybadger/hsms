@@ -1,8 +1,12 @@
+const net = require('net');
+
 const constants = require( './string-resources' );
-const InvalidItemSizeError = require( './errors/size-error' );
 const ItemFormat = require( '../messages/data/item-format' );
 
-const {InvalidEnumValueError} = require ( './errors/custom-errors' )
+const {
+	InvalidEnumValueError,
+	InvalidFormatError,
+	InvalidItemSizeError } = require ( './errors/custom-errors' )
 
 //https://webbjocke.com/javascript-check-data-types/
 class ValidationHelper{
@@ -36,6 +40,10 @@ class ValidationHelper{
 		return typeof f === "undefined"
 	}
 
+	static isIP(ip){
+		return ( 0 !== net.isIP( ip ) );
+	}
+
 	static getEnumValue( enumType, f ){
     if( !enumType || ValidationHelper.isUndefined( f ) ){
       throw new InvalidEnumValueError();
@@ -54,7 +62,7 @@ class ValidationHelper{
 	
 	static getItemValue(value, format, size) {
 		if (ValidationHelper.isUndefined( value ) || ValidationHelper.isUndefined( format )) {
-			throw new TypeError(constants.INVALID_ITEM_VALUE_OR_FORMAT);
+			throw new InvalidFormatError();
 		}
 
 		format = ValidationHelper.getEnumValue(ItemFormat, format);
@@ -75,6 +83,14 @@ class ValidationHelper{
 
 				case ItemFormat.I2:
 					res = ValidationHelper.getShortInRange( res );
+					break;	
+
+				case ItemFormat.U1:
+					res = ValidationHelper.getUByteInRange( res );
+					break;	
+
+				case ItemFormat.U2:
+					res = ValidationHelper.getUShortInRange( res );
 					break;	
 					
 				case ItemFormat.A:
@@ -147,11 +163,21 @@ class ValidationHelper{
 		}
 
 		if (ValidationHelper.isUndefined( res )) {
-			throw new TypeError(constants.INVALID_ITEM_VALUE_OR_FORMAT);
+			throw new InvalidFormatError();
 		}
 
 		return res;
 	}
+
+	static flatten(arr) {
+		// Only NodeJS version 11 and above support native flat method. 
+		// That's why I am using my own.
+		return arr.reduce(function (flat, toFlatten) {
+			return flat.concat(Array.isArray(toFlatten) ? ValidationHelper.flatten(toFlatten) : toFlatten);
+		}, []);
+	}
+
+	
 
 	
 }

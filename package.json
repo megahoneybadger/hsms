@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --recursive",
+    "testc": "npm test -- --grep \"Config\"",
     "test-with-coverage": "nyc --reporter=text  mocha --recursive",
     "start": "nde index.js"
   },

@@ -1,14 +1,20 @@
-const net = require('net');
-const constants = require('./../utils/string-resources')
-const NoBuilderError = require('./../utils/errors/builder-error')
 const validator = require('./../utils/validation-helper')
+
+const ConnectionMode = require('./connection-mode')
+const ItemFormat = require('./../messages/data/item-format')
+
+
+const {
+	NoBuilderError,
+	TooManyParamsError,
+	InvalidFormatError } = require('./../utils/errors/custom-errors')
+
 
 class Config {
 	constructor(builder) {
 		if (arguments.length < 1 || !(String(builder.constructor) === String(Config.builder.constructor))) {
 			throw new NoBuilderError();
 		}
-
 
 		if (arguments.length > 1) {
 			throw new TooManyParamsError();
@@ -45,12 +51,18 @@ class Config {
 
 		const device = builder.device();
 
-		// TODO
+		// Gets device id.
+		// Device ID is a property of the equipment, and can be viewed as a
+		// logical identifier associated with a physical device or
+		// sub-entity within the equipment. 
+		//
+		// Will be attached to every message.
 		Object.defineProperty(this, "device", {
 			get: function () { return device; },
 			enumerable: true,
 			configurable: false,
 		});
+
 
 		const timeouts = builder.timers();
 
@@ -63,32 +75,12 @@ class Config {
 	}
 
 	/**
-	 * Returns available connection modes.
-	*/
-	static get mode() {
-		return ConnectionMode;
-	}
-
-	/**
 	 * Returns builder's instance.
 	*/
 	static get builder() {
 		return new Builder();
 	}
 }
-
-/**
- * Represents available connection modes.
-*/
-const ConnectionMode = Object.freeze({
-	// The Passive mode is used when the local entity listens for
-	// and accepts a connect procedure initiated by the Remote Entity
-	Passive: 0,
-
-	// The Active mode is used when the connect 
-	// procedure is initiated by the Local Entity.
-	Active: 1,
-})
 
 // https://css-tricks.com/implementing-private-variables-in-javascript/
 // Hide builder fields from users.
@@ -97,34 +89,76 @@ let props = new WeakMap();
 class Builder {
 	constructor() {
 		props.set(this, {
-			ip: '',
-			port: 0,
-			mode : ConnectionMode.Passive,
+			ip: '127.0.0.1',
+			port: 8000,
+			mode: ConnectionMode.Passive,
+			device: 0,
+			timers: undefined
 		});
 	}
 
 	mode(m) {
-		if ( validator.isUndefined( m )) {
-			return props.get(this).mode ;
+		if (validator.isUndefined(m)) {
+			return props.get(this).mode;
 		}
 
-		props.get(this).mode = validator.getEnumValue( ConnectionMode, m );
+		props.get(this).mode = validator.getEnumValue(ConnectionMode, m);
 
 		return this;
 	}
 
-	port( p ){
-		if ( validator.isUndefined( p )) {
+	ip(ip) {
+		if (validator.isUndefined(ip)) {
+			return props.get(this).ip;
+		}
+
+		validator.isString
+
+		if (!validator.isIP(ip)) {
+			throw new InvalidFormatError();
+		}
+
+		props.get(this).ip = ip;
+
+		return this;
+	}
+
+	port(p) {
+		if (validator.isUndefined(p)) {
 			return props.get(this).port;
 		}
 
-		props.get(this).port = validator.getUShortInRange( p, "port" )
+		props.get(this).port = validator.getItemValue(p, ItemFormat.U2, 0);
+
+		return this;
+	}
+
+	device(d) {
+		if (validator.isUndefined(d)) {
+			return props.get(this).device;
+		}
+
+		props.get(this).device = validator.getItemValue(d, ItemFormat.U2, 0);
+
+		return this;
+	}
+
+	timers(t) {
+		if (validator.isUndefined(t)) {
+			return props.get(this).timers;
+		}
+
+		if (!(t instanceof Timers)) {
+			throw new TypeError("Invalid timers object");
+		}
+
+		props.get(this).timers = t;
 
 		return this;
 	}
 
 	build() {
-		return new Config( this );
+		return new Config(this);
 	}
 }
 

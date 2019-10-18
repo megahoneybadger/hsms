@@ -72,7 +72,7 @@ module.exports = (function () {
       return DataItem
         .builder
         .format(f)
-        .value(( 0 == values.length ) ? 0 : values.flat()  )
+        .value(( 0 == values.length ) ? 0 : /*values.flat()*/ validator.flatten( values )  )
         .name(name)
         .build();
 		}
