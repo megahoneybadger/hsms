@@ -1,4 +1,3 @@
-var ByteBuffer = require("bytebuffer");
 const constants = require('./../../utils/string-resources')
 const validator = require('./../../utils/validation-helper')
 const ItemFormat = require('./item-format')
@@ -100,12 +99,12 @@ module.exports = (function () {
 		 * @param {numeric} size Item size.
 		 * @param  {...any} values Item value for initialization. Single string only can be passed.
 		 */
-		static a(name = "", value, size = 0) {
+		static a(name = "", v, size = 0) {
 			return DataItem
 				.builder
 				.format(ItemFormat.A)
 				.size(size)
-				.value(value)
+				.value(v)
 				.name(name)
 				.build();
     }
@@ -131,7 +130,7 @@ module.exports = (function () {
 			props.set(this, {
 				name: '',
 				format: ItemFormat.I2,
-			 	size : undefined,
+			 	size : 0,
 				value : undefined,
 				children : []
 			});
@@ -140,7 +139,7 @@ module.exports = (function () {
 		 * Gets or sets data item's name.
 		*/
 		name(n) {
-			if (!n) {
+			if (validator.isUndefined( n )) {
 				return props.get(this).name;
 			}
 
@@ -162,7 +161,7 @@ module.exports = (function () {
 			props.get(this).format = validator.getEnumValue(ItemFormat, f);
 
 			if (!ItemFormat.isSizeable(props.get(this).format)) {
-				props.get(this).size = undefined;
+				props.get(this).size = /*undefined*/0;
 			}
 
 			if ( !validator.isUndefined( props.get(this).value ) ) {
@@ -208,7 +207,7 @@ module.exports = (function () {
 			let size = props.get(this).size;
 			const isArray = v instanceof Array;
 
-			if( isArray && 1 == v.length ){
+			if( isArray && ( 1 == v.length || ItemFormat.isString( format ) ) ){
 				value = validator.getItemValue( v[ 0 ], format, size );
 			} else if( isArray && 1 < v.length ){
 				value = [];
@@ -232,8 +231,16 @@ module.exports = (function () {
 				props.get(this).name = '';
 			}
 
-			if ( validator.isUndefined( props.get(this).value ) ) {
-				props.get(this).value = ItemFormat.default( props.get(this).format );
+			const size = props.get(this).size;
+			const value =  props.get(this).value;
+			const format =  props.get(this).format;
+
+			// if( validator.isUndefined( size ) && ItemFormat.isSizeable( format ) ) {
+			// 	props.get(this).size = 0;
+			// }
+
+			if( validator.isUndefined( value ) ) {
+				props.get(this).value = ItemFormat.default( format, size );
 			}
 
 			return new DataItem(this);

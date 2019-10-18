@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --recursive",
+		"test": "mocha --recursive",
+		"testc": "npm test -- --grep \"Reject Req\"",
     "test-with-coverage": "nyc --reporter=text  mocha --recursive",
     "start": "nde index.js"
   },

@@ -92,7 +92,7 @@ describe('Deselect Rsp', () => {
       .to.throw(TypeError, Constants.getErrUIntNotInRange("Context"));
   });
 
-  it('should throw an exception if passing negative integer context', () => {
+  it('should throw an exception if passing a negative integer context', () => {
     expect(() => {
       new DeselectRsp("654", -10);
     })
@@ -152,7 +152,7 @@ describe('Deselect Rsp', () => {
     expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
   });
 
-  it('encode must return valid binary stream #2', () => {
+  it('encode must return valid binary stream #3', () => {
     dr = new DeselectRsp(37, 23, 7);
 
     const encodedArray = Encoder.encode(dr);
@@ -161,7 +161,7 @@ describe('Deselect Rsp', () => {
     expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
   });
 
-  it('encode must return valid binary stream #3', () => {
+  it('encode must return valid binary stream #4', () => {
     dr = new DeselectRsp(2781, 37541);
 
     const encodedArray = Encoder.encode(dr);

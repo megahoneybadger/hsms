@@ -33,6 +33,16 @@ module.exports = (function () {
           return false;
       }
 		},
+
+		isString(n) {
+      switch (n) {
+        case this.A:
+          return true;
+
+        default:
+          return false;
+      }
+		},
 		
 		isInteger(n) {
       switch (n) {
@@ -51,9 +61,13 @@ module.exports = (function () {
       }
 		},
 		
-		default( n ){
+		default( n, size = 0 ){
 			if( this.isInteger( n )){
 				return 0;
+			}
+
+			if( this.isString( n ) ){
+				return ''.padEnd( size, ' ' );
 			}
 
 			return null;
