@@ -7,7 +7,8 @@ const { DataItem, ItemFormat, Constants } = require( '../../../src/hsms' )
 const { 
 	NoBuilderError,
 	TooManyParamsError,
-	InvalidEnumValueError } = require( '../../../src/utils/errors/custom-errors' )
+	InvalidEnumValueError,
+	InvalidFormatError } = require( '../../../src/utils/errors/custom-errors' )
 
 describe('Data Item A', () => {
 	
@@ -223,7 +224,7 @@ describe('Data Item A', () => {
 				.value( { name: "error" } )
 				.build();
     })
-		.to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+		.to.throw( InvalidFormatError );
 	});
 
 	
@@ -236,7 +237,7 @@ describe('Data Item A', () => {
 				.value( [undefined] )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 	it('should throw an exception if passing invalid value before setting a format', () => {
@@ -247,7 +248,7 @@ describe('Data Item A', () => {
 				.format( ItemFormat.A )
 				.build();
     })
-    .to.throw( TypeError, Constants.INVALID_ITEM_VALUE_OR_FORMAT );
+    .to.throw( InvalidFormatError );
 	});
 
 

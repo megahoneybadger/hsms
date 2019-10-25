@@ -6,12 +6,24 @@ const {
 	DataItem,
 	ItemFormat,
 	Timers,
-	Config } = require('./src/hsms')
+	Config,
+	ConnectionMode,
+	Connection } = require('./src/hsms')
 
 try {
-	var timers = new Timers( 10, 43, 123243, () => 123 );
 
-	console.log( timers.toString() );
+	const config = Config
+		.builder
+		.ip( "127.0.0.1" )
+		.port( 8000 )
+		.device( 12 )
+		.mode( ConnectionMode.Passive )
+		.timers( new Timers( 20, 30 ) )
+		.build();
+
+	const conn = new Connection( config );
+
+	console.log( item.toString() );
 }
 catch (err) {
 	console.log(err);

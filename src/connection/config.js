@@ -73,6 +73,7 @@ class Config {
 		});
 	}
 
+
 	/**
 	 * Returns builder's instance.
 	*/

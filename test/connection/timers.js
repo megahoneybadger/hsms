@@ -101,6 +101,46 @@ describe('Timers', () => {
       new Timers( 10, 43, 143, 123, 1, "oops" );
     })
     .to.throw( Constants.getErrUShortNotInRange( 'lt' ));
+	});
+	
+	it('should not allow to modify timer values', () => {
+		const t = new Timers( 10, 43, 143, 123, 1, 7 );
+
+		t.t3 = 8776;
+		t.t5 = "a";
+		t.t6 = () => 1;
+		t.t7 = "b";
+		t.t8 = 12;
+		t.linkTest = -123;
+
+
+   
+    t.should.have.property( 't3' ).equal( 10 );
+    t.should.have.property( 't5' ).equal( 43 );
+    t.should.have.property( 't6' ).equal( 143 );
+    t.should.have.property( 't7' ).equal( 123 );
+    t.should.have.property( 't8' ).equal( 1 );
+    t.should.have.property( 'linkTest' ).equal( 7 );
+	});
+	
+	it('should not allow to delete timer values', () => {
+		const t = new Timers( 10, 43, 143, 123, 1, 7 );
+
+		delete t.t3;
+		delete t.t5;
+		delete t.t6;
+		delete t.t7;
+		delete t.t8;
+		delete t.linkTest;
+
+
+   
+    t.should.have.property( 't3' ).equal( 10 );
+    t.should.have.property( 't5' ).equal( 43 );
+    t.should.have.property( 't6' ).equal( 143 );
+    t.should.have.property( 't7' ).equal( 123 );
+    t.should.have.property( 't8' ).equal( 1 );
+    t.should.have.property( 'linkTest' ).equal( 7 );
   });
   
 });

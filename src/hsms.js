@@ -10,8 +10,9 @@ const LinkTestRsp = require('./messages/control/link-test-rsp')
 
 const Config = require('./connection/config')
 const ConnectionMode = require('./connection/connection-mode')
+const ConnectionState = require('./connection/connection-state')
 const Timers = require('./connection/timers')
-
+const Connection = require('./connection/connection')
 
 const Encoder = require('./coding/encoder')
 const SelectRsp = require('./messages/control/select-rsp')
@@ -33,8 +34,10 @@ module.exports = {
   Encoder,
 
   Config,
-  ConnectionMode,
-  Timers,
+	ConnectionMode,
+	ConnectionState,
+	Timers,
+	Connection,	
 	
 	DataItem,
 	ItemFormat

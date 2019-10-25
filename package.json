@@ -5,16 +5,20 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --recursive",
-    "testc": "npm test -- --grep \"Config\"",
+    "testc": "npm test -- --grep \"Connection\"",
     "test-with-coverage": "nyc --reporter=text  mocha --recursive",
-    "start": "nde index.js"
+    "start": "nde index.js",
+    "lint": "eslint ./src --fix"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "chai": "^4.2.0",
+    "eslint": "^6.5.1",
+    "eslint-config-strongloop": "^2.1.0",
     "mocha": "^6.2.0",
-    "nyc": "^14.1.1"
+    "nyc": "^14.1.1",
+    "prettier": "1.18.2"
   },
   "dependencies": {
     "bytebuffer": "^5.0.1"

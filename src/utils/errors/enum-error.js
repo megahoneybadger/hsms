@@ -1,6 +1,4 @@
 
-const constants = require( '../string-resources' )
-
 class InvalidEnumValueError extends Error{
 	constructor() {
 		super( "Invalid enum value" );

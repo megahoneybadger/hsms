@@ -81,8 +81,15 @@ module.exports = (function () {
 		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.
 		 */
 		static i1(name = "", ...values) {
-			var x = [...values];
       return DataItem.numeric(ItemFormat.I1, name, ...values);
+		}
+		/**
+		 * Creates U1 data item.
+		 * @param {String} name Item name.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.
+		 */
+		static u1(name = "", ...values) {
+      return DataItem.numeric(ItemFormat.U1, name, ...values);
 		}
 		/**
 		 * Creates I2 data item.
@@ -90,8 +97,15 @@ module.exports = (function () {
 		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.
 		 */
 		static i2(name = "", ...values) {
-			var x = [...values];
       return DataItem.numeric(ItemFormat.I2, name, ...values);
+		}
+		/**
+		 * Creates U2 data item.
+		 * @param {String} name Item name.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.
+		 */
+		static u2(name = "", ...values) {
+      return DataItem.numeric(ItemFormat.U2, name, ...values);
 		}
 		/**
 		 * Creates string data item.
@@ -130,9 +144,9 @@ module.exports = (function () {
 			props.set(this, {
 				name: '',
 				format: ItemFormat.I2,
-			 	size : 0,
-				value : undefined,
-				children : []
+				size: 0,
+				value: undefined,
+				children: []
 			});
 		}
 		/**

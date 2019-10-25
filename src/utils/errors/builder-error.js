@@ -1,5 +1,3 @@
-const constants = require( '../string-resources' )
-
 class NoBuilderError extends Error{
 	constructor() {
 		super( "Cannot construct an instance without a builder" );

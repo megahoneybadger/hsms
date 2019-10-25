@@ -1,6 +1,4 @@
 
-const constants = require( '../string-resources' )
-
 class TooManyParamsError extends Error{
 	constructor() {
 		super( "Too many parameters for the constructor" );

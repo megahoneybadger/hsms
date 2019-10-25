@@ -1,7 +1,3 @@
-var ByteBuffer = require("bytebuffer");
-const constants = require('../../utils/string-resources')
-const validator = require('../../utils/validation-helper')
-
 module.exports = (function () {
 
 	/**

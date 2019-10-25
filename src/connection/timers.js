@@ -26,8 +26,8 @@ module.exports = (function () {
 			// All proposed values were taken from SEMI E37-0303 (table 10)
 
 			let tt3 = validator.getUShortInRange(t3, 't3');
-			let tt5 = validator.getUShortInRange(t5, 't5');;
-			let tt6 = validator.getUShortInRange(t6, 't6');;
+			let tt5 = validator.getUShortInRange(t5, 't5');
+			let tt6 = validator.getUShortInRange(t6, 't6');
 			let tt7 = validator.getUShortInRange(t7, 't7');
 			let tt8 = validator.getUShortInRange(t8, 't8');
 			let tlt = validator.getUShortInRange(lt, 'lt');
