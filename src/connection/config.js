@@ -1,14 +1,13 @@
 const validator = require('./../utils/validation-helper')
 
 const ConnectionMode = require('./connection-mode')
+const Timers = require('./timers')
 const ItemFormat = require('./../messages/data/item-format')
-
 
 const {
 	NoBuilderError,
 	TooManyParamsError,
 	InvalidFormatError } = require('./../utils/errors/custom-errors')
-
 
 class Config {
 	constructor(builder) {
@@ -149,7 +148,7 @@ class Builder {
 		}
 
 		if (!(t instanceof Timers)) {
-			throw new TypeError("Invalid timers object");
+			throw new InvalidFormatError();
 		}
 
 		props.get(this).timers = t;

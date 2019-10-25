@@ -6,6 +6,7 @@ const {
   Message,
   Config,
   ConnectionMode,
+  Timers,
   Constants } = require( '../../src/hsms' )
 
 const { 
@@ -339,6 +340,44 @@ describe('Config', () => {
 			.build();
     })
     .to.throw( InvalidFormatError );
+  });
+
+  it('should throw an exception if passing invalid timers', () => {
+    expect( () => {
+      Config
+			.builder
+			.timers( () => 'wrong object' )
+			.build();
+    })
+    .to.throw( InvalidFormatError );
+  });
+
+  it('should be created with valid default timers', () => {
+		const conf = Config
+			.builder
+			.timers( new Timers() )
+			.build();
+
+    conf.should.have.property( 'timers' ).that.has.property( 't3' ).equal( Timers.default.t3 );
+    conf.should.have.property( 'timers' ).that.has.property( 't5' ).equal( Timers.default.t5 );
+    conf.should.have.property( 'timers' ).that.has.property( 't6' ).equal( Timers.default.t6 );
+    conf.should.have.property( 'timers' ).that.has.property( 't7' ).equal( Timers.default.t7 );
+    conf.should.have.property( 'timers' ).that.has.property( 't8' ).equal( Timers.default.t8 );
+    conf.should.have.property( 'timers' ).that.has.property( 'linkTest' ).equal( Timers.default.linkTest );
+  });
+
+  it('should be created with valid default timers', () => {
+		const conf = Config
+			.builder
+			.timers( new Timers(1,2,3,4,5,6) )
+			.build();
+
+    conf.should.have.property( 'timers' ).that.has.property( 't3' ).equal( 1 );
+    conf.should.have.property( 'timers' ).that.has.property( 't5' ).equal( 2 );
+    conf.should.have.property( 'timers' ).that.has.property( 't6' ).equal( 3 );
+    conf.should.have.property( 'timers' ).that.has.property( 't7' ).equal( 4 );
+    conf.should.have.property( 'timers' ).that.has.property( 't8' ).equal( 5 );
+    conf.should.have.property( 'timers' ).that.has.property( 'linkTest' ).equal( 6 );
   });
   
 });
