@@ -10,9 +10,12 @@ const { TooManyParamsError} = require( './../../utils/errors/custom-errors' )
  * - The responding entity sends a Linktest.rsp.
  */
 class LinkTestRsp extends ControlMessage{
+	static get ST_DEVICE(){
+		return 0xFFFF;
+	}
 
   constructor( cont ){
-    super( 0xFFFF, cont );
+    super( LinkTestRsp.ST_DEVICE, cont );
 
     if( arguments.length > 1 ){
       throw new TooManyParamsError();

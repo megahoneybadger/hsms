@@ -138,7 +138,6 @@ class ValidationHelper{
 			case ItemFormat.U2:
 			case ItemFormat.U4:
 			case ItemFormat.U8:
-				
 				break;
 
 			// case ItemFormat.F4:

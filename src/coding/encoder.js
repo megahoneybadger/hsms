@@ -35,6 +35,9 @@ module.exports = (function () {
 
 				case Message.Type.LinkTestReq:
 					return encodeLinkTestReq(m);
+
+					case Message.Type.LinkTestRsp:
+					return encodeLinkTestRsp(m);
 			}
 
 		}
@@ -73,7 +76,6 @@ module.exports = (function () {
 
 		return b.buffer.slice(0, b.offset);
 	}
-
 
 	function encodeSelectRsp(m) {
 		if (!(m instanceof SelectRsp)) {
@@ -176,6 +178,39 @@ module.exports = (function () {
 
 	function encodeLinkTestReq(m) {
 		if (!(m instanceof LinkTestReq)) {
+			throw new TypeError(constants.NOT_SUPPORTED_OBJECT_TYPE);
+		}
+
+		let b = new ByteBuffer();
+
+		b.BE();
+
+		b.writeUint32(10);
+		b.writeUint16(m.device);
+
+		b.LE();
+
+		// byte #2
+		b.writeUInt8(0)
+
+		// byte #3
+		b.writeUInt8(0)
+
+		// PType
+		b.writeUInt8(0)
+
+		// SType
+		b.writeUInt8(m.kind)
+
+		b.BE();
+		b.writeUint32(m.context);
+		b.LE();
+
+		return b.buffer.slice(0, b.offset);
+	}
+
+	function encodeLinkTestRsp(m) {
+		if (!(m instanceof LinkTestRsp)) {
 			throw new TypeError(constants.NOT_SUPPORTED_OBJECT_TYPE);
 		}
 
