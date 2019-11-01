@@ -83,7 +83,7 @@ const MessageType = Object.freeze({
 
   RejectReq: 7,
 
-  SeparateReq: 8
+  SeparateReq: 9
 })
 
 module.exports = Message;

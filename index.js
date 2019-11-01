@@ -15,15 +15,22 @@ try {
 	const config = Config
 		.builder
 		.ip( "127.0.0.1" )
-		.port( 8000 )
+		.port( 7000 )
 		.device( 12 )
 		.mode( ConnectionMode.Passive )
-		.timers( new Timers( 20, 30 ) )
+		.timers( new Timers( 10, 20, 30, 40, 10, 10 ) )
 		.build();
 
 	const conn = new Connection( config );
 
-	console.log( item.toString() );
+	conn.start();
+
+	conn
+  .on( "dropped", () => console.log( `connection has been dropped` ) )
+  .on( "error", ( err ) => console.log( `encountered error: ${err}` ) )
+  .on( "established", ( r ) =>{
+    console.log( `established selected connection [${r.ip}:${r.port}]` );
+  })
 }
 catch (err) {
 	console.log(err);

@@ -7,6 +7,8 @@ const DeselectReq = require('./messages/control/deselect-req')
 const DeselectRsp = require('./messages/control/deselect-rsp')
 const LinkTestReq = require('./messages/control/link-test-req')
 const LinkTestRsp = require('./messages/control/link-test-rsp')
+const SeparateReq = require('./messages/control/separate-req')
+const RejectReq = require('./messages/control/reject-req')
 
 const Config = require('./connection/config')
 const ConnectionMode = require('./connection/connection-mode')
@@ -30,6 +32,9 @@ module.exports = {
   DeselectReq,
   DeselectRsp,
 
+  SeparateReq,
+  RejectReq,
+
   Constants,
   Encoder,
 
@@ -42,3 +47,4 @@ module.exports = {
 	DataItem,
 	ItemFormat
 };
+

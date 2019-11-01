@@ -18,12 +18,18 @@ class ControlMessage extends Message{
     // }
   }
 
-  isPrimary(){
-    return ( 0 != ( ( this.kind() ) & 1 ) );
+  /**
+   * Gets a value indicating whether this message is primary (not a reply).
+   */
+  get isPrimary(){
+    return ( 0 != ( ( this.kind ) & 1 ) );
   }
 
-  isReplyRequired(){
-    return this.isPrimary();
+  /**
+   * Gets a value indicating whether this message requires a reply.
+   */
+  get isReplyRequired(){
+    return this.isPrimary;
   }
 }
 
