@@ -6,5 +6,4 @@ class NoBuilderError extends Error{
   }
 }
 
-
 module.exports = NoBuilderError;

@@ -1,6 +1,7 @@
 const Message = require('./messages/message')
 const ControlMessage = require('./messages/control/control-message')
 const DataItem = require('./messages/data/data-item')
+const DataMessage = require('./messages/data/data-message')
 const ItemFormat = require('./messages/data/item-format')
 const SelectReq = require('./messages/control/select-req')
 const DeselectReq = require('./messages/control/deselect-req')
@@ -45,6 +46,7 @@ module.exports = {
 	Connection,	
 	
 	DataItem,
-	ItemFormat
+  ItemFormat,
+  DataMessage
 };
 

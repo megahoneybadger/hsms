@@ -26,7 +26,7 @@ function createConnection( active ){
     .port( 7000 )
     .device( 12 )
     .mode( active ? ConnectionMode.Active : ConnectionMode.Passive )
-    .timers( new Timers( 10, 1, 30, 40, 10, 10 ) )
+    .timers( new Timers( 1, 1, 1, 1, 2, 0 ) )
     .build();
 
   return new Connection( config );
@@ -72,13 +72,57 @@ describe('Communication passive', () => {
       server.stop();
       done();
     }, 500);
-    
+
+    delete conn.debug;
   })
 
   it('should establish connection', function(done) {
     server.on( "established", (e) => {
       done();
     })
+
+    server.start();
+  });
+
+  it('should establish physical connection but not selected', function(done) {
+    this.timeout(3000);
+
+    server.on( "timeout", ( t, m ) =>{
+      if( 7 === t ){
+        done();
+      }
+    })
+
+    conn.debug = {
+      doNotSendSelect: true
+    };
+
+    server.start();
+  });
+
+  it('should establish connection after a few attempts (recv t7)', function(done) {
+    this.timeout(10000);
+
+    var index = 0;
+
+    server.on( "timeout", ( t, m ) =>{
+      if( 7 === t ){
+        ++index;
+        console.log( "got t7" );
+      }
+      
+      if( index > 3 ){
+        delete conn.debug;
+      }
+    })
+
+    server.on( "established", (e) => {
+      done();
+    })
+
+    conn.debug = {
+      doNotSendSelect: true
+    };
 
     server.start();
   });

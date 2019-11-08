@@ -90,8 +90,6 @@ module.exports = (function () {
 			props(this).state = ConnectionState.notConnected;
 
 			resetRecv.call(this);
-
-
 		}
 
 		/**
@@ -202,8 +200,11 @@ module.exports = (function () {
 			// (i.e., no HSMS activity) before it is considered a communications failure.
 			// Send 'select request' and begin waiting for the response.
 			props(this).t7 = setTimeout(() => onT7Expired.call(this), this.timers.t7 * 1000);
-
-			this.send(new SelectReq());
+			
+			if( canSendSelectReq.call( this ) ){
+				this.send(new SelectReq());
+			}
+			
 		});
 	}
 
@@ -648,7 +649,13 @@ module.exports = (function () {
     if( fireCustomComplete ){
       setImmediate( () => t.message.complete( t.message, m ) );
     }
-  }
+	}
+
+	/* Debug helpor methods */
+
+	function canSendSelectReq(){
+		return !( this.debug && this.debug.doNotSendSelect )
+	}
 
 	return Connection;
 })();

@@ -15,12 +15,24 @@ class ValidationHelper {
 		return ValidationHelper.getNumberInRange(v, constants.MIN_BYTE, constants.MAX_BYTE, name);
 	}
 
+	static getUByteInRange(v, name) {
+		return ValidationHelper.getNumberInRange(v, 0, constants.MAX_UBYTE, name);
+	}
+
 	static getShortInRange(v, name) {
 		return ValidationHelper.getNumberInRange(v, constants.MIN_SHORT, constants.MAX_SHORT, name);
 	}
 
 	static getUShortInRange(v, name) {
 		return ValidationHelper.getNumberInRange(v, 0, constants.MAX_USHORT, name);
+	}
+
+	static getIntInRange(v, name) {
+		return ValidationHelper.getNumberInRange(v, constants.MIN_INT, constants.MAX_INT, name);
+	}
+
+	static getUIntInRange(v, name) {
+		return ValidationHelper.getNumberInRange(v, 0, constants.MAX_UINT, name);
 	}
 
 	static getNumberInRange(v, low, up, name) {
@@ -35,6 +47,13 @@ class ValidationHelper {
 	static isString(s) {
 		return (typeof s === 'string' || s instanceof String);
 	}
+
+	static isBoolean(b) {
+		return (typeof b === 'boolean' || b instanceof Boolean );
+	}
+
+
+	
 
 	static isUndefined(f) {
 		return typeof f === "undefined"

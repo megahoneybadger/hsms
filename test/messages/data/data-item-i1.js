@@ -2,7 +2,11 @@ var assert = require('assert');
 var expect = require('chai').expect;
 var should = require('chai').should();
 
-const { DataItem, ItemFormat, Constants } = require( '../../../src/hsms' )
+const { 
+	DataItem,
+	ItemFormat,
+	Constants,
+	Encoder } = require( '../../../src/hsms' )
 
 const { 
 	NoBuilderError,
@@ -527,4 +531,24 @@ describe('Data Item I1', () => {
 		item.should.have.property( 'format' ).equal( ItemFormat.I1 );
 		item.should.have.property( 'name' ).equal( "humidity" );
 	});
+
+	it('encode must return valid binary stream (single value)', () => {
+		const m = DataItem.i1( "temp", 123 );
+
+    const encodedArray = Encoder.encode(m);
+		const expectedArray = Buffer.from([0x65, 0x01, 0x7B ])
+	
+    expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
+	});
+	
+	it('encode must return valid binary stream (array)', () => {
+		const m = DataItem.i1( "temp", 87, 12, 54 );
+
+    const encodedArray = Encoder.encode(m);
+		const expectedArray = Buffer.from([0x65, 0x03, 0x57, 0x0C, 0x36  ])
+	
+    expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
+  });
+
+
 });

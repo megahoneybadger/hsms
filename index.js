@@ -4,6 +4,7 @@ const Encoder = require('./src/coding/encoder');
 const {
 	Message,
 	DataItem,
+	DataMessage,
 	ItemFormat,
 	Timers,
 	Config,
@@ -12,51 +13,53 @@ const {
 
 try {
 
+	// let m = DataMessage
+	// 	.builder
+	// 	.device( 1 )
+	// 	.stream( 1 )
+	// 	.context( 7895654 )
+	// 	.replyExpected( false )
+	// 	.func( 1 )
+	// 	.items(
+	// 		DataItem.i1( "", 78 ),
+	// 		DataItem.i1( "", 1, 6, 9 ),
+	// 		DataItem.i1( "", [ 12, 99 ] )) 
+	// 	.build();
+
+	// const encodedArray = Encoder.encode(m);
+	// console.log( encodedArray );
+
 	const config = Config
 		.builder
 		.ip( "127.0.0.1" )
 		.port( 7000 )
 		.device( 12 )
-		.mode( ConnectionMode.Passive )
+		.mode( ConnectionMode.Active )
 		.timers( new Timers( 10, 20, 30, 40, 10, 10 ) )
 		.build();
 
 	const conn = new Connection( config );
-
-	conn.start();
+	conn.debug = {
+		doNotSendSelect: true
+	};
 
 	conn
   .on( "dropped", () => console.log( `connection has been dropped` ) )
   .on( "error", ( err ) => console.log( `encountered error: ${err}` ) )
   .on( "established", ( r ) =>{
-    console.log( `established selected connection [${r.ip}:${r.port}]` );
-  })
+		console.log( `established selected connection [${r.ip}:${r.port}]` );
+		
+		//conn.send( m );
+	})
+	
+	conn.start();
+
+
+			
+	
 }
 catch (err) {
 	console.log(err);
 }
-
-
-//var builder = DataItem.a( "glass-id", "glass1"  )
-
-// const item = DataItem
-// 	.builder
-// 	.format(ItemFormat.I2)
-// 	.size( 2 )
-// 	.value( 12345 )
-// 	.size( 3 )
-// 	.format( ItemFormat.A )
-// 	.size( 10 )
-// 	.build()
-
-// TODO: do not forget about chains i2>value>i5>value etc.
-
-
-
-
-
-
-
-
 
 console.log("end");

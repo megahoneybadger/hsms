@@ -14,12 +14,9 @@ class Message extends EventEmitter {
       throw new TypeError( constants.CANNOT_CONSTRUCT_DIRECTLY );
     }
 
-    device = ValidationHelper.getNumberInRange( 
-      device, 0, constants.MAX_USHORT, "Device" );
+    device = ValidationHelper.getUShortInRange( device, "Device" );
 
-    context = ValidationHelper.getNumberInRange( 
-      context, 0, constants.MAX_UINT, "Context" );
-
+    context = ValidationHelper.getUIntInRange( context, "Context" );
 
     // A 15-bit field in the message header used
     // to identify a subentity within the equipment.
