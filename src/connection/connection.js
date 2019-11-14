@@ -146,13 +146,14 @@ module.exports = (function () {
 				let socket = props(this).client;
 
 				if (socket && buffer) {
-					//console.log(`sending ${m.toString()}`);
-
+					
 					if (m.isReplyRequired) {
 						props(this).trx.set(m.context, {
 							time: new moment(),
 							message: m
 						});
+						
+						//console.log( `send [${this.mode}] -> ${props(this).trx.size}` );
 					}
 
 					socket.write(buffer);
@@ -202,7 +203,7 @@ module.exports = (function () {
 			props(this).t7 = setTimeout(() => onT7Expired.call(this), this.timers.t7 * 1000);
 			
 			if( canSendSelectReq.call( this ) ){
-				this.send(new SelectReq());
+				this.send(new SelectReq( this.device, 1 ));
 			}
 			
 		});
@@ -278,6 +279,9 @@ module.exports = (function () {
 				clearTimeout(props(this).t8);
 			}
 
+			// console.log( `[${this.mode}]` );
+			// console.log( data );
+
 			let recv = props(this).recv;
 
 			// data may contain more or less data than needed to construct current message
@@ -294,14 +298,14 @@ module.exports = (function () {
 				toReadNow = Math.min(data.length - 4, recv.messageLength);
 				headerLen = 4;
 
-				recv.buffur = ByteBuffer.wrap(data.slice(headerLen, headerLen + toReadNow));
+				recv.buffer = ByteBuffer.wrap(data.slice(headerLen, headerLen + toReadNow));
 				recv.count = 0;
 			} else {
 				// data may contain more or less data than needed to construct current message
 				toReadNow = Math.min(data.length, recv.messageLength - recv.count);
 
 				// append tail to existing buffer if message is too big for a single event
-				recv.buffur = recv.buffur.append(data.slice(0, toReadNow), recv.count);
+				recv.buffer = recv.buffer.append(data.slice(0, toReadNow), recv.count);
 			}
 
 			// keep tracking how much data already has been recv
@@ -309,20 +313,19 @@ module.exports = (function () {
 
 			if (recv.messageLength == recv.count) {
 				// if read the whole message and ready to construct it
-
 				// build message from its binary buffer
-				let m = Decoder.decode(recv.buffur);
+				let m = Decoder.decode(recv.buffer);
 
 				setImmediate(() => this.emit("recv", m));
 
 				handleRecv.call(this, m);
 
-				// get ready for the next message: reset buffur and counters
+				// get ready for the next message: reset buffer and counters
 				resetRecv.call(this);
 
 				if (data.length != toReadNow + headerLen) {
 					// if data contains header of another/next message restart the procedure // setNextTick ??
-					onRecv(data.slice(headerLen + toReadNow));
+					onRecv.call(this, data.slice(headerLen + toReadNow));
 				}
 			} else {
 				// if message is too long start t8 timeout for the next chunk.
@@ -331,7 +334,11 @@ module.exports = (function () {
 			}
 		}
 		catch (err) {
-			setImmediate(() => this.emit("error", err));
+		
+			console.log( this.mode );
+			console.log( err  );
+			//console.log( this.ConnectionMode );
+			setImmediate(() => this.emit.call( this, "error", err));
 
 			// if anything happens reset recv buffer and disconnect 
 			close.call(this);
@@ -370,7 +377,7 @@ module.exports = (function () {
 					break;
 
 				case Message.Type.LinkTestReq:
-					this.send(new LinkTestRsp(m.context));
+					handleLinkTestReq.call( this, m );
 					break;
 
 				case Message.Type.LinkTestRsp:
@@ -402,16 +409,16 @@ module.exports = (function () {
  * Message to inspect.
  */
 	function checkSelect(m) {
-		// if( ConnectionState.connectedNotSelected !== props(this).state ) 
-		//   return;
+		if( ConnectionState.connectedNotSelected !== props(this).state ) 
+		  return;
 
-		// let bShouldCloseConnection =
-		//   ( this.Mode == ConfigParams.Mode.Active && m.kind() != Message.Type.SelectRsp) ||
-		//   ( this.Mode == ConfigParams.Mode.Passive && m.kind() != Message.Type.SelectReq );
+		let bShouldCloseConnection =
+		  ( this.Mode == ConnectionMode.Active && m.kind != Message.Type.SelectRsp) ||
+		  ( this.Mode == ConnectionMode.Passive && m.kind != Message.Type.SelectReq );
 
-		// if (bShouldCloseConnection) {
-		//   throw new TypeError("expected selected message")
-		// }
+		if (bShouldCloseConnection) {
+		  throw new TypeError("expected selected message")
+		}
 	}
 
 	  /**
@@ -442,7 +449,10 @@ module.exports = (function () {
       setImmediate( () => this.emit( "established", {
         ip: props( this ).client.remoteAddress,
         port: props( this ).client.remotePort
-      } ) ); 
+			} ) ); 
+			
+			// Now connection checks for t3&5 timeouts.
+			props(this).t36 = setTimeout(() => onT36Expired.call(this), 1000);
     }
   }
 
@@ -474,6 +484,7 @@ module.exports = (function () {
 				port: client ? client.remotePort : undefined,
 			}));
 
+			// Now connection checks for t3&5 timeouts.
 			props(this).t36 = setTimeout(() => onT36Expired.call(this), 1000);
 		}
 		// else if( null == t )
@@ -481,12 +492,26 @@ module.exports = (function () {
 		// 	Send( new RejectReq( m, RejectReq.Code.TransactionNotOpen ) ); 
 		// }
 	}
+	/**
+	 * Handles link test request.
+	 * @param {*} m 
+	 *  Incoming link test request message.
+	 */
+	function handleLinkTestReq(m){
+		if( canSendLinkTestRsp.call( this ) ){
+			this.send(new LinkTestRsp(m.context));
+		}
+	}
 
 	/**
 	 *  Handles link test response.
+	 * @param {*} m 
+	 *  Incoming link test response message.
 	 */
-	function handleLinkTestRsp() {
-    //console.log("handleLinkTestRsp");
+	function handleLinkTestRsp( m ) {
+		setImmediate( () => this.emit( "alive", m ));
+
+		// Buffer 00 00 00 0a ff ff 00 00 00 05 00 00 0e b0 00 00 00 0a ff ff 00 00 00 06 00 00 12 dc
   }
 
 	/**
@@ -494,13 +519,18 @@ module.exports = (function () {
 	*/
 	function onT36Expired() {
     if( !props(this).run )
-      return;
+			return;
+			
+		
+		//console.log( `onT36Expired [${this.mode}] -> ${props(this).trx.size}` );
 
     try{
       let list = [];
       let now = new moment();
       let commFailure = false;
-      let dictTrx = props(this).trx;
+			let dictTrx = props(this).trx;
+			
+			//console.log( dictTrx.size );
       
       const t3 = moment.duration({ seconds: this.timers.t3 }).seconds();
       const t6 = moment.duration({ seconds: this.timers.t6 }).seconds();
@@ -565,6 +595,8 @@ module.exports = (function () {
     if (!props(this).run || this.timers.linkTest == 0 )
       return;
 
+		//console.log( `sending link test req ${this.mode}` );
+
     this.send(new LinkTestReq());
 
     props(this).linkTest = setTimeout(() =>
@@ -588,13 +620,12 @@ module.exports = (function () {
     if( props(this).server ){
       props(this).server.close();
       props(this).server = undefined;
-    }
-    
+		}
+	  
     props(this).state = ConnectionState.notConnected;
     props(this).trx.clear();
     resetRecv.call(this);
-    
-
+  
     // var t5FireTime = _bRun ?  _timeouts.T5 * 1000 : Timeout.Infinite;
     //  _timerT5ConnectSeparationTimeout.Change( t5FireTime, Timeout.Infinite );
     if (props(this).run) {
@@ -630,8 +661,8 @@ module.exports = (function () {
    */
   function closeTrx(m) {
     if (m.isPrimary)
-      return;
-
+			return;
+	
     let t = props(this).trx.get(m.context);
 
     props(this).trx.delete(m.context);
@@ -651,10 +682,14 @@ module.exports = (function () {
     }
 	}
 
-	/* Debug helpor methods */
+	/* Debug helper methods */
 
 	function canSendSelectReq(){
 		return !( this.debug && this.debug.doNotSendSelect )
+	}
+
+	function canSendLinkTestRsp(){
+		return !( this.debug && this.debug.doNotSendLinkTestRsp )
 	}
 
 	return Connection;

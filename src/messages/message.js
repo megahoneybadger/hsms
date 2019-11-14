@@ -29,6 +29,10 @@ class Message extends EventEmitter {
       configurable: false,
     });
 
+    if( this.isPrimary && !context ){
+      context = Math.floor((Math.random() * 10000 ) + 1);
+    }
+
     // Context (or system bytes) is a four-byte field occupying
     // header bytes 6-9. It is used to identify a transaction uniquely
     // among the set of open transactions.
@@ -55,6 +59,8 @@ class Message extends EventEmitter {
       enumerable: true,
       configurable: false,
     });
+
+
   }
 
   /*

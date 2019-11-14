@@ -26,7 +26,20 @@ function createConnection( active ){
     .port( 7000 )
     .device( 12 )
     .mode( active ? ConnectionMode.Active : ConnectionMode.Passive )
-    .timers( new Timers( 1, 1, 1, 1, 2, 0 ) )
+    .timers( new Timers( 1, 1, 1, 1, 2, 1 ) )
+    .build();
+
+  return new Connection( config );
+}
+
+function createConnection2( active ){
+  const config = Config
+    .builder
+    .ip( "127.0.0.1" )
+    .port( 7000 )
+    .device( 12 )
+    .mode( active ? ConnectionMode.Active : ConnectionMode.Passive )
+    .timers( new Timers( 1, 1, 1, 1, 2,  10 ) )
     .build();
 
   return new Connection( config );
@@ -84,6 +97,20 @@ describe('Communication passive', () => {
     server.start();
   });
 
+  it('should drop connection', function(done) {
+    this.timeout(5000);
+
+    server.on( "established", (e) => {
+      server.stop();
+    })
+
+    server.on( "dropped", (e) => {
+      done();
+    });
+
+    server.start();
+  });
+
   it('should establish physical connection but not selected', function(done) {
     this.timeout(3000);
 
@@ -127,19 +154,48 @@ describe('Communication passive', () => {
     server.start();
   });
 
-  // it('should drop connection', function(done) {
-  //   this.timeout(5000);
+  it('should send link test req but do not recv reply (t6)', function(done) {
+    this.timeout(5000);
 
-  //   server.on( "established", (e) => {
-  //     server.stop();
-  //   })
+    server.on( "timeout", ( t, m ) =>{
+      if( 6 === t ){
+        done();
+      }
+    })
 
-  //   server.on( "dropped", (e) => {
-  //     done();
-  //   });
+    conn.debug = {
+      doNotSendLinkTestRsp: true
+    };
 
-  //   server.start();
-  // });
+    server.start();
+  });
+
+  it('should send link test req but do not recv reply for a few times (t6)', function(done) {
+    this.timeout(30000);
+
+    var index = 0;
+
+    server.on( "timeout", ( t, m ) =>{
+      if( 6 === t ){
+        ++index;
+        console.log( "got t6" );
+      }
+
+      if( index > 2 ){
+        delete conn.debug;
+      }
+    })
+
+    server.on( "alive", ( m ) => done());
+
+    conn.debug = {
+      doNotSendLinkTestRsp: true
+    };
+
+    server.start();
+  });
+
+
 
   // it('should reconnect 5 times', function(done) {
   //   this.timeout(10000);

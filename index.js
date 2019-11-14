@@ -35,12 +35,13 @@ try {
 		.port( 7000 )
 		.device( 12 )
 		.mode( ConnectionMode.Active )
-		.timers( new Timers( 10, 20, 30, 40, 10, 10 ) )
+		.timers( new Timers( 1, 1, 1, 2, 2, 1 ) )
 		.build();
 
 	const conn = new Connection( config );
 	conn.debug = {
-		doNotSendSelect: true
+		//doNotSendSelect: true
+		//doNotSendLinkTestRsp: true
 	};
 
 	conn

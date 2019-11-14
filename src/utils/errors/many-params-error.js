@@ -1,11 +1,10 @@
 
 class TooManyParamsError extends Error{
 	constructor() {
-		super( "Too many parameters for the constructor" );
+		super( "Invalid number of parameters for the constructor" );
 		
     Error.captureStackTrace(this, TooManyParamsError)
   }
 }
-
 
 module.exports = TooManyParamsError;
