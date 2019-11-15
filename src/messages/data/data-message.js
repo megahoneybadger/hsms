@@ -102,6 +102,36 @@ module.exports = (function () {
 		}
 
 		/**
+		 * Determines whether the specified message is equal to the current object.
+		 * @param {*} dm 
+		 * The message to compare with the current object.
+		 */ 
+		equals( dm ){
+
+			if( this.context != dm.context ){
+				return false;
+			}
+
+			if( this.device != dm.device ){
+				return false;
+			}
+
+			if( this.stream != dm.stream ){
+				return false;
+			}
+
+			if( this.func != dm.func ){
+				return false;
+			}
+
+			if( this.replyExpected != dm.replyExpected ){
+				return false;
+			}
+
+			return true;
+		}
+
+		/**
 		 * Returns builder's instance.
 		 */
 		static get builder() {

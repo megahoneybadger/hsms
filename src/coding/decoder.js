@@ -3,11 +3,12 @@ var SelectReq = require('../messages/control/select-req');
 var LinkTestReq = require('../messages/control/link-test-req');
 var LinkTestRsp = require('../messages/control/link-test-rsp');
 var SeparateReq = require('../messages/control/separate-req');
- const Message = require('../messages/message');
-// const DataMessage = require('./../messages/data/data-message');
-// const DataItem = require('./../messages/data/data-item');
+const Message = require('../messages/message');
+const DataMessage = require('./../messages/data/data-message');
+const DataItem = require('./../messages/data/data-item');
+const ItemFormat = require("../messages/data/item-format")
 const ByteBuffer = require('bytebuffer')
-// const Utils = require('../utils');
+
 
 module.exports = (function () {
 
@@ -18,13 +19,13 @@ module.exports = (function () {
 
       let device = bb.readUint16();
 
-      let hb2 = bb.readByte();
+      let hb2 = bb.readUint8();
 
-      let hb3 = bb.readByte();
+      let hb3 = bb.readUint8();
 
-      let ptype = bb.readByte();
+      let ptype = bb.readUint8();
 
-      let stype = bb.readByte();
+      let stype = bb.readUint8();
 
       let context = bb.readUint32();
 
@@ -67,7 +68,7 @@ module.exports = (function () {
   }
 
   function decodeDataMessage( b, device, hb2, hb3, context ){
-    let senderExpectReply = (( hb2 & 128 ) > 0 );
+    let senderExpectReply = (( hb2 & 128 ) == 0 );
 
     let stream = ( hb2 & 127 );
     let func = hb3;
@@ -111,43 +112,43 @@ module.exports = (function () {
     let btFormatByteWithoutNoLenBytes = ( fb & MASK_KILL_NO_LEN_BYTES );
     let iNoLenBytes = ( fb & MASK_NO_LEN_BYTES );
 
-    let len = Utils.readVarLength( b, iNoLenBytes )
+    let len = readVarLength( b, iNoLenBytes )
 
     switch( btFormatByteWithoutNoLenBytes ){
-      case DataItem.Format.A:
+      case ItemFormat.A:
         return DataItem.a( '', b.readString( len ), len );
 
-      case DataItem.Format.List:
+      case ItemFormat.List:
         return decodeList( b, len );
 
-      case DataItem.Format.I1:
+      case ItemFormat.I1:
         return decodeI1( b, len );
 
-      case DataItem.Format.I2:
+      case ItemFormat.I2:
         return decodeI2( b, len );
 
-      case DataItem.Format.I4:
+      case ItemFormat.I4:
         return decodeI4( b, len );
 
-      case DataItem.Format.I8:
+      case ItemFormat.I8:
         return decodeI8( b, len );
 
-      case DataItem.Format.U1:
+      case ItemFormat.U1:
         return decodeU1( b, len );
 
-      case DataItem.Format.U2:
+      case ItemFormat.U2:
         return decodeU2( b, len );
 
-      case DataItem.Format.U4:
+      case ItemFormat.U4:
         return decodeU4( b, len );
 
-      case DataItem.Format.U8:
+      case ItemFormat.U8:
         return decodeU8( b, len );
 
-      case DataItem.Format.F4:
+      case ItemFormat.F4:
         return decodeF4( b, len );
 
-      case DataItem.Format.F8:
+      case ItemFormat.F8:
         return decodeF8( b, len );
     }
   }
@@ -334,6 +335,25 @@ module.exports = (function () {
 
       return DataItem.f8( '', ...arr );
     }
+  }
+
+  function readVarLength( b, iNoLenBytes ){
+    let lenArr = []
+
+    for( var i = 0; i < iNoLenBytes; ++i ){
+      lenArr.push( b.readUint8());
+    }
+
+    while( iNoLenBytes < 4 ){
+      lenArr.splice( 0, 0, 0 );
+      ++iNoLenBytes;
+    }
+
+    var u8 = new Uint8Array(lenArr.reverse()); // original array
+    var u32bytes = u8.buffer.slice(); // last four bytes as a new `ArrayBuffer`
+    var uint = new Uint32Array(u32bytes)[0];
+
+    return uint;
   }
 
   return new Decoder();

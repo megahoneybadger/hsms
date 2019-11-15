@@ -17,6 +17,7 @@ const Decoder = require('../coding/decoder')
 
 const moment = require("moment");
 const ByteBuffer = require('bytebuffer')
+const {	InvalidConstructorArguments } = require( './../utils/errors/custom-errors' )
 
 module.exports = (function () {
 
@@ -40,7 +41,7 @@ module.exports = (function () {
 			super();
 
 			if (validator.isUndefined(cp) || !(cp instanceof Config)) {
-				throw new TypeError("Cannot construct [Connection] instances without config params");
+				throw new InvalidConstructorArguments();
 			}
 
 			let port = cp.port;
@@ -512,6 +513,46 @@ module.exports = (function () {
 		setImmediate( () => this.emit( "alive", m ));
 
 		// Buffer 00 00 00 0a ff ff 00 00 00 05 00 00 0e b0 00 00 00 0a ff ff 00 00 00 06 00 00 12 dc
+	}
+	
+	/**
+	 * Handles data message.
+	 * @param {*} m 
+	 * Incoming data message.
+	 */
+	function handleDataMessage( m ){
+    if( m.isPrimary ){
+      handlePrimaryMessage.call( this, m );
+    } else {
+      handleReplyMessage.call( this, m );
+    }
+	}
+	
+	/**
+	 * Handles primary data message.
+	 * @param {*} m 
+	 * Incoming primary data message.
+	 */
+	function handlePrimaryMessage( m ){
+    //console.log( `handle primary [${m.toString()}]` );
+
+    // if( IsS9Case( m ) )
+    //   return;
+
+    // var isF0Case = 
+		// 		( null == existsReq ) ||
+    // 		( DataMessage.Reply.Ack == existsReq.ReplyType && null == existsRep );
+    
+    // if( isF0Case ) 
+	}
+	
+	/**
+	 * Handles reply data message.
+	 * @param {*} m 
+	 * Incoming reply data message.
+	 */
+	function handleReplyMessage( m ){
+    //console.log( `handle reply [${m.toString()}]` );
   }
 
 	/**
@@ -685,7 +726,7 @@ module.exports = (function () {
 	/* Debug helper methods */
 
 	function canSendSelectReq(){
-		return !( this.debug && this.debug.doNotSendSelect )
+		return !( this.debug && this.debug.doNotSendSelectReq )
 	}
 
 	function canSendLinkTestRsp(){

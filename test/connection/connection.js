@@ -15,9 +15,25 @@ const {
 	NoBuilderError,
 	TooManyParamsError,
   InvalidEnumValueError,
-  InvalidFormatError } = require( '../../src/utils/errors/custom-errors' )
+	InvalidFormatError,
+	InvalidContructorArguments } = require( '../../src/utils/errors/custom-errors' )
 
 describe('Connection', () => {
+
+	
+  it('should throw an exception if creating without a proper configuration #1', () => {
+    expect( () => {
+      new Connection( 1 );
+    })
+    .to.throw( InvalidContructorArguments );
+	});
+	
+	it('should throw an exception if creating without a proper configuration #2', () => {
+    expect( () => {
+      new Connection();
+    })
+    .to.throw( InvalidContructorArguments );
+  });
   
   it('should be created with valid parameters #1', () => {
 		const conn = new Connection(  Config

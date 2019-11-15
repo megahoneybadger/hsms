@@ -26,7 +26,7 @@ function createConnection( active ){
     .port( 7000 )
     .device( 12 )
     .mode( active ? ConnectionMode.Active : ConnectionMode.Passive )
-    .timers( new Timers( 10, 20, 30, 40, 10, 10 ) )
+    .timers( new Timers( 1, 1, 1, 1, 2, 1 ) )
     .build();
 
   return new Connection( config );
@@ -86,13 +86,29 @@ describe('Communication active', () => {
     conn.start();
   });
 
-  it('should drop connection', function(done) {
+  it('should drop connection #1', function(done) {
     this.timeout(5000);
 
     conn.on( "established", (e) => {
       e.should.have.property('ip').equal('127.0.0.1');
       e.should.have.property('port').equal(7000 );
       conn.stop();
+    })
+
+    conn.on( "dropped", (e) => {
+      done();
+    });
+
+    conn.start();
+  });
+
+  it('should drop connection #2', function(done) {
+    this.timeout(5000);
+
+    conn.on( "established", (e) => {
+      e.should.have.property('ip').equal('127.0.0.1');
+      e.should.have.property('port').equal(7000 );
+      setTimeout( () => conn.stop(), 1000 );
     })
 
     conn.on( "dropped", (e) => {
@@ -128,6 +144,36 @@ describe('Communication active', () => {
 
     conn.start();
   });
+
+  it('should reconnect 3 times and make sure remote entity is alive', function(done) {
+    this.timeout(10000);
+    let dropCount = 0;
+    let estCount = 0;
+
+    conn.on( "established", (e) => {
+      e.should.have.property('ip').equal('127.0.0.1');
+      ++estCount;
+
+      if( estCount < 3 ){
+        conn.stop();
+        conn.start();
+      } 
+    })
+
+    conn.on( "dropped", (e) => {
+      ++dropCount;
+    });
+
+    conn.on( "alive", (e) => {
+      done();
+    });
+
+    conn.start();
+  });
+
+ 
+
+  
 
 
 

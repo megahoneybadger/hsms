@@ -13,18 +13,25 @@ const {
 
 try {
 
-	// let m = DataMessage
-	// 	.builder
-	// 	.device( 1 )
-	// 	.stream( 1 )
-	// 	.context( 7895654 )
-	// 	.replyExpected( false )
-	// 	.func( 1 )
-	// 	.items(
-	// 		DataItem.i1( "", 78 ),
-	// 		DataItem.i1( "", 1, 6, 9 ),
-	// 		DataItem.i1( "", [ 12, 99 ] )) 
-	// 	.build();
+	var x = 128 & 139;
+	
+	let m = DataMessage
+		.builder
+		.device( 1 )
+		.stream( 1 )
+		.context( 76122 )
+		.replyExpected( false )
+		.func( 1 )
+		.items(
+			DataItem.u1( "", 16 ),
+			DataItem.i1( "", -17 ),
+			DataItem.u1( "", 161, 211 ),
+			DataItem.i1( "", -123, "-45", [ -113, 11 ] ),
+			DataItem.u1( "", 200, "210" ),
+			// DataItem.u1( "", 124, 8, 221, 7, "11", 0 ),
+			// DataItem.u1( "", [193, "16" ] )
+			 ) 
+		.build();
 
 	// const encodedArray = Encoder.encode(m);
 	// console.log( encodedArray );
@@ -35,7 +42,7 @@ try {
 		.port( 7000 )
 		.device( 12 )
 		.mode( ConnectionMode.Active )
-		.timers( new Timers( 1, 1, 1, 2, 2, 1 ) )
+		.timers( new Timers( 1, 1, 1, 2, 2, 0 ) )
 		.build();
 
 	const conn = new Connection( config );
@@ -50,10 +57,15 @@ try {
   .on( "established", ( r ) =>{
 		console.log( `established selected connection [${r.ip}:${r.port}]` );
 		
-		//conn.send( m );
+		conn.send( m );
 	})
+	.on( "recv", ( m ) => {
+    console.log( `recv [${m.toString()}]` );
+  })
 	
 	conn.start();
+
+	
 
 
 			

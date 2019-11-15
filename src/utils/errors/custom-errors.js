@@ -3,6 +3,7 @@ const TooManyParamsError = require('./many-params-error')
 const InvalidEnumValueError = require('./enum-error')
 const InvalidFormatError = require('./invalid-format')
 const InvalidItemSizeError = require('./size-error')
+const InvalidConstructorArguments = require('./invalid-constr-args')
 
 module.exports = {
 	
@@ -10,5 +11,6 @@ module.exports = {
 	TooManyParamsError,
 	InvalidEnumValueError,
 	InvalidFormatError,
-	InvalidItemSizeError
+	InvalidItemSizeError,
+	InvalidConstructorArguments,
 };
