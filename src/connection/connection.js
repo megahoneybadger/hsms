@@ -124,9 +124,9 @@ module.exports = (function () {
 				return;
 			}
 
-			props(this).run = false;
-
 			this.send( new SeparateReq( 0 ) );
+
+			props(this).run = false;
 
 			console.log( `stopped [${this.mode}]` );
 
@@ -140,6 +140,10 @@ module.exports = (function () {
 		send(m) {
 			if (!(m instanceof Message)) {
 				TypeError("Argument must be of type [Message]");
+			}
+
+			if( !props(this).run ){
+				return;
 			}
 
 			try {
@@ -182,7 +186,7 @@ module.exports = (function () {
 		props(this).client = new net.Socket();
 
 		// In case of errors clean all resources and try to reconnect.
-		props(this).client.on('error', e => close.call(this));
+		props(this).client.on('error', e => close.call(this, e));
 
 		// When recv data from a remote entity 
 		props(this).client.on('data', d => onRecv.call(this, d));
@@ -239,8 +243,8 @@ module.exports = (function () {
    */
   function onClientConnected( client ){
     if( !props(this).run )
-      return;
-
+			return;
+	
     props(this).client = client;
 
     // stop listening for another clients
@@ -336,7 +340,6 @@ module.exports = (function () {
 		}
 		catch (err) {
 		
-			console.log( this.mode );
 			console.log( err  );
 			//console.log( this.ConnectionMode );
 			setImmediate(() => this.emit.call( this, "error", err));
@@ -649,9 +652,16 @@ module.exports = (function () {
    * If connection is not disposed (run === true) tries to reconnect (in active mode) 
    * or start listening for new clients (in passive mode). 
    */
-  function close() {
-    // 	Fire( ConnectionEventArgs.Dropped( /*_socket.RemoteEndPoint as IPEndPoint*/null ));
-    setImmediate( () => this.emit( "dropped" ));
+  function close( reason ) {
+		// if( !props(this).client && !props(this).server ){
+		// 	// it seems that sockets already have benn closed
+		// 	// do not send dropped event twice
+		// 	return;
+		// }
+
+		if( props(this).state == ConnectionState.connectedSelected ){
+			setImmediate( () => this.emit( "dropped" ));
+		}
 
     if( props(this).client ){
       props(this).client.destroy();

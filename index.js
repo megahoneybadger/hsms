@@ -13,6 +13,11 @@ const {
 
 try {
 
+	const itemA = DataItem.i1( "temp", 12, 13  );
+	const itemB = DataItem.i1( "pressure", 12  );
+
+	var res = itemA.equals( itemB );
+
 	var x = 128 & 139;
 	
 	let m = DataMessage
@@ -51,22 +56,44 @@ try {
 		//doNotSendLinkTestRsp: true
 	};
 
+	var index = 0;
+
 	conn
-  .on( "dropped", () => console.log( `connection has been dropped` ) )
+  .on( "dropped", () => {
+		console.log( `connection has been dropped` );
+	} )
   .on( "error", ( err ) => console.log( `encountered error: ${err}` ) )
   .on( "established", ( r ) =>{
 		console.log( `established selected connection [${r.ip}:${r.port}]` );
+
+		conn.stop();
+		++index;
+
+		if( index < 3 ){
+			conn.start();
+		}
 		
 		conn.send( m );
 	})
 	.on( "recv", ( m ) => {
-    console.log( `recv [${m.toString()}]` );
+		console.log( `recv [${m.toString()}]` );
+	
+		
   })
 	
-	conn.start();
-
 	
 
+	const server = new Connection( Config
+		.builder
+		.ip( "127.0.0.1" )
+		.port( 7000 )
+		.device( 12 )
+		.mode( ConnectionMode.Passive )
+		.timers( new Timers( 1, 1, 1, 2, 2, 0 ) )
+		.build());
+
+	server.start();
+	conn.start();
 
 			
 	

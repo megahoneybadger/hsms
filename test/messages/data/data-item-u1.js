@@ -540,6 +540,62 @@ describe('Data Item U1', () => {
     expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
   });
 
+	it('should be equal items #1', () => {
+		const itemA = DataItem.u1( "temp", 212 );
+		const itemB = DataItem.u1( "pressure", 212 );
+			
+		( itemA.equals( itemB ) ).should.be.true;
+	});
+
+	it('should be equal items #2', () => {
+		const itemA = DataItem.u1( "temp", 121, [145, "123"], 12, [12, 78, 90] );
+		const itemB = DataItem.u1( "pressure", 121, "145", [123, 12], 12, [78], "90" );
+			
+		( itemA.equals( itemB ) ).should.be.true;
+	});
+
+	it('should be equal items #3', () => {
+		const itemA = DataItem.u1( "temp", [128], );
+		const itemB = DataItem.u1( "pressure", "128" );
+			
+		( itemA.equals( itemB ) ).should.be.true;
+	});
+
+	it('should be equal items #4', () => {
+		const itemA = DataItem.u1( "temp", [11, 12, 0], );
+		const itemB = DataItem.u1( "pressure", 11, "12", [0] );
+			
+		( itemA.equals( itemB ) ).should.be.true;
+	});
+
+
+	it('should not be equal items #1', () => {
+		const itemA = DataItem.i1( "temp", 122 );
+		const itemB = DataItem.u1( "temp", 122 );
+			
+		( itemA.equals( itemB ) ).should.be.false;
+	});
+
+	it('should not be equal items #2', () => {
+		const itemA = DataItem.u1( "temp", 13 );
+		const itemB = DataItem.u1( "temp", 12 );
+			
+		( itemA.equals( itemB ) ).should.be.false;
+	});
+
+	it('should not be equal items #2', () => {
+		const itemA = DataItem.u1( "temp", 12 );
+		const itemB = DataItem.u1( "temp", 12, 13 );
+			
+		( itemA.equals( itemB ) ).should.be.false;
+	});
+
+	it('should not be equal items #4', () => {
+		const itemA = DataItem.u1( "temp", [12, 13, 14] );
+		const itemB = DataItem.u1( "temp", 12, 13 );
+			
+		( itemA.equals( itemB ) ).should.be.false;
+	});
 
 
 	//

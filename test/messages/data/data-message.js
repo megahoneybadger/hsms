@@ -277,6 +277,8 @@ describe('Data Message', () => {
 			m.items[ 2 ].should.have.property( 'value' ).to.have.members( [1,6,9] );
 	});
 
+
+
 	it('encode must return valid binary stream (i1) #1', () => {
 		let m = DataMessage
 			.builder

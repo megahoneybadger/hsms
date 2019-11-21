@@ -107,6 +107,9 @@ module.exports = (function () {
 		 * The message to compare with the current object.
 		 */ 
 		equals( dm ){
+			if (!(dm instanceof DataMessage)) {
+				return false;
+			}
 
 			if( this.context != dm.context ){
 				return false;
@@ -126,6 +129,16 @@ module.exports = (function () {
 
 			if( this.replyExpected != dm.replyExpected ){
 				return false;
+			}
+
+			if( this.items.length != dm.items.length ){
+				return false
+			}
+			
+			for( var i = 0; i < this.items.length; ++i ){
+				if( !this.items[ i ].equals( dm.items[ i ] ) ){
+					return false;
+				}
 			}
 
 			return true;

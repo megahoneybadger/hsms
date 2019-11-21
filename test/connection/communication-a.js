@@ -1,7 +1,6 @@
 var assert = require('assert');
 var expect = require('chai').expect;
 var should = require('chai').should();
-var sinon = require('sinon');
 
 const { 
   Message,
@@ -126,7 +125,9 @@ describe('Communication active', () => {
     conn.on( "established", (e) => {
       e.should.have.property('ip').equal('127.0.0.1');
       e.should.have.property('port').equal(7000 );
-      ++estCount;
+			++estCount;
+			
+			console.log( 'active conn established' );
 
       if( estCount < 5 ){
         conn.stop();
@@ -139,6 +140,7 @@ describe('Communication active', () => {
     })
 
     conn.on( "dropped", (e) => {
+			console.log( 'active conn dropped' );
       ++dropCount;
     });
 

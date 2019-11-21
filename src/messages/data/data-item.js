@@ -61,6 +61,51 @@ module.exports = (function () {
       }
 
 		}
+
+			/**
+		 * Determines whether the specified item is equal to the current object.
+		 * @param {*} dm 
+		 * The item to compare with the current object.
+		 */ 
+		equals( dm ){
+			if (!(dm instanceof DataItem)) {
+				return false;
+			}
+
+			if( this.format != dm.format ){
+				return false;
+			}
+
+			if( this.size != dm.size ){
+				return false;
+			}
+
+			const isMyArray = this.value instanceof Array;
+			const isHisArray = dm.value instanceof Array;
+
+			if( isMyArray !== isHisArray ){
+				return false;
+			}
+
+			if( isMyArray ){
+				const eq = 
+					( this.value.length === dm.value.length ) && 
+					( this.value.every((value, index) => value === dm.value[index]))
+				
+				if( !eq ){
+					return false;
+				}
+			} else {
+				if( this.value != dm.value ){
+					return false;
+				}
+			}
+			
+			// todo: list
+
+			return true;
+		}
+
 		/**
 		 * Creates numeric data item.
 		 * @param {ItemFormat} f Item format.
