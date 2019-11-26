@@ -15,8 +15,10 @@ module.exports = (function () {
   class Decoder {
     decode(buffer) {
       let bb = ByteBuffer.wrap(buffer);
-      let m = null;
+			let m = null;
 
+			//console.log( bb );
+			
       let device = bb.readUint16();
 
       let hb2 = bb.readUint8();
@@ -307,7 +309,12 @@ module.exports = (function () {
     let nominalLen = 4;
 
     if( nominalLen === len ){
-      return DataItem.f4( '', b.readFloat32() );
+			// https://stackoverflow.com/questions/42699162/javascript-convert-array-of-4-bytes-into-a-float-value-from-modbustcp-read#comment92169146_42699667
+			var v = +b.readFloat32().toFixed( 7 );
+			 
+			var item = DataItem.f4( '', v );
+			
+      return item;
     } else {
       var count = len / nominalLen;
       var arr = [];
@@ -318,8 +325,18 @@ module.exports = (function () {
 
       return DataItem.f4( '', ...arr );
     }
-  }
-
+	}
+	
+	function bytesToFloat(bytes) {
+    // JavaScript bitwise operators yield a 32 bits integer, not a float.
+    // Assume LSB (least significant byte first).
+    var bits = bytes[3]<<24 | bytes[2]<<16 | bytes[1]<<8 | bytes[0];
+    var sign = (bits>>>31 === 0) ? 1.0 : -1.0;
+    var e = bits>>>23 & 0xff;
+    var m = (e === 0) ? (bits & 0x7fffff)<<1 : (bits & 0x7fffff) | 0x800000;
+    var f = sign * m * Math.pow(2, e - 150);
+    return f;
+  }  
   function decodeF8( b, len ){
     let nominalLen = 8;
 

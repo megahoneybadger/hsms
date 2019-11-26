@@ -13,29 +13,23 @@ const {
 
 try {
 
-	const itemA = DataItem.i1( "temp", 12, 13  );
-	const itemB = DataItem.i1( "pressure", 12  );
 
-	var res = itemA.equals( itemB );
-
-	var x = 128 & 139;
-	
 	let m = DataMessage
 		.builder
-		.device( 1 )
-		.stream( 1 )
-		.context( 76122 )
-		.replyExpected( false )
-		.func( 1 )
+		.device(1)
+		.stream(1)
+		.context(98126)
+		.replyExpected(false)
+		.func(1)
 		.items(
-			DataItem.u1( "", 16 ),
-			DataItem.i1( "", -17 ),
-			DataItem.u1( "", 161, 211 ),
-			DataItem.i1( "", -123, "-45", [ -113, 11 ] ),
-			DataItem.u1( "", 200, "210" ),
-			// DataItem.u1( "", 124, 8, 221, 7, "11", 0 ),
-			// DataItem.u1( "", [193, "16" ] )
-			 ) 
+			DataItem.a( "", "", 10000 ),
+			DataItem.a( "", "", 10000 ),
+			DataItem.a( "", "", 10000 ),
+			DataItem.a( "", "", 10000 ),
+			DataItem.a( "", "", 10000 ),
+			DataItem.a( "", "", 10000 ),
+			DataItem.a( "", "", 10000 )
+		)
 		.build();
 
 	// const encodedArray = Encoder.encode(m);
@@ -43,14 +37,15 @@ try {
 
 	const config = Config
 		.builder
-		.ip( "127.0.0.1" )
-		.port( 7000 )
-		.device( 12 )
-		.mode( ConnectionMode.Active )
-		.timers( new Timers( 1, 1, 1, 2, 2, 0 ) )
+		//.ip("192.168.154.1")
+		.ip("127.0.0.1")
+		.port(7000)
+		.device(1)
+		.mode(ConnectionMode.Active)
+		.timers(new Timers(1, 1, 1, 2, 2, 0))
 		.build();
 
-	const conn = new Connection( config );
+	const conn = new Connection(config);
 	conn.debug = {
 		//doNotSendSelect: true
 		//doNotSendLinkTestRsp: true
@@ -59,44 +54,33 @@ try {
 	var index = 0;
 
 	conn
-  .on( "dropped", () => {
-		console.log( `connection has been dropped` );
-	} )
-  .on( "error", ( err ) => console.log( `encountered error: ${err}` ) )
-  .on( "established", ( r ) =>{
-		console.log( `established selected connection [${r.ip}:${r.port}]` );
+		.on("dropped", () => {
+			console.log(`connection has been dropped`);
+		})
+		.on("error", (err) => console.log(`encountered error: ${err}`))
+		.on("established", (r) => {
+			conn.send(m);
+		})
+		.on("recv", (m) => {
+			console.log(`recv [${m.toString()}]`);
+		})
 
-		conn.stop();
-		++index;
 
-		if( index < 3 ){
-			conn.start();
-		}
-		
-		conn.send( m );
-	})
-	.on( "recv", ( m ) => {
-		console.log( `recv [${m.toString()}]` );
-	
-		
-  })
-	
-	
 
-	const server = new Connection( Config
+	const server = new Connection(Config
 		.builder
-		.ip( "127.0.0.1" )
-		.port( 7000 )
-		.device( 12 )
-		.mode( ConnectionMode.Passive )
-		.timers( new Timers( 1, 1, 1, 2, 2, 0 ) )
+		.ip("127.0.0.1")
+		.port(7000)
+		.device(12)
+		.mode(ConnectionMode.Passive)
+		.timers(new Timers(1, 1, 1, 2, 2, 0))
 		.build());
 
 	server.start();
 	conn.start();
 
-			
-	
+
+
 }
 catch (err) {
 	console.log(err);

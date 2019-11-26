@@ -94,6 +94,13 @@ class ValidationHelper {
 			}
 		}
 
+		if (ItemFormat.isFloat(format)) {
+			let pfv = parseFloat(value);
+			if (!isNaN(pfv) && isFinite(value)) {
+				res = pfv;
+			}
+		}
+
 		try {
 			switch (format) {
 				case ItemFormat.I1:

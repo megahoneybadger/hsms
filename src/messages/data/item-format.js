@@ -56,6 +56,18 @@ module.exports = (function () {
           return false;
       }
 		},
+
+			
+		isFloat(n) {
+      switch (n) {
+				case ItemFormat.F4:
+				case ItemFormat.F8:
+          return true;
+
+        default:
+          return false;
+      }
+		},
 		
 		default( n, size = 0 ){
 			if( this.isInteger( n )){

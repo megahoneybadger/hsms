@@ -161,6 +161,9 @@ module.exports = (function () {
 						//console.log( `send [${this.mode}] -> ${props(this).trx.size}` );
 					}
 
+					//console.log( buffer );
+
+
 					socket.write(buffer);
 
 					setImmediate(() => this.emit("send", m));
@@ -303,20 +306,28 @@ module.exports = (function () {
 				toReadNow = Math.min(data.length - 4, recv.messageLength);
 				headerLen = 4;
 
-				recv.buffer = ByteBuffer.wrap(data.slice(headerLen, headerLen + toReadNow));
+				//recv.buffer = ByteBuffer.wrap(data.slice(headerLen, headerLen + toReadNow));
+				//recv.buffer = ByteBuffer.wrap(data.slice(headerLen, headerLen + toReadNow));
+				recv.buffer = data.slice(headerLen, headerLen + toReadNow);
 				recv.count = 0;
 			} else {
+
+				//console.log( `${data.length}  ${recv.messageLength - recv.count}` )
 				// data may contain more or less data than needed to construct current message
 				toReadNow = Math.min(data.length, recv.messageLength - recv.count);
 
 				// append tail to existing buffer if message is too big for a single event
-				recv.buffer = recv.buffer.append(data.slice(0, toReadNow), recv.count);
+				//recv.buffer = recv.buffer.append(data.slice(0, toReadNow), recv.count);
+
+				recv.buffer = Buffer.concat( [ recv.buffer, data.slice(0, toReadNow) ]);
+				//var res2 =  ByteBuffer.wrap(recv.buffer2);
 			}
 
 			// keep tracking how much data already has been recv
 			recv.count += toReadNow;
 
 			if (recv.messageLength == recv.count) {
+				//console.log( recv.buffer.size );
 				// if read the whole message and ready to construct it
 				// build message from its binary buffer
 				let m = Decoder.decode(recv.buffer);
@@ -451,8 +462,8 @@ module.exports = (function () {
       this.send( new SelectRsp( m.device, m.context, 0/*ok*/ ) )
 
       setImmediate( () => this.emit( "established", {
-        ip: props( this ).client.remoteAddress,
-        port: props( this ).client.remotePort
+        ip: props( this ).server.remoteAddress,
+        port: props( this ).server.remotePort
 			} ) ); 
 			
 			// Now connection checks for t3&5 timeouts.

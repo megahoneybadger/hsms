@@ -152,6 +152,23 @@ module.exports = (function () {
 		static u2(name = "", ...values) {
       return DataItem.numeric(ItemFormat.U2, name, ...values);
 		}
+
+		/**
+		 * Creates F4 data item.
+		 * @param {String} name Item name.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.
+		 */
+		static f4(name = "", ...values) {
+      return DataItem.numeric(ItemFormat.F4, name, ...values);
+		}
+		/**
+		 * Creates F8 data item.
+		 * @param {String} name Item name.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.
+		 */
+		static f8(name = "", ...values) {
+      return DataItem.numeric(ItemFormat.F8, name, ...values);
+		}
 		/**
 		 * Creates string data item.
 		 * @param {String} name Item name.
@@ -166,7 +183,23 @@ module.exports = (function () {
 				.value(v)
 				.name(name)
 				.build();
+		}
+		/**
+		 * Creates list data item.
+		 * @param {*} name Item name. 
+		 * @param  {...any} items List children items.
+		 */
+		static list(name = "", ...items) {
+      let arr = items.filter( x => x instanceof DataItem );
+
+      return DataItem
+        .builder
+        .name(name)
+        .format(ItemFormat.List)
+        //.items(arr)
+        .build();
     }
+
 		/**
 		 * Returns builder's instance.
 		 */

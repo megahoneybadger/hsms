@@ -414,17 +414,17 @@ module.exports = (function () {
       case ItemFormat.List:
       case ItemFormat.A: {
 				let isList = ( item.format === ItemFormat.List );
-        let len = isList ? item.items.length : thitemis.value.length;
+        let len = isList ? item.items.length : item.value.length;
         let btNoLenBytes = (len <= 255) ? 1 : (len <= 65535) ? 2 : 3;
-        let btFormatByte = this.format | btNoLenBytes;
+        let btFormatByte = item.format | btNoLenBytes;
         b.offset--; // update format byte which was written in the begining of the functon  
         b.writeUInt8(btFormatByte);
-        Utils.writeVarLength(b, btNoLenBytes, len);
+        writeVarLength(b, btNoLenBytes, len);
 
         if( isList ){
-          this.items.forEach( x => x.encode( b ) )
+          item.items.forEach( x => x.encode( b ) )
         } else {
-          b.writeString(this.value);
+          b.writeString(item.value);
         }
         
         break;

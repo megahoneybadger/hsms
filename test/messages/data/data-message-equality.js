@@ -52,8 +52,16 @@ describe('Data Message Equality', () => {
 			.items(
 				DataItem.i1( "temp1", -87, "12", 54 ),
 				DataItem.i1( "temp2", [32, -78, "0", 121, -76] ),
+
 				DataItem.u1( "temp3", 200 ),
-				DataItem.u1( "temp4", [200, 100, 0 ] ) ) 
+				DataItem.u1( "temp4", [200, 100, 0 ] ),
+
+				DataItem.i2( "temp3", -200, 3211 ),
+				DataItem.i2( "temp4", [200, 100, 0 ] ),
+				
+				DataItem.u2( "temp3", 62100, 32611 ),
+				DataItem.u2( "temp4", [21200, 17600, 10 ] )
+				) 
 			.build();
 
 		let m2 = DataMessage
@@ -65,8 +73,17 @@ describe('Data Message Equality', () => {
 			.items(
 				DataItem.i1( "error", "-87", ["12", 54] ),
 				DataItem.i1( "pressure", 32, "-78", "0", [121, -76] ),
+
 				DataItem.u1( "temp3", 200 ),
-				DataItem.u1( "temp4", "200", "100", [0 ] )  ) 
+				DataItem.u1( "temp4", "200", "100", [0 ] ),
+
+				DataItem.i2( "temp3", -200, "3211" ),
+				DataItem.i2( "temp4", "200", "100", [0 ] ),
+
+				DataItem.u2( "temp3", [62100, "32611"] ),
+				DataItem.u2( "temp4", [21200], [17600, "10" ] )
+				
+				) 
 			.build();
 
 			( m1.equals( m2 ) ).should.be.true;

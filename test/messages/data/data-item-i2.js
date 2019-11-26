@@ -2,7 +2,11 @@ var assert = require('assert');
 var expect = require('chai').expect;
 var should = require('chai').should();
 
-const { DataItem, ItemFormat, Constants } = require( '../../../src/hsms' )
+const { 
+	DataItem,
+	ItemFormat,
+	Constants,
+	Encoder } = require( '../../../src/hsms' )
 
 const { 
 	NoBuilderError,
@@ -594,6 +598,80 @@ describe('Data Item I2', () => {
 		item.should.have.property( 'format' ).equal( ItemFormat.I2 );
 		item.should.have.property( 'name' ).equal( "humidity" );
 	});
+
+
+
+	it('encode must return valid binary stream (single value)', () => {
+		const m = DataItem.i2( "temp", 1656 );
+
+    const encodedArray = Encoder.encode(m);
+		const expectedArray = Buffer.from([0x69, 0x02, 0x06, 0x78  ])
+
+		console.log( encodedArray )
+		console.log( expectedArray )
+	
+    expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
+	});
+
+	it('encode must return valid binary stream (array)', () => {
+		const m = DataItem.i2( "temp", -870, 1265, "-5431" );
+
+    const encodedArray = Encoder.encode(m);
+		const expectedArray = Buffer.from([0x69, 0x06, 0xFC, 0x9A, 0x04, 0xF1, 0xEA, 0xC9 ])
+	
+    expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
+	});
+
+	it('should be equal items #1', () => {
+		const itemA = DataItem.i2( "temp", -1213 );
+		const itemB = DataItem.i2( "pressure", -1213 );
+			
+		( itemA.equals( itemB ) ).should.be.true;
+	});
+
+	it('should be equal items #2', () => {
+		const itemA = DataItem.i2( "temp", 120, [-450, "-130"], 1211 );
+		const itemB = DataItem.i2( "pressure", 120, "-450", [-130, 1211] );
+			
+		( itemA.equals( itemB ) ).should.be.true;
+	});
+
+	it('should be equal items #3', () => {
+		const itemA = DataItem.i2( "temp", [1212], );
+		const itemB = DataItem.i2( "pressure", "1212" );
+			
+		( itemA.equals( itemB ) ).should.be.true;
+	});
+
+	it('should be equal items #4', () => {
+		const itemA = DataItem.i2( "temp", [1112, -122, 0], );
+		const itemB = DataItem.i2( "pressure", 1112, "-122", [0] );
+			
+		( itemA.equals( itemB ) ).should.be.true;
+	});
+
+	
+	it('should not be equal items #2', () => {
+		const itemA = DataItem.i2( "temp", 1232 );
+		const itemB = DataItem.i2( "temp", -1232 );
+			
+		( itemA.equals( itemB ) ).should.be.false;
+	});
+
+	it('should not be equal items #3', () => {
+		const itemA = DataItem.i2( "temp", 12 );
+		const itemB = DataItem.i2( "temp", 12, 13 );
+			
+		( itemA.equals( itemB ) ).should.be.false;
+	});
+
+	it('should not be equal items #4', () => {
+		const itemA = DataItem.i2( "temp", [-12, 130, 140] );
+		const itemB = DataItem.i2( "temp", -12, 130 );
+			
+		( itemA.equals( itemB ) ).should.be.false;
+	});
+
 
 
 	

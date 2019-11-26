@@ -2,7 +2,11 @@ var assert = require('assert');
 var expect = require('chai').expect;
 var should = require('chai').should();
 
-const { DataItem, ItemFormat, Constants } = require( '../../../src/hsms' )
+const { 
+	DataItem,
+	ItemFormat,
+	Constants,
+	Encoder } = require( '../../../src/hsms' )
 
 const { 
 	NoBuilderError,
@@ -250,6 +254,36 @@ describe('Data Item A', () => {
     })
     .to.throw( InvalidFormatError );
 	});
+
+	it('encode must return valid binary stream #1', () => {
+		const m = DataItem.a( "temp", "hello world !", 10 );
+
+    const encodedArray = Encoder.encode(m);
+		const expectedArray = Buffer.from([0x41, 0x0A, 0x68, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x77, 0x6F, 0x72, 0x6C  ])
+	
+    expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
+	});
+
+	it('encode must return valid binary stream #2', () => {
+		const m = DataItem.a( "temp", "", 5 );
+
+    const encodedArray = Encoder.encode(m);
+		const expectedArray = Buffer.from([0x41, 0x05, 0x20, 0x20, 0x20, 0x20, 0x20  ])
+	
+    expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
+	});
+
+
+	it('encode must return valid binary stream #3', () => {
+		const m = DataItem.a( "temp", "start", 15 );
+
+    const encodedArray = Encoder.encode(m);
+		const expectedArray = Buffer.from([0x41, 0x0F, 0x73, 0x74, 0x61, 0x72, 0x74,
+			 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 ])
+	
+    expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
+	});
+
 
 
 
