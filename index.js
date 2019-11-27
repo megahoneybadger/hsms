@@ -14,6 +14,7 @@ const {
 try {
 
 
+
 	let m = DataMessage
 		.builder
 		.device(1)
@@ -22,13 +23,24 @@ try {
 		.replyExpected(false)
 		.func(1)
 		.items(
-			DataItem.a( "", "", 10000 ),
-			DataItem.a( "", "", 10000 ),
-			DataItem.a( "", "", 10000 ),
-			DataItem.a( "", "", 10000 ),
-			DataItem.a( "", "", 10000 ),
-			DataItem.a( "", "", 10000 ),
-			DataItem.a( "", "", 10000 )
+			DataItem.u1( "", 16 ),
+			DataItem.i1( "", -17 ),
+			DataItem.u1( "", 161, 211 ),
+			DataItem.i1( "", -123, "-45", [ -113, 11 ] ),
+			DataItem.u1( "", 200, "210" ),
+
+			DataItem.u2( "", 28700, "21110" ),
+			DataItem.u2( "", 6500 ),
+
+			DataItem.i2( "", -2700, "8541" ),
+			DataItem.i2( "", -5124 ),
+
+			DataItem.i4( "", -2147483600, "1147483647" ),
+			DataItem.i4( "", -6712645 ),
+
+			DataItem.u4( "", 4294967295, "5321231" ),
+			DataItem.u4( "", 4294967267 ),
+		
 		)
 		.build();
 
@@ -37,8 +49,8 @@ try {
 
 	const config = Config
 		.builder
-		//.ip("192.168.154.1")
-		.ip("127.0.0.1")
+		.ip("192.168.154.1")
+		//.ip("127.0.0.1")
 		.port(7000)
 		.device(1)
 		.mode(ConnectionMode.Active)
@@ -67,16 +79,16 @@ try {
 
 
 
-	const server = new Connection(Config
-		.builder
-		.ip("127.0.0.1")
-		.port(7000)
-		.device(12)
-		.mode(ConnectionMode.Passive)
-		.timers(new Timers(1, 1, 1, 2, 2, 0))
-		.build());
+	// const server = new Connection(Config
+	// 	.builder
+	// 	.ip("127.0.0.1")
+	// 	.port(7000)
+	// 	.device(12)
+	// 	.mode(ConnectionMode.Passive)
+	// 	.timers(new Timers(1, 1, 1, 2, 2, 0))
+	// 	.build());
 
-	server.start();
+	// server.start();
 	conn.start();
 
 

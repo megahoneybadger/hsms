@@ -510,7 +510,7 @@ describe('Data Message', () => {
     expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
 	});
 
-	it('encode must return valid binary stream (u2) #1', () => {
+	it('encode must return valid binary stream (u2) #2', () => {
 		let m = DataMessage
 			.builder
 			.device( 1 )
@@ -558,7 +558,7 @@ describe('Data Message', () => {
     expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
 	});
 
-	it('encode must return valid binary stream (i2) #1', () => {
+	it('encode must return valid binary stream (i2) #2', () => {
 		let m = DataMessage
 			.builder
 			.device( 1 )
@@ -575,6 +575,104 @@ describe('Data Message', () => {
 		const expectedArray = Buffer.from([ 0x00, 0x00, 0x00, 0x0e, 
 			0x00, 0x01, 0x81, 0x01, 0x00, 0x00, 0x00, 0x01, 0x7F, 0x4E,
 			0x69, 0x02, 0xFF, 0xEB   ])
+
+		// console.log( encodedArray );
+		// console.log( expectedArray );
+	
+    expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
+	});
+
+
+	it('encode must return valid binary stream (i4) #1', () => {
+		let m = DataMessage
+			.builder
+			.device( 1 )
+			.stream( 1 )
+			.replyExpected( false )
+			.func( 1 )
+			.context( 98126 )
+			.items(
+				DataItem.i4( "temp", -2147483640, -8865, 2147483640 )) 
+			.build();
+
+		const encodedArray = Encoder.encode(m);
+	
+		const expectedArray = Buffer.from([ 0x00, 0x00, 0x00, 0x18, 
+			0x00, 0x01, 0x81, 0x01, 0x00, 0x00, 0x00, 0x01, 0x7F, 0x4E,
+			0x71, 0x0C, 0x80, 0x00, 0x00, 0x08, 0xFF, 0xFF, 0xDD, 0x5F, 0x7F, 0xFF, 0xFF, 0xF8   ])
+
+		// console.log( encodedArray );
+		// console.log( expectedArray );
+	
+    expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
+	});
+
+	it('encode must return valid binary stream (i4) #2', () => {
+		let m = DataMessage
+			.builder
+			.device( 1 )
+			.stream( 1 )
+			.replyExpected( false )
+			.func( 1 )
+			.context( 98126 )
+			.items(
+				DataItem.i4( "temp", -2147483630)) 
+			.build();
+
+		const encodedArray = Encoder.encode(m);
+	
+		const expectedArray = Buffer.from([ 0x00, 0x00, 0x00, 0x10, 
+			0x00, 0x01, 0x81, 0x01, 0x00, 0x00, 0x00, 0x01, 0x7F, 0x4E,
+			0x71, 0x04, 0x80, 0x00, 0x00, 0x12    ])
+
+		// console.log( encodedArray );
+		// console.log( expectedArray );
+	
+    expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
+	});
+
+
+	it('encode must return valid binary stream (u4) #1', () => {
+		let m = DataMessage
+			.builder
+			.device( 1 )
+			.stream( 1 )
+			.replyExpected( false )
+			.func( 1 )
+			.context( 98126 )
+			.items(
+				DataItem.u4( "temp", 4294967280, 123428865, 2147483640 )) 
+			.build();
+
+		const encodedArray = Encoder.encode(m);
+	
+		const expectedArray = Buffer.from([ 0x00, 0x00, 0x00, 0x18, 
+			0x00, 0x01, 0x81, 0x01, 0x00, 0x00, 0x00, 0x01, 0x7F, 0x4E,
+			0xB1, 0x0C, 0xFF, 0xFF, 0xFF, 0xF0, 0x07, 0x5B, 0x60, 0x01, 0x7F, 0xFF, 0xFF, 0xF8   ])
+
+		// console.log( encodedArray );
+		// console.log( expectedArray );
+	
+    expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
+	});
+
+	it('encode must return valid binary stream (u4) #2', () => {
+		let m = DataMessage
+			.builder
+			.device( 1 )
+			.stream( 1 )
+			.replyExpected( false )
+			.func( 1 )
+			.context( 98126 )
+			.items(
+				DataItem.u4( "temp", 3294967280 )) 
+			.build();
+
+		const encodedArray = Encoder.encode(m);
+	
+		const expectedArray = Buffer.from([ 0x00, 0x00, 0x00, 0x10, 
+			0x00, 0x01, 0x81, 0x01, 0x00, 0x00, 0x00, 0x01, 0x7F, 0x4E,
+			0xB1, 0x04, 0xC4, 0x65, 0x35, 0xF0  ])
 
 		// console.log( encodedArray );
 		// console.log( expectedArray );
@@ -604,19 +702,32 @@ describe('Data Message', () => {
 				DataItem.u2( "", 6500 ),
 
 				DataItem.i2( "", -2700, "8541" ),
-				DataItem.i2( "", -5124 )
+				DataItem.i2( "", -5124 ),
+
+				DataItem.i4( "", -2147483600, "1147483647" ),
+				DataItem.i4( "", -6712645 ),
+
+				DataItem.u4( "", 4294967295, "5321231" ),
+				DataItem.u4( "", 4294967267 ),
+
+
 
 				) 
 			.build();
 
 		const encodedArray = Encoder.encode(m);
 	
-		const expectedArray = Buffer.from([ 0x00, 0x00, 0x00, 0x32, 
+		const expectedArray = Buffer.from([ 0x00, 0x00, 0x00, 0x52, 
 			0x00, 0x01, 0x81, 0x01, 0x00, 0x00, 0x00, 0x01, 0x7F, 0x4E ,  
 			0xA5, 0x01, 0x10, 0x65, 0x01, 0xEF, 0xA5, 0x02, 0xA1,
 			0xD3, 0x65, 0x04, 0x85, 0xD3, 0x8F, 0x0B, 0xA5, 0x02, 0xC8, 0xD2,
 			0xA9, 0x04, 0x70, 0x1C, 0x52, 0x76, 0xA9, 0x02, 0x19, 0x64, 0x69,
-			0x04, 0xF5, 0x74, 0x21, 0x5D, 0x69, 0x02, 0xEB, 0xFC
+			0x04, 0xF5, 0x74, 0x21, 0x5D, 0x69, 0x02, 0xEB, 0xFC,
+			0x71, 0x08, 0x80, 0x00, 0x00, 0x30, 0x44, 0x65, 0x35,
+			0xFF, 0x71, 0x04, 0xFF, 0x99, 0x92, 0xBB,
+			0xB1, 0x08, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x51, 0x32,
+			0x0F, 0xB1, 0x04, 0xFF, 0xFF, 0xFF, 0xE3 
+ 
 		 ])
 
 		 

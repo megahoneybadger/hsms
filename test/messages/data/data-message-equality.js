@@ -56,11 +56,18 @@ describe('Data Message Equality', () => {
 				DataItem.u1( "temp3", 200 ),
 				DataItem.u1( "temp4", [200, 100, 0 ] ),
 
-				DataItem.i2( "temp3", -200, 3211 ),
-				DataItem.i2( "temp4", [200, 100, 0 ] ),
+				DataItem.i2( "temp3", -200, "3211" ),
+				DataItem.i2( "temp4", "200", "100", [0 ] ),
+
+				DataItem.u2( "temp3", [62100, "32611"] ),
+				DataItem.u2( "temp4", [21200], [17600, "10" ] ),
+
+				DataItem.i4( "temp5", -2112320, 2147483640 ),
+				DataItem.i4( "temp6", [200, 2147483630, 0 ] ),
 				
-				DataItem.u2( "temp3", 62100, 32611 ),
-				DataItem.u2( "temp4", [21200, 17600, 10 ] )
+				DataItem.u4( "temp3", 6210012, 4294967290 ),
+				DataItem.u4( "temp4", [2121234200, 3294967295, 10 ] )
+				
 				) 
 			.build();
 
@@ -81,7 +88,13 @@ describe('Data Message Equality', () => {
 				DataItem.i2( "temp4", "200", "100", [0 ] ),
 
 				DataItem.u2( "temp3", [62100, "32611"] ),
-				DataItem.u2( "temp4", [21200], [17600, "10" ] )
+				DataItem.u2( "temp4", [21200], [17600, "10" ] ),
+
+				DataItem.i4( "temp5", -2112320, 2147483640 ),
+				DataItem.i4( "temp6", [200, 2147483630, 0 ] ),
+				
+				DataItem.u4( "temp3", 6210012, 4294967290 ),
+				DataItem.u4( "temp4", [2121234200, 3294967295, 10 ] )
 				
 				) 
 			.build();

@@ -1,7 +1,8 @@
 module.exports = Object.freeze({
   MAX_UBYTE: 0xff,
-  MAX_USHORT: 0xffff,
-  MAX_UINT: 0xffffffff,
+	MAX_USHORT: 0xffff,
+	
+  MAX_UINT: 0xffffffff, // 4294967295
   MAX_ULONG: 0xffffffffffffffff,
 
   MIN_BYTE: -128,

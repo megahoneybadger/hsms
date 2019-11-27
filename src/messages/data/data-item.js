@@ -154,6 +154,23 @@ module.exports = (function () {
 		}
 
 		/**
+		 * Creates I4 data item.
+		 * @param {String} name Item name.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.
+		 */
+		static i4(name = "", ...values) {
+      return DataItem.numeric(ItemFormat.I4, name, ...values);
+		}
+		/**
+		 * Creates U4 data item.
+		 * @param {String} name Item name.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.
+		 */
+		static u4(name = "", ...values) {
+      return DataItem.numeric(ItemFormat.U4, name, ...values);
+		}
+
+		/**
 		 * Creates F4 data item.
 		 * @param {String} name Item name.
 		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.

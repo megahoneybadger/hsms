@@ -111,12 +111,20 @@ class ValidationHelper {
 					res = ValidationHelper.getShortInRange(res);
 					break;
 
+				case ItemFormat.I4:
+					res = ValidationHelper.getIntInRange(res);
+					break;
+
 				case ItemFormat.U1:
 					res = ValidationHelper.getUByteInRange(res);
 					break;
 
 				case ItemFormat.U2:
 					res = ValidationHelper.getUShortInRange(res);
+					break;
+
+				case ItemFormat.U4:
+					res = ValidationHelper.getUIntInRange(res);
 					break;
 
 				case ItemFormat.A: {
