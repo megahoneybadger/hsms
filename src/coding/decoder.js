@@ -1,5 +1,7 @@
 var SelectRsp = require('../messages/control/select-rsp');
 var SelectReq = require('../messages/control/select-req');
+var DeselectRsp = require('../messages/control/deselect-rsp');
+var DeselectReq = require('../messages/control/deselect-req');
 var LinkTestReq = require('../messages/control/link-test-req');
 var LinkTestRsp = require('../messages/control/link-test-rsp');
 var SeparateReq = require('../messages/control/separate-req');
@@ -42,6 +44,14 @@ module.exports = (function () {
 
         case Message.Type.SelectRsp:
           m = new SelectRsp(device, context, hb3);
+					break;
+					
+				case Message.Type.DeselectReq:
+          m = new DeselectReq( device, context );
+          break;
+
+        case Message.Type.DeselectRsp:
+          m = new DeselectRsp(device, context, hb3);
           break;
 
         case Message.Type.LinkTestReq:

@@ -3,7 +3,7 @@ module.exports = Object.freeze({
 	MAX_USHORT: 0xffff,
 	
   MAX_UINT: 0xffffffff, // 4294967295
-  MAX_ULONG: 0xffffffffffffffff,
+  MAX_ULONG: Number.MAX_SAFE_INTEGER,//0xffffffffffffffff,
 
   MIN_BYTE: -128,
   MAX_BYTE: 127,
@@ -14,8 +14,9 @@ module.exports = Object.freeze({
   MIN_INT: -2147483648,
   MAX_INT: 2147483647,
   
-  MIN_LONG: -9223372036854775808,
-  MAX_LONG: 9223372036854775807,
+  MIN_LONG: Number.MIN_SAFE_INTEGER,// -9007199254740991  //-9223372036854775808,
+	MAX_LONG: Number.MAX_SAFE_INTEGER,// 9007199254740991 //9223372036854775807
+						
 
 	CANNOT_CONSTRUCT_DIRECTLY: 'Cannot construct instance directly',
 	NOT_SUPPORTED_OBJECT_TYPE: 'Not supported object type',

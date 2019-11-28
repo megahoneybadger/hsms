@@ -35,6 +35,14 @@ class ValidationHelper {
 		return ValidationHelper.getNumberInRange(v, 0, constants.MAX_UINT, name);
 	}
 
+	static getLongInRange(v, name) {
+		return ValidationHelper.getNumberInRange(v, constants.MIN_LONG, constants.MAX_LONG, name);
+	}
+
+	static getULongInRange(v, name) {
+		return ValidationHelper.getNumberInRange(v, 0, constants.MAX_ULONG, name);
+	}
+
 	static getNumberInRange(v, low, up, name) {
 		let nv = parseInt(v);
 		if (!isNaN(nv) && nv >= low && nv <= up) {
@@ -115,6 +123,10 @@ class ValidationHelper {
 					res = ValidationHelper.getIntInRange(res);
 					break;
 
+				case ItemFormat.I8:
+					res = ValidationHelper.getLongInRange(res);
+					break;
+
 				case ItemFormat.U1:
 					res = ValidationHelper.getUByteInRange(res);
 					break;
@@ -126,6 +138,11 @@ class ValidationHelper {
 				case ItemFormat.U4:
 					res = ValidationHelper.getUIntInRange(res);
 					break;
+
+				case ItemFormat.U8:
+					res = ValidationHelper.getULongInRange(res);
+					break;
+	
 
 				case ItemFormat.A: {
 					if (ValidationHelper.isUndefined(size) || !Number.isInteger(size)) {
@@ -157,43 +174,6 @@ class ValidationHelper {
 			}
 
 			res = undefined;
-		}
-
-
-		switch (format) {
-			case ItemFormat.I1:
-
-				break;
-
-
-			case ItemFormat.I2:
-			case ItemFormat.I4:
-			case ItemFormat.I8:
-			case ItemFormat.U1:
-			case ItemFormat.U2:
-			case ItemFormat.U4:
-			case ItemFormat.U8:
-				break;
-
-			// case ItemFormat.F4:
-			// case ItemFormat.F8:
-			// 	let pfv = parseFloat(value);
-			// 	if (!isNaN(pfv) && isFinite(value)) {
-			// 		res = pfv;
-			// 	}
-			// 	break;
-
-			// case ItemFormat.Bool:
-			// 	if (typeof (value) == typeof (true)) {
-			// 		res = value;
-			// 	}
-			// 	break;
-
-			// case ItemFormat.A:
-
-
-			// 	break;
-
 		}
 
 		if (ValidationHelper.isUndefined(res)) {

@@ -63,6 +63,17 @@ module.exports = (function () {
 		}
 
 			/**
+		 * Returns a string that represents the current message.
+		 */
+		toString() {
+			const key = Object.keys(ItemFormat).find(k => ItemFormat[k] === this.format);
+
+			const len = ItemFormat.isSizeable(this.format) ? this.size : '';
+
+			return `${key}${len} ${this.value}`;
+		}
+
+			/**
 		 * Determines whether the specified item is equal to the current object.
 		 * @param {*} dm 
 		 * The item to compare with the current object.
@@ -168,6 +179,22 @@ module.exports = (function () {
 		 */
 		static u4(name = "", ...values) {
       return DataItem.numeric(ItemFormat.U4, name, ...values);
+		}
+			/**
+		 * Creates I8 data item.
+		 * @param {String} name Item name.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.
+		 */
+		static i8(name = "", ...values) {
+      return DataItem.numeric(ItemFormat.I8, name, ...values);
+		}
+		/**
+		 * Creates U8 data item.
+		 * @param {String} name Item name.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.
+		 */
+		static u8(name = "", ...values) {
+      return DataItem.numeric(ItemFormat.U8, name, ...values);
 		}
 
 		/**

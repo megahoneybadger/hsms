@@ -287,6 +287,8 @@ module.exports = (function () {
 				clearTimeout(props(this).t8);
 			}
 
+			console.log( data );
+
 			// console.log( `[${this.mode}]` );
 			// console.log( data );
 
@@ -306,21 +308,15 @@ module.exports = (function () {
 				toReadNow = Math.min(data.length - 4, recv.messageLength);
 				headerLen = 4;
 
-				//recv.buffer = ByteBuffer.wrap(data.slice(headerLen, headerLen + toReadNow));
-				//recv.buffer = ByteBuffer.wrap(data.slice(headerLen, headerLen + toReadNow));
 				recv.buffer = data.slice(headerLen, headerLen + toReadNow);
 				recv.count = 0;
 			} else {
 
-				//console.log( `${data.length}  ${recv.messageLength - recv.count}` )
 				// data may contain more or less data than needed to construct current message
 				toReadNow = Math.min(data.length, recv.messageLength - recv.count);
 
 				// append tail to existing buffer if message is too big for a single event
-				//recv.buffer = recv.buffer.append(data.slice(0, toReadNow), recv.count);
-
 				recv.buffer = Buffer.concat( [ recv.buffer, data.slice(0, toReadNow) ]);
-				//var res2 =  ByteBuffer.wrap(recv.buffer2);
 			}
 
 			// keep tracking how much data already has been recv
@@ -384,11 +380,11 @@ module.exports = (function () {
 					break;
 
 				case Message.Type.DeselectReq:
-					handleDeselectReq.call(this, m);
+					//handleDeselectReq.call(this, m);
 					break;
 
 				case Message.Type.DeselectRsp:
-					handleDeselectRsp.call(this, m);
+					//handleDeselectRsp.call(this, m);
 					break;
 
 				case Message.Type.LinkTestReq:

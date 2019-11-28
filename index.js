@@ -5,6 +5,7 @@ const {
 	Message,
 	DataItem,
 	DataMessage,
+	DeselectReq,
 	ItemFormat,
 	Timers,
 	Config,
@@ -12,7 +13,6 @@ const {
 	Connection } = require('./src/hsms')
 
 try {
-
 
 
 	let m = DataMessage
@@ -23,23 +23,9 @@ try {
 		.replyExpected(false)
 		.func(1)
 		.items(
-			DataItem.u1( "", 16 ),
-			DataItem.i1( "", -17 ),
-			DataItem.u1( "", 161, 211 ),
-			DataItem.i1( "", -123, "-45", [ -113, 11 ] ),
-			DataItem.u1( "", 200, "210" ),
-
-			DataItem.u2( "", 28700, "21110" ),
-			DataItem.u2( "", 6500 ),
-
-			DataItem.i2( "", -2700, "8541" ),
-			DataItem.i2( "", -5124 ),
-
-			DataItem.i4( "", -2147483600, "1147483647" ),
-			DataItem.i4( "", -6712645 ),
-
-			DataItem.u4( "", 4294967295, "5321231" ),
-			DataItem.u4( "", 4294967267 ),
+			//DataItem.u8( "", 16981289037889134 ),
+			DataItem.i8( "", 8007199254740991, 32178918723, -7891273712836 ),
+		
 		
 		)
 		.build();
@@ -71,7 +57,9 @@ try {
 		})
 		.on("error", (err) => console.log(`encountered error: ${err}`))
 		.on("established", (r) => {
-			conn.send(m);
+			//conn.send(m);
+
+			conn.send( new DeselectReq( ) );
 		})
 		.on("recv", (m) => {
 			console.log(`recv [${m.toString()}]`);

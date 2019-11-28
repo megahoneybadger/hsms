@@ -64,6 +64,9 @@ describe('Data Message Equality', () => {
 
 				DataItem.i4( "temp5", -2112320, 2147483640 ),
 				DataItem.i4( "temp6", [200, 2147483630, 0 ] ),
+
+				DataItem.i8( "temp5", -21321123412320, 543147483640 ),
+				DataItem.i8( "temp9", [5431474321483640] ),
 				
 				DataItem.u4( "temp3", 6210012, 4294967290 ),
 				DataItem.u4( "temp4", [2121234200, 3294967295, 10 ] )
@@ -92,6 +95,9 @@ describe('Data Message Equality', () => {
 
 				DataItem.i4( "temp5", -2112320, 2147483640 ),
 				DataItem.i4( "temp6", [200, 2147483630, 0 ] ),
+
+				DataItem.i8( "", -21321123412320, 543147483640 ),
+				DataItem.i8( "", [5431474321483640] ),
 				
 				DataItem.u4( "temp3", 6210012, 4294967290 ),
 				DataItem.u4( "temp4", [2121234200, 3294967295, 10 ] )
