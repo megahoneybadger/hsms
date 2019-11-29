@@ -5,6 +5,7 @@ var DeselectReq = require('../messages/control/deselect-req');
 var LinkTestReq = require('../messages/control/link-test-req');
 var LinkTestRsp = require('../messages/control/link-test-rsp');
 var SeparateReq = require('../messages/control/separate-req');
+var RejectReq = require('../messages/control/reject-req');
 const Message = require('../messages/message');
 const DataMessage = require('./../messages/data/data-message');
 const DataItem = require('./../messages/data/data-item');
@@ -67,7 +68,7 @@ module.exports = (function () {
           break;
 
         case Message.Type.RejectReq:
-          m = new RejectReq();
+          m = new RejectReq( device, context, hb3 );
           break;
       }
 

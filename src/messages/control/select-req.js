@@ -24,7 +24,7 @@ class SelectReq extends ControlMessage{
   constructor( dev, cont ){
     super( dev, cont );
 
-    if( arguments.length != 2 ){
+    if( arguments.length > 2 ){
       throw new TooManyParamsError();
     }
   }

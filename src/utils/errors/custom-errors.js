@@ -4,6 +4,8 @@ const InvalidEnumValueError = require('./enum-error')
 const InvalidFormatError = require('./invalid-format')
 const InvalidItemSizeError = require('./size-error')
 const InvalidConstructorArguments = require('./invalid-constr-args')
+const ExpectedSelectReqError  = require('./expected-select-req')
+const BadSelectRspCodeError = require( './bad-select-rsp-code' )
 
 module.exports = {
 	
@@ -13,4 +15,6 @@ module.exports = {
 	InvalidFormatError,
 	InvalidItemSizeError,
 	InvalidConstructorArguments,
+	ExpectedSelectReqError,
+	BadSelectRspCodeError
 };

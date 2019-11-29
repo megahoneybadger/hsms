@@ -17,7 +17,10 @@ const Decoder = require('../coding/decoder')
 
 const moment = require("moment");
 const ByteBuffer = require('bytebuffer')
-const {	InvalidConstructorArguments } = require( './../utils/errors/custom-errors' )
+const {	
+	InvalidConstructorArguments,
+	ExpectedSelectReqError,
+	BadSelectRspCodeError } = require( './../utils/errors/custom-errors' )
 
 module.exports = (function () {
 
@@ -191,8 +194,15 @@ module.exports = (function () {
 		// In case of errors clean all resources and try to reconnect.
 		props(this).client.on('error', e => close.call(this, e));
 
+		// props(this).client.on('close', (e) => {
+		// 	console.log( "client detected closed connection" )
+		// 	close.call(this)
+		// });
+
 		// When recv data from a remote entity 
 		props(this).client.on('data', d => onRecv.call(this, d));
+
+		
 
 		// Start connection attempt
 		props(this).client.connect(this.port, this.ip, () => {
@@ -204,6 +214,12 @@ module.exports = (function () {
 				// Connection established and we do not need the timeout anymore
 				clearTimeout(props(this).t5);
 			}
+
+			//console.log( "established physical connection" );
+			setImmediate( () => this.emit( "connected", {
+        ip: this.port,
+        port: this.ip
+			} ) ); 
 
 			// Time which a TCP/IP connection can remain in NOT SELECTED state
 			// (i.e., no HSMS activity) before it is considered a communications failure.
@@ -225,12 +241,14 @@ module.exports = (function () {
 			return;
 
 		let server = new net.Server();
+
 		props(this).server = server;
 
 		server.on('error', (e) => {
 			console.log(`server socket error: ${e}`);
 			close.call(this)
 		});
+
 
 		server.on('listening', (e) => console.log("listening"));
 
@@ -255,7 +273,9 @@ module.exports = (function () {
 
     props(this).client.on( 'error', (e) => close.call(this));
 
-    props(this).client.on('data', (d) => onRecv.call(this, d));
+		props(this).client.on('data', (d) => onRecv.call(this, d));
+		
+		//props(this).client.on('close', (e) => close.call(this));
 
     props(this).state = ConnectionState.connectedNotSelected;
 
@@ -286,11 +306,6 @@ module.exports = (function () {
 			if (props(this).t8) {
 				clearTimeout(props(this).t8);
 			}
-
-			console.log( data );
-
-			// console.log( `[${this.mode}]` );
-			// console.log( data );
 
 			let recv = props(this).recv;
 
@@ -347,9 +362,9 @@ module.exports = (function () {
 		}
 		catch (err) {
 		
-			console.log( err  );
-			//console.log( this.ConnectionMode );
-			setImmediate(() => this.emit.call( this, "error", err));
+			console.log( `${err}` );
+			
+			setImmediate(() => this.emit( "error", err));
 
 			// if anything happens reset recv buffer and disconnect 
 			close.call(this);
@@ -411,6 +426,7 @@ module.exports = (function () {
 		finally {
 			closeTrx.call(this, m);
 		}
+		
 	}
 
 	/**
@@ -421,14 +437,14 @@ module.exports = (function () {
  */
 	function checkSelect(m) {
 		if( ConnectionState.connectedNotSelected !== props(this).state ) 
-		  return;
+			return;
 
 		let bShouldCloseConnection =
-		  ( this.Mode == ConnectionMode.Active && m.kind != Message.Type.SelectRsp) ||
-		  ( this.Mode == ConnectionMode.Passive && m.kind != Message.Type.SelectReq );
+		  ( this.mode == ConnectionMode.Active && m.kind != Message.Type.SelectRsp) ||
+		  ( this.mode == ConnectionMode.Passive && m.kind != Message.Type.SelectReq );
 
 		if (bShouldCloseConnection) {
-		  throw new TypeError("expected selected message")
+		  throw new ExpectedSelectReqError()
 		}
 	}
 
@@ -441,7 +457,7 @@ module.exports = (function () {
     if( ConnectionState.connectedSelected === props(this).state ){
       // if connection already entered SELECTED state respond with err code
       this.send( new SelectRsp( m.device, m.context, 1/*already selected*/ ) )
-    } else{
+    } else {
       // connection enters SELECTED state
       props(this).state = ConnectionState.connectedSelected;
 
@@ -476,10 +492,10 @@ module.exports = (function () {
 		let hasOpenTrx = props(this).trx.has(m.context);
 
 		if (!hasOpenTrx) {
-			this.send(new RejectReq(m, 3 /*TransactionNotOpen*/));
+			this.send(new RejectReq(m.device, m.context, 3 /*TransactionNotOpen*/));
 		}
 		else if (0 != m.status) {
-			throw new TypeError("bad select.rsp status code");
+			//throw new BadSelectRspCodeError();
 		} else {
 			props(this).state = ConnectionState.connectedSelected;
 
@@ -571,9 +587,6 @@ module.exports = (function () {
 	function onT36Expired() {
     if( !props(this).run )
 			return;
-			
-		
-		//console.log( `onT36Expired [${this.mode}] -> ${props(this).trx.size}` );
 
     try{
       let list = [];
@@ -666,27 +679,45 @@ module.exports = (function () {
 		// 	return;
 		// }
 
+		//console.log( `close [${this.mode}]` );
+
 		if( props(this).state == ConnectionState.connectedSelected ){
 			setImmediate( () => this.emit( "dropped" ));
 		}
 
-    if( props(this).client ){
-      props(this).client.destroy();
-      props(this).client = undefined;
-    }
-
-    if( props(this).server ){
-      props(this).server.close();
-      props(this).server = undefined;
+		if( props(this).client ){
+			props(this).client.destroy();
+			props(this).client = undefined;
 		}
-	  
-    props(this).state = ConnectionState.notConnected;
-    props(this).trx.clear();
-    resetRecv.call(this);
-  
-    // var t5FireTime = _bRun ?  _timeouts.T5 * 1000 : Timeout.Infinite;
-    //  _timerT5ConnectSeparationTimeout.Change( t5FireTime, Timeout.Infinite );
-    if (props(this).run) {
+
+		if( props(this).server ){
+			props(this).server.close();
+			props(this).server = undefined;
+		}
+		
+		props(this).state = ConnectionState.notConnected;
+		props(this).trx.clear();
+		resetRecv.call(this);
+		
+		if (props(this).t36) {
+			clearTimeout(props(this).t36);
+		}
+
+		if (props(this).t7) {
+			clearTimeout(props(this).t7);
+		}
+
+		if (props(this).t8) {
+			clearTimeout(props(this).t8);
+		}
+
+		if (props(this).linkTest) {
+			clearTimeout(props(this).linkTest);
+		}
+	
+		// var t5FireTime = _bRun ?  _timeouts.T5 * 1000 : Timeout.Infinite;
+		//  _timerT5ConnectSeparationTimeout.Change( t5FireTime, Timeout.Infinite );
+		if (props(this).run) {
 			if( this.mode == ConnectionMode.Passive ){
 				// ?! I think we should start listening immediately
 				setImmediate( () => listen.call( this ) );
@@ -694,23 +725,7 @@ module.exports = (function () {
 				props(this).t5 = setTimeout(() =>
 					connect.call( this ), 1000 * this.timers.t5 );
 			}
-    }
-
-    if (props(this).t36) {
-      clearTimeout(props(this).t36);
-    }
-
-    if (props(this).t7) {
-      clearTimeout(props(this).t7);
-    }
-
-    if (props(this).t8) {
-      clearTimeout(props(this).t8);
-    }
-
-    if (props(this).linkTest) {
-      clearTimeout(props(this).linkTest);
-    }
+		}
 	}
 	
 	/**

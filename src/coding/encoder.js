@@ -13,6 +13,7 @@ const DeselectRsp = require("../messages/control/deselect-rsp")
 const LinkTestReq = require("../messages/control/link-test-req")
 const LinkTestRsp = require("../messages/control/link-test-rsp")
 const SeparateReq = require("../messages/control/separate-req")
+const RejectReq = require("../messages/control/reject-req")
 
 module.exports = (function () {
 
@@ -60,6 +61,9 @@ module.exports = (function () {
 
 			case Message.Type.DataMessage:
 				return encodeDataMessage(m, b);
+
+			case Message.Type.RejectReq:
+				return encodeRejectReq(m, b);
 
 		}
 	}
@@ -281,6 +285,39 @@ module.exports = (function () {
 
 		// byte #3
 		b.writeUInt8(0)
+
+		// PType
+		b.writeUInt8(0)
+
+		// SType
+		b.writeUInt8(m.kind)
+
+		b.BE();
+		b.writeUint32(m.context);
+		b.LE();
+
+		return b.buffer.slice(0, b.offset);
+	}
+
+	function encodeRejectReq(m) {
+		if (!(m instanceof RejectReq)) {
+			throw new TypeError(constants.NOT_SUPPORTED_OBJECT_TYPE);
+		}
+
+		let b = new ByteBuffer();
+
+		b.BE();
+
+		b.writeUint32(10);
+		b.writeUint16(m.device);
+
+		b.LE();
+
+		// byte #2
+		b.writeUInt8(0)
+
+		// byte #3
+		b.writeUInt8(m.reason)
 
 		// PType
 		b.writeUInt8(0)

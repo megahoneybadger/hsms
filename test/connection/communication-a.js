@@ -8,6 +8,11 @@ const {
 	ConnectionMode,
 	ConnectionState,
 	Connection,
+	SelectReq,
+	SelectRsp,
+	RejectReq,
+	DataMessage,
+	DataItem,
   Timers,
   Constants } = require( '../../src/hsms' )
 
@@ -15,7 +20,8 @@ const {
 	NoBuilderError,
 	TooManyParamsError,
   InvalidEnumValueError,
-  InvalidFormatError } = require( '../../src/utils/errors/custom-errors' )
+	InvalidFormatError,
+	ExpectedSelectReqError } = require( '../../src/utils/errors/custom-errors' )
 
   
 function createConnection( active ){
@@ -171,12 +177,81 @@ describe('Communication active', () => {
     });
 
     conn.start();
+	});
+	
+	it('should reply with select rsp error code if recv extra select req', function(done) {
+    this.timeout(10000);
+    let selectRspCount = 0;
+    let sendCount = 5;
+
+    conn.on( "established", (e) => {
+      conn.send( new SelectReq() )
+		})
+		
+		conn.on( "recv", (m) => {
+			
+			if( m instanceof SelectRsp ){
+				++selectRspCount
+			}
+
+			if( 5 == selectRspCount && 1 == m.status ){
+				done();
+			} else {
+				conn.send( new SelectReq() )
+			}
+    });
+
+    conn.start();
   });
 
+	it('should refuse all messages before becoming selected', function(done) {
+    this.timeout(10000);
+		
+		conn.debug = {
+			doNotSendSelectReq: true
+		};
+
+		conn.start();
+
+		conn.on( "connected", p => conn.send( DataMessage
+			.builder
+			.device(1)
+			.stream(1)
+			.context(98126)
+			.replyExpected(false)
+			.func(1)
+			.items(
+				DataItem.i8( "", 8007199254740991, 32178918723, -7891273712836 ))
+			.build() ) )
+		
+		server.on( "error", e => {
+			if( e instanceof ExpectedSelectReqError ){
+				delete conn.debug;
+			}
+		});
+
+		conn.on( "established", p => done() ) ;
+
+	});
+
+	it('should refuse garbage select rsp', function(done) {
+    //this.timeout(10000);
+
+		conn.start();
+		let rsp = new SelectRsp( 1, Message.generateContext(), 12 )
+
+		conn.on( "established", p => conn.send( rsp ) )
+		
+		conn.on( "recv", e => {
+
+			if( e instanceof RejectReq && e.context == rsp.context ){
+				done()
+			}
+		});
+	});
+	
+	
+
  
-
-  
-
-
 
 });

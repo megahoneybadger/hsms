@@ -30,7 +30,7 @@ class Message extends EventEmitter {
     });
 
     if( this.isPrimary && !context ){
-      context = Math.floor((Math.random() * 10000 ) + 1);
+      context = Message.generateContext();
     }
 
     // Context (or system bytes) is a four-byte field occupying
@@ -68,7 +68,13 @@ class Message extends EventEmitter {
   */
   static get Type() {
     return MessageType;
-  }
+	}
+	/**
+	 * Generates a random context value.
+	 */
+	static generateContext(){
+		return Math.floor((Math.random() * 10000 ) + 1)
+	}
 }
 
 const MessageType = Object.freeze({
