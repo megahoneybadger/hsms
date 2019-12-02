@@ -10,7 +10,11 @@ const {
 	Connection,
 	SelectReq,
 	SelectRsp,
+	DeselectReq,
+	DeselectRsp,
 	RejectReq,
+	SeparateReq,
+	LinkTestRsp,
 	DataMessage,
 	DataItem,
   Timers,
@@ -21,7 +25,8 @@ const {
 	TooManyParamsError,
   InvalidEnumValueError,
 	InvalidFormatError,
-	ExpectedSelectReqError } = require( '../../src/utils/errors/custom-errors' )
+	ExpectedSelectReqError,
+	BadSelectRspCodeError } = require( '../../src/utils/errors/custom-errors' )
 
   
 function createConnection( active ){
@@ -71,7 +76,9 @@ describe('Communication active', () => {
   })
 
   afterEach(function( done ) {
-    this.timeout(3000);
+		this.timeout(3000);
+		
+		delete server.debug;
 
     setTimeout(function(){
       conn.stop();
@@ -181,26 +188,20 @@ describe('Communication active', () => {
 	
 	it('should reply with select rsp error code if recv extra select req', function(done) {
     this.timeout(10000);
-    let selectRspCount = 0;
-    let sendCount = 5;
+    let count = 0;
 
     conn.on( "established", (e) => {
-      conn.send( new SelectReq() )
+			conn.send( new SelectReq() )
+			++count;
 		})
-		
-		conn.on( "recv", (m) => {
-			
-			if( m instanceof SelectRsp ){
-				++selectRspCount
-			}
 
-			if( 5 == selectRspCount && 1 == m.status ){
+		conn.on( "error", m => {
+			if( m instanceof BadSelectRspCodeError && 3 == count ){
+				conn.stop();
 				done();
-			} else {
-				conn.send( new SelectReq() )
 			}
-    });
-
+		} )
+	
     conn.start();
   });
 
@@ -243,13 +244,129 @@ describe('Communication active', () => {
 		conn.on( "established", p => conn.send( rsp ) )
 		
 		conn.on( "recv", e => {
-
 			if( e instanceof RejectReq && e.context == rsp.context ){
 				done()
 			}
 		});
 	});
 	
+	it('should refuse garbage replies', function(done) {
+    this.timeout(10000);
+
+		conn.start();
+
+		const m = DataMessage
+			.builder
+			.device(1)
+			.stream(1)
+			.context(98126)
+			.replyExpected(false)
+			.func(2) /*!!!*/
+			.items(
+				DataItem.i8( "", 8007199254740991, 32178918723, -7891273712836 ))
+			.build();
+
+		conn.on( "established", p => {
+			console.log( 'established' )
+			conn.send( m )
+		} )
+		
+		conn.on( "recv", e => {
+			if( e instanceof RejectReq && e.context == m.context ){
+				done()
+			}
+		});
+	});
+
+	it('should refuse garbage link test replies', function(done) {
+    this.timeout(10000);
+	
+		conn.start();
+
+		const lt = new LinkTestRsp( Message.generateContext() );
+
+		conn.on( "established", p => conn.send( lt ))
+		
+		conn.on( "recv", e => {
+			if( e instanceof RejectReq && e.context == lt.context ){
+				done()
+			}
+		});
+
+		
+
+	});
+
+	it('should separate', function(done) {
+    this.timeout(10000);
+	
+		conn.start();
+		let count = 0;
+
+		conn.on( "established", p => {
+			console.log( "established" )
+			conn.send( new SeparateReq() );
+			++count;
+		})
+		
+		conn.on( "dropped", (e) => {
+			console.log( "dropped" )
+			if( 5 == count ){
+				done();
+			}
+    })
+
+		
+
+	});
+
+	it('should not reply to a deselect req (T6)', function(done) {
+    this.timeout(3000);
+		
+		server.debug = {
+			doNotSendDeselectRsp: true
+		};
+
+		conn.start();
+
+		conn.on( "established", p => conn.send( new DeselectReq() ) )
+		
+		conn.on("timeout", (t) => {
+			console.log( "timeout" );
+			if (6 === t) {
+				done();
+			}
+		})
+	});
+
+	
+	it('should reply to a deselect req', function(done) {
+		this.timeout(5000);
+		let dropped = false;
+		let deselectRsp = false;
+
+		conn.start();
+
+		conn.on( "established", p => {
+			if( deselectRsp ){
+				done();
+			} else{
+				console.log( "sending deselect" )
+				conn.send( new DeselectReq() )
+			}
+		} )
+		
+		conn.on( "dropped", (e) => dropped = true )
+
+		conn.on( "recv", m => {
+			if( m instanceof DeselectRsp ){
+				deselectRsp = true;
+			}
+		} )
+
+		
+	});
+
 	
 
  

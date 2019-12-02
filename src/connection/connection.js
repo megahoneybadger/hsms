@@ -8,6 +8,7 @@ const net = require('net');
 const Message = require('../messages/message');
 const SelectReq = require('../messages/control/select-req');
 const SelectRsp = require('../messages/control/select-rsp');
+const DeselectRsp = require('../messages/control/deselect-rsp');
 const LinkTestReq = require('../messages/control/link-test-req');
 const LinkTestRsp = require('../messages/control/link-test-rsp');
 const RejectReq = require('../messages/control/reject-req');
@@ -186,6 +187,8 @@ module.exports = (function () {
 		if (!props(this).run)
 			return;
 
+		props(this).closed = false;
+
 		console.log( "connecting" );
 
 		// Create a new client socket.
@@ -194,10 +197,10 @@ module.exports = (function () {
 		// In case of errors clean all resources and try to reconnect.
 		props(this).client.on('error', e => close.call(this, e));
 
-		// props(this).client.on('close', (e) => {
-		// 	console.log( "client detected closed connection" )
-		// 	close.call(this)
-		// });
+		props(this).client.on('close', (e) => {
+			//console.log( "client detected closed connection" )
+			close.call(this)
+		});
 
 		// When recv data from a remote entity 
 		props(this).client.on('data', d => onRecv.call(this, d));
@@ -240,15 +243,11 @@ module.exports = (function () {
 		if (!props(this).run)
 			return;
 
+		props(this).closed = false;
+
 		let server = new net.Server();
 
 		props(this).server = server;
-
-		server.on('error', (e) => {
-			console.log(`server socket error: ${e}`);
-			close.call(this)
-		});
-
 
 		server.on('listening', (e) => console.log("listening"));
 
@@ -275,7 +274,10 @@ module.exports = (function () {
 
 		props(this).client.on('data', (d) => onRecv.call(this, d));
 		
-		//props(this).client.on('close', (e) => close.call(this));
+		props(this).client.on('close', (e) =>{
+			//console.log( "server detected closed connection" )
+			close.call(this)
+		} );
 
     props(this).state = ConnectionState.connectedNotSelected;
 
@@ -395,7 +397,8 @@ module.exports = (function () {
 					break;
 
 				case Message.Type.DeselectReq:
-					//handleDeselectReq.call(this, m);
+					handleDeselectReq.call( this, m );
+					
 					break;
 
 				case Message.Type.DeselectRsp:
@@ -415,7 +418,9 @@ module.exports = (function () {
 					break;
 
 				case Message.Type.SeparateReq:
-					close.call( this );
+					// This causes socket's close event,
+					// which in turns cleans all resources
+					props(this).client.destroy();
 					break;
 
 				case Message.Type.RejectReq:
@@ -495,7 +500,7 @@ module.exports = (function () {
 			this.send(new RejectReq(m.device, m.context, 3 /*TransactionNotOpen*/));
 		}
 		else if (0 != m.status) {
-			//throw new BadSelectRspCodeError();
+			throw new BadSelectRspCodeError();
 		} else {
 			props(this).state = ConnectionState.connectedSelected;
 
@@ -520,6 +525,17 @@ module.exports = (function () {
 		// }
 	}
 	/**
+	 * Handles deselect request.
+	 * @param {*} m 
+	 * Incoming deselect message.
+	 */
+	function handleDeselectReq( m ){
+		if( canSendDeselectRsp.call( this ) ){
+			this.send( new DeselectRsp( m.device, m.context, 0 ) );
+			props(this).client.destroy();
+		}
+	}
+	/**
 	 * Handles link test request.
 	 * @param {*} m 
 	 *  Incoming link test request message.
@@ -536,9 +552,10 @@ module.exports = (function () {
 	 *  Incoming link test response message.
 	 */
 	function handleLinkTestRsp( m ) {
-		setImmediate( () => this.emit( "alive", m ));
-
-		// Buffer 00 00 00 0a ff ff 00 00 00 05 00 00 0e b0 00 00 00 0a ff ff 00 00 00 06 00 00 12 dc
+		if( validateReply.call( this, m )){
+			setImmediate( () => this.emit( "alive", m ));
+		}
+	
 	}
 	
 	/**
@@ -578,8 +595,23 @@ module.exports = (function () {
 	 * Incoming reply data message.
 	 */
 	function handleReplyMessage( m ){
-    //console.log( `handle reply [${m.toString()}]` );
-  }
+		validateReply.call( this, m );
+	} 
+	/**
+	 * Validates incoming reply message: determines if there is an open trx for the message.
+	 * If reply is unexpected send reject.
+	 * @param {} m 
+	 * Incoming message to validate.
+	 */
+	function validateReply( m ){
+		let hasOpenTrx = props(this).trx.has(m.context);
+
+		if (!hasOpenTrx) {
+			this.send(new RejectReq(m.device, m.context, 3 /*TransactionNotOpen*/));
+		}
+
+		return hasOpenTrx;
+	}
 
 	/**
 	 *  Fires when t3 or t6 timeout expires.
@@ -673,13 +705,14 @@ module.exports = (function () {
    * or start listening for new clients (in passive mode). 
    */
   function close( reason ) {
-		// if( !props(this).client && !props(this).server ){
-		// 	// it seems that sockets already have benn closed
-		// 	// do not send dropped event twice
-		// 	return;
-		// }
+		// try to avoid 'close method -> close event -> close method' problem
+		// do not start re-establish connection if socket is undefined 
+		// (that means we already took care of him)
+		if( props(this).closed ){
+			return;
+		}
 
-		//console.log( `close [${this.mode}]` );
+		//console.log( `close method [${this.mode}]` )
 
 		if( props(this).state == ConnectionState.connectedSelected ){
 			setImmediate( () => this.emit( "dropped" ));
@@ -714,6 +747,8 @@ module.exports = (function () {
 		if (props(this).linkTest) {
 			clearTimeout(props(this).linkTest);
 		}
+
+		props(this).closed = true;
 	
 		// var t5FireTime = _bRun ?  _timeouts.T5 * 1000 : Timeout.Infinite;
 		//  _timerT5ConnectSeparationTimeout.Change( t5FireTime, Timeout.Infinite );
@@ -759,6 +794,10 @@ module.exports = (function () {
 
 	function canSendSelectReq(){
 		return !( this.debug && this.debug.doNotSendSelectReq )
+	}
+
+	function canSendDeselectRsp(){
+		return !( this.debug && this.debug.doNotSendDeselectRsp )
 	}
 
 	function canSendLinkTestRsp(){

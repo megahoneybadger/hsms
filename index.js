@@ -9,7 +9,9 @@ const {
 	SelectReq,
 	RejectReq,
 	SelectRsp,
+	LinkTestRsp,
 	ItemFormat,
+	SeparateReq,
 	Timers,
 	Config,
 	ConnectionMode,
@@ -27,7 +29,7 @@ try {
 		.stream(1)
 		.context(98126)
 		.replyExpected(true)
-		.func(1)
+		.func(2)
 		.items(
 			//DataItem.u8( "", 16981289037889134 ),
 			DataItem.i8( "", 8007199254740991, 32178918723, -7891273712836 ),
@@ -67,9 +69,9 @@ try {
 		.on("error", (err) => console.log(`encountered error: ${err}`))
 		.on("established", (r) => {
 			//conn.send(m);
-			console.log( "connection established" )
+			//console.log( "connection established" )
 
-			conn.send(new SelectReq());
+			conn.send(new DeselectReq());
 		})
 		.on("recv", (m) => {
 			console.log(`recv [${m.toString()}]`);
