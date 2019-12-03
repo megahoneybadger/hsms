@@ -402,7 +402,7 @@ module.exports = (function () {
 					break;
 
 				case Message.Type.DeselectRsp:
-					//handleDeselectRsp.call(this, m);
+					handleDeselectRsp.call( this, m );
 					break;
 
 				case Message.Type.LinkTestReq:
@@ -533,6 +533,16 @@ module.exports = (function () {
 		if( canSendDeselectRsp.call( this ) ){
 			this.send( new DeselectRsp( m.device, m.context, 0 ) );
 			props(this).client.destroy();
+		}
+	}
+		/**
+	 * Handles deselect reply.
+	 * @param {*} m 
+	 * Incoming deselect reply message.
+	 */
+	function handleDeselectRsp( m ){
+		if( validateReply.call( this, m )){
+			// what shoul I do ??
 		}
 	}
 	/**

@@ -70,7 +70,7 @@ module.exports = (function () {
 		},
 		
 		default( n, size = 0 ){
-			if( this.isInteger( n )){
+			if( this.isInteger( n ) || this.isFloat( n )){
 				return 0;
 			}
 

@@ -6,6 +6,7 @@ const {
 	DataItem,
 	DataMessage,
 	DeselectReq,
+	DeselectRsp,
 	SelectReq,
 	RejectReq,
 	SelectRsp,
@@ -23,19 +24,22 @@ const {
 
 try {
 
+	const item = DataItem
+		.builder
+		.format( ItemFormat.F4 )
+		.value(  '0x23' )
+		
+		.build();
+
 	let m = DataMessage
 		.builder
-		.device(1)
-		.stream(1)
-		.context(98126)
-		.replyExpected(true)
-		.func(2)
+		.device( 1 )
+		.stream( 12 )
+		.replyExpected( true )
+		.func( 15 )
+		.context( 98654126 )
 		.items(
-			//DataItem.u8( "", 16981289037889134 ),
-			DataItem.i8( "", 8007199254740991, 32178918723, -7891273712836 ),
-		
-		
-		)
+			DataItem.f4( "temp", 87.0987, 12.345, 54.56781 )) 
 		.build();
 
 	// const encodedArray = Encoder.encode(m);
@@ -43,8 +47,8 @@ try {
 
 	const config = Config
 		.builder
-		//.ip("192.168.154.1")
-		.ip("127.0.0.1")
+		.ip("192.168.154.1")
+		//.ip("127.0.0.1")
 		.port(7000)
 		.device(1)
 		.mode(ConnectionMode.Active)
@@ -68,10 +72,10 @@ try {
 		// } )
 		.on("error", (err) => console.log(`encountered error: ${err}`))
 		.on("established", (r) => {
-			//conn.send(m);
+			conn.send(m);
 			//console.log( "connection established" )
 
-			conn.send(new DeselectReq());
+			//conn.send(new DeselectRsp());
 		})
 		.on("recv", (m) => {
 			console.log(`recv [${m.toString()}]`);
@@ -96,7 +100,7 @@ try {
 			console.log(`server connection has been dropped`);
 		})
 
-	server.start();
+	//server.start();
 	conn.start();
 
 

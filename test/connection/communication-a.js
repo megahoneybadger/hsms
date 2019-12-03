@@ -367,6 +367,25 @@ describe('Communication active', () => {
 		
 	});
 
+	it('should refuse garbage deselect rsp', function(done) {
+    this.timeout(3000);
+	
+		conn.start();
+
+		const dr = new DeselectRsp( 1, Message.generateContext() );
+
+		conn.on( "established", p => conn.send( dr ))
+		
+		conn.on( "recv", m => {
+			if( m instanceof RejectReq && m.context == dr.context ){
+				done()
+			}
+		});
+
+		
+
+	});
+
 	
 
  
