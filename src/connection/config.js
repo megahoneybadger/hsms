@@ -93,7 +93,7 @@ class Builder {
 			port: 8000,
 			mode: ConnectionMode.Passive,
 			device: 0,
-			timers: undefined
+			timers: new Timers()
 		});
 	}
 

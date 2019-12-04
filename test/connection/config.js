@@ -364,9 +364,23 @@ describe('Config', () => {
     conf.should.have.property( 'timers' ).that.has.property( 't7' ).equal( Timers.default.t7 );
     conf.should.have.property( 'timers' ).that.has.property( 't8' ).equal( Timers.default.t8 );
     conf.should.have.property( 'timers' ).that.has.property( 'linkTest' ).equal( Timers.default.linkTest );
+	});
+	
+	it('should be created with valid default timers even if not specified', () => {
+		const conf = Config
+			.builder
+			.build();
+
+    conf.should.have.property( 'timers' ).that.has.property( 't3' ).equal( Timers.default.t3 );
+    conf.should.have.property( 'timers' ).that.has.property( 't5' ).equal( Timers.default.t5 );
+    conf.should.have.property( 'timers' ).that.has.property( 't6' ).equal( Timers.default.t6 );
+    conf.should.have.property( 'timers' ).that.has.property( 't7' ).equal( Timers.default.t7 );
+    conf.should.have.property( 'timers' ).that.has.property( 't8' ).equal( Timers.default.t8 );
+    conf.should.have.property( 'timers' ).that.has.property( 'linkTest' ).equal( Timers.default.linkTest );
   });
 
-  it('should be created with valid default timers', () => {
+
+  it('should be created with valid timers', () => {
 		const conf = Config
 			.builder
 			.timers( new Timers(1,2,3,4,5,6) )

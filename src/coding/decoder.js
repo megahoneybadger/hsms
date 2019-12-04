@@ -321,7 +321,7 @@ module.exports = (function () {
 
     if( nominalLen === len ){
 			// https://stackoverflow.com/questions/42699162/javascript-convert-array-of-4-bytes-into-a-float-value-from-modbustcp-read#comment92169146_42699667
-			var v = +b.readFloat32().toFixed( 7 );
+			var v = +b.readFloat32().toPrecision( 7 )// toFixed( 7 );
 			 
 			var item = DataItem.f4( '', v );
 			

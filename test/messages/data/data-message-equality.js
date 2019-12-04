@@ -72,7 +72,15 @@ describe('Data Message Equality', () => {
 				DataItem.u4( "temp4", [2121234200, 3294967295, 10 ] ),
 
 				DataItem.u8( "temp3", 9007199254740991, 429342324967290 ),
-				DataItem.u8( "", [54374321483640] ) ) 
+				DataItem.u8( "", [54374321483640] ),
+
+				DataItem.f4( "", 312.34556, 1.213 ),
+				DataItem.f4( "", 1.432 ),
+
+				DataItem.f8( "", 313212.34556, 1.214233 ),
+				DataItem.f8( "", 13421.43542 ),
+				
+				) 
 			.build();
 
 		let m2 = DataMessage
@@ -105,7 +113,14 @@ describe('Data Message Equality', () => {
 
 				
 				DataItem.u8( "temp3", 9007199254740991, 429342324967290 ),
-				DataItem.u8( "", [54374321483640] ) ) 
+				DataItem.u8( "", [54374321483640] ),
+				
+				DataItem.f4( "", 312.34556, 1.213 ),
+				DataItem.f4( "", 1.432 ),
+
+				DataItem.f8( "", 313212.34556, 1.214233 ),
+				DataItem.f8( "", 13421.43542 ),
+				) 
 				
 				
 			.build();

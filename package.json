@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --recursive",
-    "testc": "npm test -- --grep \"Data Item F4\"",
+    "testc": "npm test -- --grep \"Communication passive\"",
     "test-with-coverage": "nyc --reporter=text  mocha --recursive",
     "start": "nde index.js",
     "lint": "eslint ./src --fix"

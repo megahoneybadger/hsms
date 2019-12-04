@@ -387,7 +387,8 @@ describe('Communication passive', () => {
 					if( index == messages.length ){
 						done();
 					}
-				}
+				} 
+					
 
 			}
 		})
@@ -545,7 +546,7 @@ function createRandomItems(count){
 	//count = 10;
 
 	for( var i = 0; i < count; ++i ){
-		switch( getRandomUInt( 9 ) ){
+		switch( getRandomUInt( 11 ) ){
 			case 0:
 				arr.push( u1() );
 				break;
@@ -578,8 +579,16 @@ function createRandomItems(count){
 				arr.push( u8() );
 				break;
 
-
 			case 8:
+				arr.push( f4() );
+				break;
+
+			case 9:
+				arr.push( f8() );
+				break;
+
+
+			case 10:
 				arr.push( a() );
 				break
 
@@ -587,9 +596,6 @@ function createRandomItems(count){
 
 	}
 
-	
-
-	
 
 	return arr;
 }
@@ -625,6 +631,23 @@ function i4() {
 
 function i8() {
 	return DataItem.i8("", getRandomInt(Constants.MIN_LONG, Constants.MAX_LONG));
+}
+
+function f4() {
+	const min = -1000;
+	const max = 1000;
+	var v = Math.random() * (max - min) + min;
+
+	const value =  v.toFixed( getRandomUInt( 5 ) );
+	return DataItem.f4("", value );
+}
+
+function f8() {
+	const min = Constants.MIN_INT;
+	const max = Constants.MAX_INT;
+	var v = Math.random() * (max - min) + min;
+	
+	return DataItem.f8("", v );
 }
 
 
