@@ -50,27 +50,44 @@ module.exports = (function () {
         });
 			}
 			
-			if (this.format !== ItemFormat.List) {
-        const value = builder.value();
+			const value = builder.value();
 
-        Object.defineProperty(this, "value", {
-          get: function () { return value; },
-          enumerable: true,
-          configurable: false,
-        });
-      }
+			Object.defineProperty(this, "value", {
+				get: function () { return value; },
+				enumerable: true,
+				configurable: false,
+			});
 
 		}
 
 			/**
 		 * Returns a string that represents the current message.
 		 */
-		toString() {
+		toString( indent = "" ) {
 			const key = Object.keys(ItemFormat).find(k => ItemFormat[k] === this.format);
 
 			const len = ItemFormat.isSizeable(this.format) ? this.size : '';
 
-			return `${key}${len} ${this.value}`;
+			if ( !( validator.isString( indent ) ) ){
+        indent = "";
+      }
+
+      switch (this.format) {
+        case ItemFormat.A:
+          let base = `${indent}${key}<${len}> ${this.name}`;
+          return  + ( !this.value) ? base : `${base} [${this.value}]`;
+
+        case ItemFormat.List:
+          let str = `${key} ${this.name}`;
+          this.value.forEach( x => str += '\n' + indent + x.toString( indent + "  " ) )
+          return indent + str
+      }
+
+      if (!ItemFormat.isSizeable(this.format)) {
+        return ( this.value instanceof Array ) ? 
+          `${indent}${key}<${this.value.length}> ${this.name} [${this.value}]`:
+          `${indent}${key} ${this.name} [${this.value}]`;
+      }
 		}
 
 			/**
@@ -91,26 +108,40 @@ module.exports = (function () {
 				return false;
 			}
 
-			const isMyArray = this.value instanceof Array;
-			const isHisArray = dm.value instanceof Array;
-
-			if( isMyArray !== isHisArray ){
-				return false;
-			}
-
-			if( isMyArray ){
-				const eq = 
-					( this.value.length === dm.value.length ) && 
-					( this.value.every((value, index) => value === dm.value[index]))
-				
-				if( !eq ){
+			if( this.format == ItemFormat.List ){
+				if( this.value.length != dm.value.length ){
 					return false;
+				}
+
+				for( let i = 0; i < this.value.length; ++i ){
+					if( !this.value[ i ].equals( dm.value[ i ] ) ){
+						return false;
+					}
 				}
 			} else {
-				if( this.value != dm.value ){
+				const isMyArray = this.value instanceof Array;
+				const isHisArray = dm.value instanceof Array;
+	
+				if( isMyArray !== isHisArray ){
 					return false;
 				}
+	
+				if( isMyArray ){
+					const eq = 
+						( this.value.length === dm.value.length ) && 
+						( this.value.every((value, index) => value === dm.value[index]))
+					
+					if( !eq ){
+						return false;
+					}
+				} else {
+					if( this.value != dm.value ){
+						return false;
+					}
+				}
 			}
+
+		
 			
 			// todo: list
 
@@ -240,7 +271,7 @@ module.exports = (function () {
         .builder
         .name(name)
         .format(ItemFormat.List)
-        //.items(arr)
+        .value(arr)
         .build();
     }
 
@@ -343,16 +374,20 @@ module.exports = (function () {
 			let size = props.get(this).size;
 			const isArray = v instanceof Array;
 
-			if( isArray && ( 1 == v.length || ItemFormat.isString( format ) ) ){
-				value = validator.getItemValue( v[ 0 ], format, size );
-			} else if( isArray && 1 < v.length ){
-				value = [];
-
-				for( let i = 0; i < v.length; ++i ){
-					value.push( validator.getItemValue( v[ i ], format, size ));
+			if( format == ItemFormat.List ){
+				value = ( ( isArray ) ? v : [ v ] ).filter( x => x instanceof DataItem );
+			} else {
+				if( isArray && ( 1 == v.length || ItemFormat.isString( format ) ) ){
+					value = validator.getItemValue( v[ 0 ], format, size );
+				} else if( isArray && 1 < v.length ){
+					value = [];
+	
+					for( let i = 0; i < v.length; ++i ){
+						value.push( validator.getItemValue( v[ i ], format, size ));
+					}
+				} else if( !isArray ) {
+					value = validator.getItemValue( v, format, size );
 				}
-			} else if( !isArray ) {
-				value = validator.getItemValue( v, format, size );
 			}
 
 			props.get(this).value = value;

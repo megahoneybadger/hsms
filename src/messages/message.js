@@ -61,7 +61,13 @@ class Message extends EventEmitter {
     });
 
 
-  }
+	}
+		/**
+		 * Returns a string that represents the current message including children.
+		 */
+		toLongString(){
+			return this.toString();
+		}
 
   /*
   * Returns all available message types.

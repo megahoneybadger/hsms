@@ -90,7 +90,16 @@ module.exports = (function () {
 		toString() {
 			return `S${this.stream}F${this.func}`;
 		}
-
+		/**
+		 * Returns a string that represents the current message including children.
+		 */
+		toLongString(){
+			let s = this.toString();
+	
+			this.items.forEach( c => 	s = s.concat( '\n' + c.toString( "  " )));
+		
+			return s;
+		}
 		/**
 		 * Creates a deep copy of current message.
 		 */

@@ -383,7 +383,8 @@ module.exports = (function () {
 		
 		b.BE();
 
-		if( item.value instanceof Array )  {
+
+		if( item.value instanceof Array && item.format != ItemFormat.List )  {
 			encodeArrayValue( item, b );
 		} else {
 			encodeSingleValue( item, b );
@@ -451,7 +452,7 @@ module.exports = (function () {
       case ItemFormat.List:
       case ItemFormat.A: {
 				let isList = ( item.format === ItemFormat.List );
-        let len = isList ? item.items.length : item.value.length;
+        let len = item.value.length;
         let btNoLenBytes = (len <= 255) ? 1 : (len <= 65535) ? 2 : 3;
         let btFormatByte = item.format | btNoLenBytes;
         b.offset--; // update format byte which was written in the begining of the functon  
@@ -459,7 +460,7 @@ module.exports = (function () {
         writeVarLength(b, btNoLenBytes, len);
 
         if( isList ){
-          item.items.forEach( x => x.encode( b ) )
+          item.value.forEach( x => encodeDataItem( x, b ) )
         } else {
           b.writeString(item.value);
         }

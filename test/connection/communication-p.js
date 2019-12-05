@@ -503,7 +503,7 @@ describe('Communication passive', () => {
 
 
 
-});
+ });
 
 function createDataMessage(d, s, f, re, ...items) {
 	return DataMessage
@@ -531,22 +531,26 @@ function createDataMessageList(count) {
 		f+= ( f%2 == 0 ? 1 : 0 );
 
 		var itemCount = getRandomInt( 1, 100 );
-
-		//console.log( `${d} ${s} ${f} ${itemCount}` )
-
+		
 		arr.push( createDataMessage( 1, s, f, false, ...createRandomItems( itemCount ) ) )
+		// var l = list();
+		// console.log( l.toString() );
+		// arr.push( createDataMessage( 1, s, f, false, l ) )
+		
 	}
+
+	
 
 	return arr;
 }
 
-function createRandomItems(count){
+function createRandomItems(count, level = 0){
 	let arr = [];
 
 	//count = 10;
 
 	for( var i = 0; i < count; ++i ){
-		switch( getRandomUInt( 11 ) ){
+		switch( getRandomUInt( 12 ) ){
 			case 0:
 				arr.push( u1() );
 				break;
@@ -592,12 +596,31 @@ function createRandomItems(count){
 				arr.push( a() );
 				break
 
+			case 11:
+				arr.push( list(level + 1) );
+				break;
 		}
-
 	}
 
 
 	return arr;
+}
+
+function list( level = 0  ) {
+	--level;
+
+	if( level > 3 ){
+		return DataItem.list( "empty" ); 
+	}
+
+	let itemCount = getRandomInt( 1, 20 );
+	let items = createRandomItems( itemCount, level );
+	
+	var item = DataItem.list( "", ...items );
+
+	//console.log( item.toString() );
+
+	return item;
 }
 
 function u1() {
