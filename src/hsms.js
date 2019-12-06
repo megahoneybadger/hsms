@@ -18,6 +18,7 @@ const Timers = require('./connection/timers')
 const Connection = require('./connection/connection')
 
 const Encoder = require('./coding/encoder')
+const Decoder = require('./coding/decoder')
 const SelectRsp = require('./messages/control/select-rsp')
 const Constants = require('./utils/string-resources')
 
@@ -37,7 +38,8 @@ module.exports = {
   RejectReq,
 
   Constants,
-  Encoder,
+	Encoder,
+	Decoder,
 
   Config,
 	ConnectionMode,

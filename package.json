@@ -1,17 +1,18 @@
 {
-  "name": "hsms",
-  "version": "1.0.0",
-  "description": "",
+  "name": "hsms-driver",
+  "version": "0.0.03",
+  "description": "JavaScript driver for HSMS protocol.",
   "main": "index.js",
   "scripts": {
     "test": "mocha --recursive",
-    "testc": "npm test -- --grep \"Communication passive\"",
+    "testc": "npm test -- --grep \"Communication active\"",
     "test-with-coverage": "nyc --reporter=text  mocha --recursive",
     "start": "nde index.js",
-    "lint": "eslint ./src --fix"
+    "lint": "eslint ./src --fix",
+    "build": "webpack -p"
   },
   "author": "",
-  "license": "ISC",
+  "license": "Apache-2.0",
   "devDependencies": {
     "chai": "^4.2.0",
     "eslint": "^6.5.1",
@@ -19,8 +20,17 @@
     "mocha": "^6.2.0",
     "nyc": "^14.1.1",
     "prettier": "1.18.2",
-    "sinon": "^7.5.0"
-  },
+    "sinon": "^7.5.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+	},
+	"keywords": [
+		"hsms",
+		"secs",
+		"gem",
+		"semi",
+		"driver"
+	],
   "dependencies": {
     "bytebuffer": "^5.0.1",
     "moment": "^2.24.0"
