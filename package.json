@@ -23,14 +23,14 @@
     "sinon": "^7.5.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
-	},
-	"keywords": [
-		"hsms",
-		"secs",
-		"gem",
-		"semi",
-		"driver"
-	],
+  },
+  "keywords": [
+    "hsms",
+    "secs",
+    "gem",
+    "semi",
+    "driver"
+  ],
   "dependencies": {
     "bytebuffer": "^5.0.1",
     "moment": "^2.24.0"
