@@ -201,21 +201,21 @@ describe('Communication passive', () => {
 		server.start();
 	});
 
-	it('should establish physical connection but not selected', function (done) {
-		this.timeout(5000);
+	// it('should establish physical connection but not selected', function (done) {
+	// 	this.timeout(5000);
 
-		server.on("timeout", (t, m) => {
-			if (7 === t) {
-				done();
-			}
-		})
+	// 	server.on("timeout", (t, m) => {
+	// 		if (7 === t) {
+	// 			done();
+	// 		}
+	// 	})
 
-		conn.debug = {
-			doNotSendSelectReq: true
-		};
+	// 	conn.debug = {
+	// 		doNotSendSelectReq: true
+	// 	};
 
-		server.start();
-	});
+	// 	server.start();
+	// });
 
 	it('should establish connection after a few attempts (recv t7)', function (done) {
 		this.timeout(10000);
