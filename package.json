@@ -1,6 +1,6 @@
 {
   "name": "hsms-driver",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "JavaScript driver for HSMS protocol.",
   "main": "index.js",
   "scripts": {
