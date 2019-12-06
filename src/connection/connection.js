@@ -420,7 +420,9 @@ module.exports = (function () {
 				case Message.Type.SeparateReq:
 					// This causes socket's close event,
 					// which in turns cleans all resources
-					props(this).client.destroy();
+					if( props(this).client ){
+						props(this).client.destroy();
+					}
 					break;
 
 				case Message.Type.RejectReq:
