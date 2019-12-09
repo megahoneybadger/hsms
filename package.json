@@ -1,12 +1,13 @@
 {
   "name": "hsms-driver",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "JavaScript driver for HSMS protocol.",
   "main": "index.js",
   "scripts": {
     "test": "mocha --recursive",
     "testc": "npm test -- --grep \"Communication active\"",
     "test-with-coverage": "nyc --reporter=text  mocha --recursive",
+    "cover": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec test/*",
     "start": "nde index.js",
     "lint": "eslint ./src --fix",
     "build": "webpack -p"
@@ -15,6 +16,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "chai": "^4.2.0",
+    "coveralls": "^3.0.9",
     "eslint": "^6.5.1",
     "eslint-config-strongloop": "^2.1.0",
     "mocha": "^6.2.0",
@@ -23,8 +25,8 @@
     "sinon": "^7.5.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
-	},
-	"repository": {
+  },
+  "repository": {
     "type": "git",
     "url": "https://github.com/megahoneybadger/hsms"
   },
@@ -37,6 +39,7 @@
   ],
   "dependencies": {
     "bytebuffer": "^5.0.1",
+    "istanbul": "^0.4.5",
     "moment": "^2.24.0"
   }
 }

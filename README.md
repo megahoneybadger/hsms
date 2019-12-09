@@ -3,6 +3,7 @@
 
 [![Build Status](https://api.travis-ci.com/megahoneybadger/hsms.svg?branch=master)](https://travis-ci.com/megahoneybadger/hsms)
 
+
 #### What is HSMS ?
 SEMI E37 High-Speed SECS Message Services (HSMS) is the primary SEMI SECS/GEM transport protocol standard used. HSMS defines a TCP/IP based Ethernet connection used by GEM for host/equipment communication. It is intended as an alternative to SEMI E4 (SECS-I) for applications where higher speed communication is needed and the facilitated hardware setup is convenient.
 
@@ -92,13 +93,143 @@ In case if you do not have a working HSMS entity you can use a loopback address 
 		.on("established", p => console.log( "connection established" )	)
     
 	connP 
-		.on("dropped", () => console.log(`client disconnected`)	)
-		.on("established", p => console.log( "client connected" )	)
-		
-	connP.start();
+		.on("dropped", () => console.log(`client connected`)	)
+		.on("established", p => console.log( "client disconnected" )	)
+	
 	connA.start();
+	connP.start();
 
 In this case the app creates both active and passive connections and make them connect to each other.
 
-#### What is next ?
-todo :)
+#### Usage
+The engine of HSMS message exchange is a connection object. In order to create a new connection we should provide proper configuration. 
+
+##### Config
+To create a new configuration we should export a config object and set a few required properties.
+
+ 	const {
+		Config,
+		ConnectionMode } = require('hsms-driver')
+		
+First of all we should specify connection mode: active or passive. The passive mode is used when the local entity listens for and accepts a connect procedure initiated by the remote entity. The active mode is used when the connect  procedure is initiated by the local entity.
+
+Here is the example of the configuration for an active connection:
+
+	Config
+		.builder
+		.mode(ConnectionMode.Active)
+		.ip("127.0.0.1"/*IP of a passive remote entity*/)
+		.port(7000 /*port of a passive remote entity*/)
+		.build();
+And this is for the passive one:
+
+	Config
+		.builder
+		.mode(ConnectionMode.Passive)
+		.ip("127.0.0.1"/*IP a local entity should bind to*/)
+		.port(7000 /*port a local entity should listen at*/)
+		.build();
+		
+In addition, we may specify our device code (also known as system bytes):
+
+	Config
+			.builder
+			// other properties omitted for brevity
+			.device(1 /*this number depends on your situation*/)
+			.build();
+			
+The final thing you may want to specify is control timers. The point is HSMS specification uses a set of internal timers to manage its own state machine. We can tune some aspects by setting proper values. 
+
+Export a required object:
+	
+
+	const {
+		Config,
+		ConnectionMode,
+		Timers } = require('hsms-driver')
+		
+and create a new instance the following way (every timeout value is set in seconds):
+
+	Config
+		.builder
+		// other properties omitted for brevity
+		.timers(new Timers(
+			1/*t3*/,
+			1/*t5*/,
+			1/*t6*/,
+			12/*t7*/,
+			2/*t8*/,
+			0/*linked test*/))
+		.build()
+
+Here is a brief explanation of of every timer:
+
+ - T3 (Reply timeout)
+Reply timeout. Specifies maximum amount of time an entity expecting a reply message will wait for that reply.
+ - T5 (Connection Separation Timeout)
+Specifies the amount of time which must elapse between successive attempts to connect to a given remote entity.
+ - T6 (Control Transaction Timeout)
+Specifies the time which a control transaction may remain open before it is considered a communications failure. Similar to t3 but for control messages.
+ - T7 (Not Selected Timeout)
+Time which a TCP/IP connection can remain in NOT SELECTED state (i.e., no HSMS activity) before it is considered a communications failure.
+ - T8 
+Maximum time between successive bytes of a single HSMS message which may expire before it is considered a communications failure.
+- Linked Test 
+Time between link test messages.
+
+If timeout values are not set or timer object is not set itself default timeout values will be used. For example:
+
+	Config
+		.builder
+		// other properties omitted for brevity
+		.timers(new Timers())
+		.build()
+In this case timeout values will be the following:
+| Timeout | Duration (secs.)  |
+|--|--|
+| T3 | 45 |
+| T5 | 10 |
+| T6 | 5 |
+| T7 | 10 |
+| T8 | 5 |
+| T8 | 5 |
+| LT | 0 (*if value is zero driver does not send link test request) |
+
+And here is a final sample for connection configuration:
+
+    const {
+    	Config,
+    	ConnectionMode,
+     	Timers } = require('hsms-driver')
+
+
+	const connActive = Config
+		.builder
+		.ip("192.168.154.1")
+		.port(7000)
+		.device(1)
+		// timers not set -> driver will use default values
+		.mode(ConnectionMode.Active)
+		.build());
+		
+	const connPassive = Config
+		.builder
+		.ip("192.168.154.1")
+		.port(7000)
+		// device not set -> driver will use 0
+		.timers(new Timers(12, 20, 1, 2, 2, 10))
+		.mode(ConnectionMode.Passive)
+		.build());
+		
+##### Connection
+TODO :)
+
+
+
+
+
+
+
+
+
+		
