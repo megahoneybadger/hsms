@@ -133,7 +133,8 @@ const {
 	DataMessage,
 	Config,
 	ConnectionMode,
-	Connection } = require('hsms-driver')
+	Connection,
+ 	Timers } = require('hsms-driver')
 
 let m = DataMessage
 		.builder
