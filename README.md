@@ -1,7 +1,7 @@
 
 ![](https://www.semi.org/themes/custom/semi/logo.svg)
 
-[![Build Status](https://api.travis-ci.com/megahoneybadger/hsms.svg?branch=master)](https://travis-ci.com/megahoneybadger/hsms)
+[![Build Status](https://api.travis-ci.com/megahoneybadger/hsms.svg?branch=master)](https://travis-ci.com/megahoneybadger/hsms) [![Coverage Status](https://coveralls.io/repos/github/megahoneybadger/hsms/badge.svg?branch=master)](https://coveralls.io/github/megahoneybadger/hsms?branch=master)
 
 
 #### What is HSMS ?
@@ -133,10 +133,10 @@ And this is for the passive one:
 In addition, we may specify our device code (also known as system bytes):
 
 	Config
-			.builder
-			// other properties omitted for brevity
-			.device(1 /*this number depends on your situation*/)
-			.build();
+		.builder
+		// other properties omitted for brevity
+		.device(1 /*this number depends on your situation*/)
+		.build();
 			
 The final thing you may want to specify is control timers. The point is HSMS specification uses a set of internal timers to manage its own state machine. We can tune some aspects by setting proper values. 
 
@@ -185,15 +185,16 @@ If timeout values are not set or timer object is not set itself default timeout 
 		.timers(new Timers())
 		.build()
 In this case timeout values will be the following:
-| Timeout | Duration (secs.)  |
-|--|--|
-| T3 | 45 |
-| T5 | 10 |
-| T6 | 5 |
-| T7 | 10 |
-| T8 | 5 |
-| T8 | 5 |
-| LT | 0 (*if value is zero driver does not send link test request) |
+
+|  Timeout | Duration (secs.)  |
+| ------------ | ------------ |
+|  T3 | 45  |
+|  T5 | 10  |
+|   T6 | 5    |
+|   T7 | 10   |
+|  T8 | 5  |
+|  LT | 0 (*if value is zero driver does not send link test request)  |
+
 
 And here is a final sample for connection configuration:
 
