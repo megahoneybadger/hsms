@@ -26,6 +26,35 @@ const {
 		ExpectedSelectReqError } = require( './src/utils/errors/custom-errors' )
 
 try {
+	const a1 = DataItem.a( "item-name-9", "very long string", 5 );
+	const a2 = DataItem.a( "item-name-10", "short", 10 );
+	
+
+	console.log( a1.toString() );
+	console.log( a1.name );
+	console.log( a1.format );
+	console.log( a1.value );
+	console.log( a1.size );
+
+	console.log( a2.toString() );
+	console.log( a2.name );
+	console.log( a2.format );
+	console.log( a2.value );
+	console.log( a2.size );
+
+	var list = DataItem.list( "list-1",
+		DataItem.a( "item-name-9", "very long string", 5 ),
+		DataItem.i2( "item-name-3", 12  ),
+		DataItem.list( "child-1",
+			DataItem.u2( "age", 12  ),
+			DataItem.a( "name", "John Smith", 30  ) )
+	 );
+
+	 console.log( list.toString() );
+	 console.log( list.name );
+	 console.log( list.format );
+	 console.log( list.value );
+	 
 
 	const item = DataItem
 		.builder
@@ -75,29 +104,13 @@ try {
 	var index = 0;
 
 	conn
-		.on("dropped", () => {
-			console.log(`client connection has been dropped`);
-		})
-		// .on( "connected", ( p ) => {
-		// 	console.log( `connected: ${p.ip}:${p.port}` );
-		// 	conn.send( m )
-		// } )
-		.on("error", (err) => console.log(`encountered error: ${err}`))
-		.on("established", (r) => {
-			conn.send(new SeparateReq());
-			console.log( "connection established" )
-
-			//conn.send(new DeselectRsp());
-			conn.send( new SeparateReq() )
-		})
-		.on("recv", (m) => {
-			console.log(`c rec[${m.toLongString()}]`);
-		})
-		.on( "timeout", t => console.log( `timeout t${t}` ) );
+		.on("established", p  => console.log( `connection established: ${p.ip}:${p.port}` ))
+		.on("dropped", () => console.log(`connection dropped`))
+		.on("recv", m => console.log( m.toString() ))
+		.on("timeout", (t, m) => console.log( `t${t}` ) );
 
 	//setTimeout( () => , 200 );
 
-	conn.removeAllListeners( "recv" );
 
 	const server = new Connection(Config
 		.builder
@@ -109,6 +122,9 @@ try {
 		.build());
 
 	server
+		.on("established", () => {
+			setTimeout( () => server.send( m ), 1000);
+		} )
 		.on("dropped", () => {
 			console.log(`server connection has been dropped`);
 		})
@@ -126,38 +142,5 @@ catch (err) {
 	console.log(err);
 }
 
-console.log("end");
-//--------------------
-const {
-	DataItem,
-	DataMessage,
-	Config,
-	ConnectionMode,
-	Connection,
- 	Timers } = require('hsms-driver')
 
-let m = DataMessage
-		.builder
-		.device( 1 )
-		.stream( 1 )
-		.replyExpected( true )
-		.func( 1 )
-		.items(
-			DataItem.f4( "temp", 12.1  ),
-			DataItem.f8( "temp", 14.53  ) ) 
-		.build();
 
-const conn = new Connection(Config
-	.builder
-	.ip("192.168.154.1")
-	.port(7000)
-	.device(1)
-	.mode(ConnectionMode.Active)
-	.build());
-
-conn
-	.on("dropped", () => console.log(`client connection has been dropped`))
-	.on("established", p => conn.send( m ))
-	.on("recv", m => console.log(`${m.toLongString()}`))
-
-conn.start();

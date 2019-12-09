@@ -190,8 +190,8 @@ In this case timeout values will be the following:
 | ------------ | ------------ |
 |  T3 | 45  |
 |  T5 | 10  |
-|   T6 | 5    |
-|   T7 | 10   |
+|  T6 | 5    |
+|  T7 | 10   |
 |  T8 | 5  |
 |  LT | 0 (*if value is zero driver does not send link test request)  |
 
@@ -223,7 +223,161 @@ And here is a final sample for connection configuration:
 		.build());
 		
 ##### Connection
-TODO :)
+The next step is to create a connection object:
+
+	const conn = new Connection(config);
+
+Connection object supports a few events which are important for the message exchange:
+- *established*
+Physical connection has been established and the driver entered the selected state. This event means that we are ready for HSMS message exchange.
+- *dropped*
+Connection has been dropped and the driver entered not connected state.
+- *recv*
+New message has been received.
+- *timeout*
+Driver fired a control timeout (e.g. connection did not receive a reply).
+- *error*
+Error occured when handling a message.
+
+Here is the example:
+
+	conn
+		.on("established", p  => console.log( `connection established: ${p.ip}:${p.port}` ))
+		.on("dropped", () => console.log(`connection dropped`))
+		.on("recv", m => console.log(`${m.toString()}`))
+		
+	
+##### Data Items
+The main exchange unit within HSMS universe is a message. But every message consists of building blocks called data items. Every data item represents a value (or array of values) and data type. The driver supports the following types:
+
+| Data Type | Description   |
+| ------------ | ------------ |
+|I1  | 1 byte integer (signed)  |
+| I2  |  2 byte integer (signed) |
+| I4  | 4 byte integer (signed)  |
+| I8  | 8 byte integer (signed)  |
+| U1  | 1 byte integer (unsigned)  |
+|  U2 | 2 byte integer (unsigned)  |
+|  U4 | 4 byte integer (unsigned)  |
+|  U8 | 8 byte integer (signed) |
+|  F4 |  4 byte floating point |
+|  F8 |  8 byte floating point |
+|  A | ASCII   |
+|  List | list  |
+
+Here is a example how to create data items:
+
+	const {
+	    Config,
+	    ConnectionMode,
+	    Timers,
+		ItemFormat,
+		DataItem} = require('hsms-driver')
+		
+	const i1 = DataItem.i1( "item-name-1", 12  );
+	const i1arr = DataItem.i1( "item-name-2", 12, 121, -8, "7"  );
+
+	console.log( i1.toString() ); // I1 item-name-1 [12]
+	console.log( i1.name ); // item-name-1
+	console.log( i1.format ); // 100 or ItemFormat.U1
+	console.log( i1.value ); // 12
+
+	console.log( i1arr.toString() ); // I1<4> item-name-2 [12,121,-8,7]
+	console.log( i1arr.name ); // item-name-2
+	console.log( i1arr.format ); // 100 or ItemFormat.I1
+	console.log( i1arr.value ); // Array(4) [12, 121, -8, 7]
+	
+	const i2 = DataItem.i2( "item-name-3", 12  );
+	const i2arr = DataItem.i2( "item-name-4", 12, 121, -8, "7"  );
+
+	console.log( i2.toString() ); // I2 item-name-3 [12]
+	console.log( i2.name ); // item-name-3
+	console.log( i2.format ); // 104 or ItemFormat.I2
+	console.log( i2.value ); // 12
+
+	console.log( i2arr.toString() ); // I2<4> item-name-4 [12,121,-8,7]
+	console.log( i2arr.name ); // item-name-4
+	console.log( i2arr.format ); // 104 or ItemFormat.I2
+	console.log( i2arr.value ); // Array(4) [12, 121, -8, 7]
+	
+	const i4 = DataItem.i4( "item-name-3", 54312432  );
+	const i4arr = DataItem.i4( "item-name-4", 43213212, 0x2121, "-817543"  );
+
+	console.log( i4.toString() ); // I4 item-name-3 [54312432]
+	console.log( i4.name ); // item-name-3
+	console.log( i4.format ); // 112 or ItemFormat.I4
+	console.log( i4.value ); // 54312432
+
+	console.log( i4arr.toString() ); // I4<3> item-name-4 [43213212,8481,-817543]
+	console.log( i4arr.name ); // item-name-4
+	console.log( i4arr.format ); // 112 or ItemFormat.I4
+	console.log( i4arr.value ); // Array(3) [43213212, 8481, -817543]
+	
+	const f4 = DataItem.f4( "item-name-5", 54312432  );
+	const f4arr = DataItem.f4( "item-name-6", 43213212, 0x2121, "-817543"  );
+
+	console.log( f4.toString() ); // F4 item-name-5 [54312432]
+	console.log( f4.name ); // item-name-5
+	console.log( f4.format ); // 144 or ItemFormat.F4
+	console.log( f4.value ); // 54312432
+
+	console.log( f4arr.toString() ); // F4<3> item-name-6 [43213212,8481,-817543]
+	console.log( f4arr.name ); // item-name-6
+	console.log( f4arr.format ); // 144 or ItemFormat.F4
+	console.log( f4arr.value ); // Array(3) [43213212, 8481, -817543]
+	
+	const a1 = DataItem.a( "item-name-9", "very long string", 5 );
+	const a2 = DataItem.a( "item-name-10", "short", 10 );
+	
+
+	console.log( a1.toString() ); // item-name-9 [very ]
+	console.log( a1.name ); // item-name-9
+	console.log( a1.format ); // 64 or ItemFormat.A
+	console.log( a1.value ); //'very '
+	console.log( a1.size ); // 5
+
+	console.log( a2.toString() ); // A<10> item-name-10 [short     ]
+	console.log( a2.name ); // item-name-10
+	console.log( a2.format ); // 64 or ItemFormat.A
+	console.log( a2.value ); 'short     '
+	console.log( a2.size ); // 10
+	
+	const list = DataItem.list( "list-1",
+		DataItem.a( "item-name-9", "very long string", 5 ),
+		DataItem.i2( "item-name-3", 12  ),
+		DataItem.list( "child-1",
+			DataItem.u2( "age", 12  ),
+			DataItem.a( "name", "John Smith", 30  ) )
+	 );
+	
+	 console.log( list.toString() );
+	// List list-1
+	//	A<5> item-name-9 [very ]
+	//	I2 item-name-3 [12]
+	//	List child-1
+	//	U2 age [12]
+	//  	A<30> name [John Smith                    ]
+	console.log( list.name ); // list-1
+	 console.log( list.format ); // 0 or ItemFormat.List
+	 console.log( list.value ); // Array(3) [DataItem, DataItem, DataItem]
+
+Pay attention:
+- numeric types and lists do not have size (array length is not an item size)
+- numeric types support single value items as well as array value items
+- strings require a size: if a given string value is shorter than a size it will be padded with spaces and vice versa if it is longer it will be trimmed
+
+
+
+
+
+
+
+
+
+
+
+		
+
 
 
 

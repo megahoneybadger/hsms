@@ -1,6 +1,6 @@
 {
   "name": "hsms-driver",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "description": "JavaScript driver for HSMS protocol.",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "testc": "npm test -- --grep \"Communication active\"",
     "test-with-coverage": "nyc --reporter=text  mocha --recursive",
     "cover": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- --recursive test/*",
-    "start": "nde index.js",
+    "start": "node index.js",
     "lint": "eslint ./src --fix",
     "build": "webpack -p"
   },
