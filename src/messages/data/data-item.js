@@ -32,7 +32,7 @@ module.exports = (function () {
 
 			const format = builder.format();
 
-			// Gets data items's format
+			// Gets data item's format
       Object.defineProperty(this, "format", {
         get: function () { return format; },
         enumerable: true,

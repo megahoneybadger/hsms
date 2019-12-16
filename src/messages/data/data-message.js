@@ -18,12 +18,22 @@ module.exports = (function () {
 				throw new TooManyParamsError();
 			}
 
-			super(builder.device(), builder.context());
+			
 
 			const s = builder.stream();
 			const f = builder.func();
 			const d = builder.description();
 			const re = builder.replyExpected();
+			let context = builder.context();
+			const isPrimary = (0 != (f & 1));
+
+			// Duplicate the logic because the base class still does
+			// not have a correct isPrimary 
+			if( isPrimary && !context ){
+				context = Message.generateContext();
+			}
+
+			super(builder.device(), context);
 
 			const children = builder
 				.items()
@@ -50,6 +60,7 @@ module.exports = (function () {
 				configurable: false,
 			});
 
+			// Gets a value indicating whether the message expects a reply.
 			Object.defineProperty(this, "replyExpected", {
 				get: function () { return re; },
 				enumerable: true,
@@ -62,6 +73,8 @@ module.exports = (function () {
 				enumerable: true,
 				configurable: false,
 			});
+
+		
 		}
 
 		/**

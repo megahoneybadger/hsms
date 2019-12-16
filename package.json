@@ -10,7 +10,8 @@
     "cover": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- --recursive test/*",
     "start": "node index.js",
     "lint": "eslint ./src --fix",
-    "build": "webpack -p"
+		"build": "webpack -p",
+		"debug": "node --nolazy --inspect-brk=9229 test-suite.js"
   },
   "author": "",
   "license": "Apache-2.0",
