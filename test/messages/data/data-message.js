@@ -285,6 +285,7 @@ describe('Data Message', () => {
 			.device( 1 )
 			.stream( 1 )
 			.replyExpected( false )
+			.context( 1 )
 			.func( 1 )
 			.items(
 				DataItem.i1( "temp", 87, 12, 54 )) 
@@ -293,11 +294,11 @@ describe('Data Message', () => {
 		const encodedArray = Encoder.encode(m);
 	
 		const expectedArray = Buffer.from([ 0x00, 0x00, 0x00, 0x0f, 
-			0x00, 0x01, 0x81, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
+			0x00, 0x01, 0x81, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,  
 			0x65, 0x03, 0x57, 0x0C, 0x36  ])
 
-		// console.log( encodedArray );
-		// console.log( expectedArray );
+		console.log( encodedArray );
+		console.log( expectedArray );
 	
     expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
 	});
@@ -309,6 +310,7 @@ describe('Data Message', () => {
 			.stream( 1 )
 			.replyExpected( false )
 			.func( 1 )
+			.context( 87 )
 			.items(
 				DataItem.i1( "temp", 66 )) 
 			.build();
@@ -316,7 +318,7 @@ describe('Data Message', () => {
 		const encodedArray = Encoder.encode(m);
 	
 		const expectedArray = Buffer.from([ 0x00, 0x00, 0x00, 0x0d, 
-			0x00, 0x01, 0x81, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
+			0x00, 0x01, 0x81, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x57,  
 			0x65, 0x01, 0x42 ])
 
 		// console.log( encodedArray );
@@ -332,6 +334,7 @@ describe('Data Message', () => {
 			.stream( 1 )
 			.replyExpected( false )
 			.func( 1 )
+			.context( 3 )
 			.items(
 				DataItem.i1( "temp", 66 )) 
 			.build();
@@ -339,7 +342,7 @@ describe('Data Message', () => {
 		const encodedArray = Encoder.encode(m);
 	
 		const expectedArray = Buffer.from([ 0x00, 0x00, 0x00, 0x0d, 
-			0x00, 0x01, 0x81, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,  
+			0x00, 0x01, 0x81, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,  
 			0x65, 0x01, 0x42 ])
 
 		// console.log( encodedArray );

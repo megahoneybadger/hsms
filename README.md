@@ -435,8 +435,8 @@ Lists:
 		DataItem.a( "item-name-9", "very long string", 5 ),
 		DataItem.i2( "item-name-3", 12  ),
 		DataItem.list( "child-1",
-			DataItem.u2( "age", 12  ),
-			DataItem.a( "name", "John Smith", 30  ) )
+		DataItem.u2( "age", 12  ),
+		DataItem.a( "name", "John Smith", 30  ) )
 	 );
 	
 	 console.log( list.toString() );
@@ -506,7 +506,7 @@ Here is the example on how to create your first data message:
 When message building is over we are ready to send it. But before, let's summarize all the steps you have to take to send the message:
 
  - create a configuration object where you specify network and timeout details
-  - create a connection based on the configuration, subscribe to  events you need and call a method 'start'
+ - create a connection based on the configuration, subscribe to  events you need and call a method 'start'
  - create a data message with required stream and function numbers, add data items 
  - send the message via 'send' method of the created connection object
 

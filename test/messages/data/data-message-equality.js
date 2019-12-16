@@ -25,6 +25,7 @@ describe('Data Message Equality', () => {
 			.stream( 1 )
 			.replyExpected( false )
 			.func( 1 )
+			.context( 12345 )
 			.items(
 				DataItem.i1( "temp", 87, 12, 54 )) 
 			.build();
@@ -35,6 +36,7 @@ describe('Data Message Equality', () => {
 			.stream( 1 )
 			.replyExpected( false )
 			.func( 1 )
+			.context( 12345 )
 			.items(
 				DataItem.i1( "temp", 87, 12, 54 )) 
 			.build();
@@ -48,6 +50,7 @@ describe('Data Message Equality', () => {
 			.device( 1 )
 			.stream( 1 )
 			.replyExpected( false )
+			.context( 9862 )
 			.func( 1 )
 			.items(
 				DataItem.i1( "temp1", -87, "12", 54 ),
@@ -89,6 +92,7 @@ describe('Data Message Equality', () => {
 			.stream( 1 )
 			.replyExpected( false )
 			.func( 1 )
+			.context( 9862 )
 			.items(
 				DataItem.i1( "error", "-87", ["12", 54] ),
 				DataItem.i1( "pressure", 32, "-78", "0", [121, -76] ),

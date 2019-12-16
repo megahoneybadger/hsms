@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --recursive",
-    "testc": "npm test -- --grep \"Communication active\"",
+    "testc": "npm test -- --grep \"Data Message\"",
     "test-with-coverage": "nyc --reporter=text  mocha --recursive",
     "cover": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- --recursive test/*",
     "start": "node index.js",
