@@ -260,7 +260,7 @@ The main exchange unit within HSMS universe is a message. But every message cons
 | U1  | 1 byte integer (unsigned)  |
 |  U2 | 2 byte integer (unsigned)  |
 |  U4 | 4 byte integer (unsigned)  |
-|  U8 | 8 byte integer (signed) |
+|  U8 | 8 byte integer (unsigned) |
 |  F4 |  4 byte floating point |
 |  F8 |  8 byte floating point |
 |  A | ASCII   |

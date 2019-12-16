@@ -1,6 +1,6 @@
 {
   "name": "hsms-driver",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "description": "JavaScript driver for HSMS protocol.",
   "main": "index.js",
   "scripts": {
@@ -32,6 +32,7 @@
     "url": "https://github.com/megahoneybadger/hsms"
   },
   "keywords": [
+		"java script",
     "hsms",
     "secs",
     "gem",
