@@ -1,4 +1,5 @@
 
+
 ![](https://www.semi.org/themes/custom/semi/logo.svg)
 
 [![Build Status](https://api.travis-ci.com/megahoneybadger/hsms.svg?branch=master)](https://travis-ci.com/megahoneybadger/hsms) [![Coverage Status](https://coveralls.io/repos/github/megahoneybadger/hsms/badge.svg?branch=master)](https://coveralls.io/github/megahoneybadger/hsms?branch=master)
@@ -8,7 +9,7 @@
 SEMI E37 High-Speed SECS Message Services (HSMS) is the primary SEMI SECS/GEM transport protocol standard used. HSMS defines a TCP/IP based Ethernet connection used by GEM for host/equipment communication. It is intended as an alternative to SEMI E4 (SECS-I) for applications where higher speed communication is needed and the facilitated hardware setup is convenient.
 
 #### What HSMS Driver Can Do ?
-The HSMS Standard defines message exchange procedures for using the TCP/IP network protocol.
+The driver can do every that the standard requires: defines message exchange procedures for using the TCP/IP network protocol.
 
 - Establishing a communication link between entities using a TCP/IP connection procedure
 - Developing and maintaining the protocol conventions necessary for exchanging SECS messages between entities
@@ -104,7 +105,7 @@ In this case the app creates both active and passive connections and make them c
 #### Usage
 The engine of HSMS message exchange is a connection object. In order to create a new connection we should provide proper configuration. 
 
-##### Config
+#### Config
 To create a new configuration we should export a config object and set a few required properties.
 
  	const {
@@ -222,7 +223,7 @@ And here is a final sample for connection configuration:
 		.mode(ConnectionMode.Passive)
 		.build());
 		
-##### Connection
+#### Connection
 The next step is to create a connection object:
 
 	const conn = new Connection(config);
@@ -247,7 +248,7 @@ Here is the example:
 		.on("recv", m => console.log(`${m.toString()}`))
 		
 	
-##### Data Items
+#### Data Items
 The main exchange unit within HSMS universe is a message. But every message consists of building blocks called data items. Every data item represents a value (or array of values) and data type. The driver supports the following types:
 
 | Data Type | Description   |
@@ -265,27 +266,62 @@ The main exchange unit within HSMS universe is a message. But every message cons
 |  A | ASCII   |
 |  List | list  |
 
-Here is a example how to create data items:
+ Every data item has the following properties:
+
+ - **name** 
+Gets data item's name.
+ - **format**
+Gets data item's format.
+ - **value**
+Gets data item's value. In case or array returns an array of values. In case of a list returns an array of sub data items.
+ - **size**
+Gets data item's size if exists. Most data items do not support the size: only strings and binary items has this property. If a given string value is shorter than the size it will be padded with spaces and vice versa if it is longer it will be trimmed.
+
+To create a new data item the driver uses a builder pattern. Every data item is an immutable object: all properties are read-only and if you need to change anything you should create a new item. 
+
+First of  all, to start working with items, you need to add the required types:
 
 	const {
-	    Config,
-	    ConnectionMode,
-	    Timers,
-		ItemFormat,
-		DataItem} = require('hsms-driver')
-		
+		Config,
+		ConnectionMode,
+	 	Timers,
+	 	DataItem, // +++,
+	 	ItemFormat // +++ } = require('hsms-driver')
+	 
+After that you can simply add items you need as shown below:
+
+(I1) 1 byte integer (signed):
+
 	const i1 = DataItem.i1( "item-name-1", 12  );
 	const i1arr = DataItem.i1( "item-name-2", 12, 121, -8, "7"  );
-
+	
 	console.log( i1.toString() ); // I1 item-name-1 [12]
 	console.log( i1.name ); // item-name-1
-	console.log( i1.format ); // 100 or ItemFormat.U1
+	console.log( i1.format ); // 100 or ItemFormat.I1
 	console.log( i1.value ); // 12
 
 	console.log( i1arr.toString() ); // I1<4> item-name-2 [12,121,-8,7]
 	console.log( i1arr.name ); // item-name-2
 	console.log( i1arr.format ); // 100 or ItemFormat.I1
 	console.log( i1arr.value ); // Array(4) [12, 121, -8, 7]
+	
+(U1) 1 byte integer (unsigned):
+
+
+	const u1 = DataItem.u1( "u-item-name-1", 128  );
+	const u1arr = DataItem.u1( "u-item-name-2", 12, 121, 250  );
+	
+	console.log( u1.toString() );// U1 u-item-name-1 [128]
+	console.log( u1.name ); // u-item-name-1
+	console.log( u1.format ); // 164 or ItemFormat.U1
+	console.log( u1.value ); // 128
+	
+	console.log( u1arr.toString() ); // U1<3> u-item-name-2 [12,121,250]
+	console.log( u1arr.name ); // u-item-name-2
+	console.log( u1arr.format ); // 164 or ItemFormat.U1
+	console.log( u1arr.value ); // Array(3) [12, 121, 250]
+	
+(I2) 2 byte integer (signed):
 	
 	const i2 = DataItem.i2( "item-name-3", 12  );
 	const i2arr = DataItem.i2( "item-name-4", 12, 121, -8, "7"  );
@@ -300,6 +336,23 @@ Here is a example how to create data items:
 	console.log( i2arr.format ); // 104 or ItemFormat.I2
 	console.log( i2arr.value ); // Array(4) [12, 121, -8, 7]
 	
+(U2) 2 byte integer (unsigned):
+	
+	const u2 = DataItem.u2( "u-item-name-3", 12543  );
+	const u2arr = DataItem.u2( "u-item-name-4", 1212, 16521, "7765"  );
+	
+	console.log( u2.toString() ); // U2 u-item-name-3 [12543]
+	console.log( u2.name ); // u-item-name-3
+	console.log( u2.format ); // 168 or ItemFormat.U2
+	console.log( u2.value ); // 12543
+	
+	console.log( u2arr.toString() ); // U2<3> u-item-name-4 [1212,16521,7765]
+	console.log( u2arr.name ); // u-item-name-4
+	console.log( u2arr.format ); // 168  or ItemFormat.U2
+	console.log( u2arr.value ); // Array(3) [1212, 16521, 7765]
+	
+(I4) 4 byte integer (signed):
+	
 	const i4 = DataItem.i4( "item-name-3", 54312432  );
 	const i4arr = DataItem.i4( "item-name-4", 43213212, 0x2121, "-817543"  );
 
@@ -313,23 +366,57 @@ Here is a example how to create data items:
 	console.log( i4arr.format ); // 112 or ItemFormat.I4
 	console.log( i4arr.value ); // Array(3) [43213212, 8481, -817543]
 	
-	const f4 = DataItem.f4( "item-name-5", 54312432  );
-	const f4arr = DataItem.f4( "item-name-6", 43213212, 0x2121, "-817543"  );
+(U4) 4 byte integer (unsigned):
 
-	console.log( f4.toString() ); // F4 item-name-5 [54312432]
-	console.log( f4.name ); // item-name-5
+	const u4 = DataItem.u4( "item-name-3", 76543124  );
+	const u4arr = DataItem.u4( "item-name-4", 4432132, 0x212154, "81754321" );
+	
+	console.log( u4.toString() ); // U4 u-item-name-3 [76543124]
+	console.log( u4.name ); // u-item-name-3
+	console.log( u4.format ); // 176 or ItemFormat.U4
+	console.log( u4.value ); // 76543124
+	
+	console.log( u4arr.toString() ); // U4<3> u-item-name-4 [4432132,2171220,81754321]
+	console.log( u4arr.name ); // u-item-name-4
+	console.log( u4arr.format ); // 176 or ItemFormat.U4
+	console.log( u4arr.value ); // Array(3) [4432132, 2171220, 81754321]
+
+	
+(F4) 4 byte floating point:
+
+	const f4 = DataItem.f4( "f-item-name-1", 54.3  );
+	const f4arr = DataItem.f4( "f-item-name-2", 21.6, -76.21, 245.6754 );
+	
+	console.log( f4.toString() ); // F4 f-item-name-1 [54.3]
+	console.log( f4.name ); // f-item-name-1
 	console.log( f4.format ); // 144 or ItemFormat.F4
-	console.log( f4.value ); // 54312432
+	console.log( f4.value ); // 54.3
 
-	console.log( f4arr.toString() ); // F4<3> item-name-6 [43213212,8481,-817543]
-	console.log( f4arr.name ); // item-name-6
+	console.log( f4arr.toString() ); // F4<3> f-item-name-2 [21.6,-76.21,245.6754]
+	console.log( f4arr.name ); // f-item-name-2
 	console.log( f4arr.format ); // 144 or ItemFormat.F4
-	console.log( f4arr.value ); // Array(3) [43213212, 8481, -817543]
+	console.log( f4arr.value ); // Array(3) [21.6, -76.21, 245.6754]
+	
+(F8) 8 byte floating point:
+
+	const f8 = DataItem.f8( "f-item-name-3", 545432.343221  );
+	const f8arr = DataItem.f8( "f-item-name-4", 29541.66543, -76211.25431 );
+	
+	console.log( f8.toString() ); // F8 f-item-name-3 [545432.343221]
+	console.log( f8.name ); // f-item-name-3
+	console.log( f8.format ); // 128 or ItemFormat.F8
+	console.log( f8.value ); // 545432.343221
+
+	console.log( f8arr.toString() ); // F8<2> f-item-name-4 [29541.66543,-76211.25431]
+	console.log( f8arr.name ); // f-item-name-4
+	console.log( f8arr.format ); // 128 or ItemFormat.F8
+	console.log( f8arr.value ); // Array(2) [29541.66543, -76211.25431]
+
+String (pay attention to the size):
 	
 	const a1 = DataItem.a( "item-name-9", "very long string", 5 );
 	const a2 = DataItem.a( "item-name-10", "short", 10 );
 	
-
 	console.log( a1.toString() ); // item-name-9 [very ]
 	console.log( a1.name ); // item-name-9
 	console.log( a1.format ); // 64 or ItemFormat.A
@@ -341,6 +428,8 @@ Here is a example how to create data items:
 	console.log( a2.format ); // 64 or ItemFormat.A
 	console.log( a2.value ); 'short     '
 	console.log( a2.size ); // 10
+
+Lists:
 	
 	const list = DataItem.list( "list-1",
 		DataItem.a( "item-name-9", "very long string", 5 ),
@@ -358,29 +447,120 @@ Here is a example how to create data items:
 	//	U2 age [12]
 	//  	A<30> name [John Smith                    ]
 	console.log( list.name ); // list-1
-	 console.log( list.format ); // 0 or ItemFormat.List
-	 console.log( list.value ); // Array(3) [DataItem, DataItem, DataItem]
+	console.log( list.format ); // 0 or ItemFormat.List
+	console.log( list.value ); // Array(3) [DataItem, DataItem, DataItem]
+	
+#### Data Messages
+As was told before the main exchange unit in HSMS is a message. That means if you need to send a data to a remote entity you should create a message, fill it with required data items and send  via driver's API. 
 
-Pay attention:
-- numeric types and lists do not have size (array length is not an item size)
-- numeric types support single value items as well as array value items
-- strings require a size: if a given string value is shorter than a size it will be padded with spaces and vice versa if it is longer it will be trimmed
+To create a message you need to add the required type:
+
+	const {
+		Config,
+		ConnectionMode,
+	 	Timers,
+	 	DataItem, 
+	 	ItemFormat,
+	 	DataMessage // +++  } = require('hsms-driver')
+
+The driver uses a builder pattern. Every data message is an immutable object: all properties are read-only and if you need to change anything you should create a new message. 
+
+ Every data message has the following properties:
+
+ - **device** 
+Gets a 15-bit field in the message header used to identify a sub-entity within the equipment. Device ID is a property of the equipment, and can be viewed as a logical identifier associated with a physical device or sub-entity within the equipment. 
+ - **context**
+Gets a message context used to identify a transaction uniquely among the set of open transactions. The context of a reply data message must be the same as those of the corresponding primary message. If you do not provide a context value for the primary message the driver will set unique value itself.
+ - **stream**
+Gets a message stream.
+ - **func**
+Gets a message function.
+ - **items**
+Gets message's data items.
+ - **replyExpected**
+ Gets a value indicating whether the message expects a reply.
+- **time** 
+Gets a time label used to identify message creation time. 
+
+Here is the example on how to create your first data message:
+
+    let m = DataMessage
+   		.builder
+   		.device( 1 )
+   		.stream( 5 )
+   		.replyExpected( false)
+   		.func( 1 )
+   		.items(
+   			DataItem.f4( "temperature", 12.1  ),
+   			DataItem.f8( "pressure", 14.53  ),
+   			DataItem.a( "description", "this is a long sensor description", 50  )) 
+   		.build();
+   		
+	console.log( m.device ); // 1
+	console.log( m.stream ); // 5
+	console.log( m.func ); // 1
+	console.log( m.replyExpected ); // false
+	console.log( m.context ); // 7107 (value generated by the driver)
+	console.log( m.items ); // Array(3) [DataItem, DataItem, DataItem]
+
+When message building is over we are ready to send it. But before, let's summarize all the steps you have to take to send the message:
+
+ - create a configuration object where you specify network and timeout details
+  - create a connection based on the configuration, subscribe to  events you need and call a method 'start'
+ - create a data message with required stream and function numbers, add data items 
+ - send the message via 'send' method of the created connection object
+
+And here is the full sample: as soon as two driver gets connected a passive connection sends a data message and does not expect a reply.
 
 
+	const {
+		DataItem,
+		DataMessage,
+		Config,
+		ConnectionMode,
+		Connection } = require('hsms-driver')
+
+	const conn = new Connection(Config
+		.builder
+		.ip("127.0.0.1")
+		.port(7000)
+		.mode(ConnectionMode.Active)
+		.build());
+
+	conn
+		.on("established", p  => console.log( `connection established: ${p.ip}:${p.port}` ))
+		.on("dropped", () => console.log(`connection dropped`))
+		.on("recv", m => console.log( m.toLongString() ))
+		.on("timeout", (t, m) => console.log( `t${t}` ) );
+
+	let m = DataMessage
+		.builder
+		.device( 1 )
+		.stream( 5 )
+		.replyExpected( false)
+		.func( 1 )
+		.items(
+			DataItem.f4( "temperature", 12.1  ),
+			DataItem.f8( "pressure", 14.53  ),
+			DataItem.a( "description", "this is a long sensor description", 50  )) 
+		.build();
+
+	const server = new Connection(Config
+		.builder
+		.ip("127.0.0.1")
+		.port(7000)
+		.mode(ConnectionMode.Passive)
+		.build());
+
+	server
+		.on("established", p  => server.send( m ));
+
+	server.start();
+	conn.start();
 
 
-
-
-
-
-
-
-
-		
-
-
-
-
+TODO:
+message callbacks and messages with replies
 
 
 
