@@ -277,6 +277,32 @@ describe('Data Message', () => {
 			m.items[ 2 ].should.have.property( 'value' ).to.have.members( [1,6,9] );
 	});
 
+	it('should be created with new random context', () => {
+		const m = DataMessage
+			.builder
+			.stream( 1 )
+			.func( 1 )
+			.items( 
+				DataItem.i1( "temp", 123 ),
+				DataItem.i1( "pressure", 98 ),
+				DataItem.i1( "misc", [1,6,9] ) )
+			.build();
+
+			m.should.have.property( 'context' ).not.equal( 0 );
+	});
+
+	it('should be created with empty context if stream and func not specified', () => {
+		const m = DataMessage
+			.builder
+			.items( 
+				DataItem.i1( "temp", 123 ),
+				DataItem.i1( "pressure", 98 ),
+				DataItem.i1( "misc", [1,6,9] ) )
+			.build();
+
+			m.should.have.property( 'context' ).equal( 0 );
+	});
+
 
 
 	it('encode must return valid binary stream (i1) #1', () => {
@@ -297,8 +323,8 @@ describe('Data Message', () => {
 			0x00, 0x01, 0x81, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,  
 			0x65, 0x03, 0x57, 0x0C, 0x36  ])
 
-		console.log( encodedArray );
-		console.log( expectedArray );
+		// console.log( encodedArray );
+		// console.log( expectedArray );
 	
     expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
 	});

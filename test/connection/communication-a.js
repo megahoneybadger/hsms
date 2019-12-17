@@ -81,221 +81,221 @@ describe('Communication active', () => {
 		delete server.debug;
 		
     setTimeout(function(){
-      conn.stop();
+			conn.stop();
       done();
     }, 500);
     
   })
 
-  // it('should establish connection', function(done) {
-  //   conn.on( "established", (e) => {
-  //     e.should.have.property('ip').equal('127.0.0.1');
-  //     e.should.have.property('port').equal(7000 );
-  //     conn.stop();  
-  //     done();
-  //   })
+  it('should establish connection', function(done) {
+    conn.on( "established", (e) => {
+      e.should.have.property('ip').equal('127.0.0.1');
+      e.should.have.property('port').equal(7000 );
+      conn.stop();  
+      done();
+    })
 
-  //   conn.start();
-  // });
+    conn.start();
+  });
 
-  // it('should drop connection #1', function(done) {
-  //   this.timeout(5000);
+  it('should drop connection #1', function(done) {
+    this.timeout(5000);
 
-  //   conn.on( "established", (e) => {
-  //     e.should.have.property('ip').equal('127.0.0.1');
-  //     e.should.have.property('port').equal(7000 );
-  //     conn.stop();
-  //   })
+    conn.on( "established", (e) => {
+      e.should.have.property('ip').equal('127.0.0.1');
+      e.should.have.property('port').equal(7000 );
+      conn.stop();
+    })
 
-  //   conn.on( "dropped", (e) => {
-  //     done();
-  //   });
+    conn.on( "dropped", (e) => {
+      done();
+    });
 
-  //   conn.start();
-  // });
+    conn.start();
+  });
 
-  // it('should drop connection #2', function(done) {
-  //   this.timeout(5000);
+  it('should drop connection #2', function(done) {
+    this.timeout(5000);
 
-  //   conn.on( "established", (e) => {
-  //     e.should.have.property('ip').equal('127.0.0.1');
-  //     e.should.have.property('port').equal(7000 );
-  //     setTimeout( () => conn.stop(), 1000 );
-  //   })
+    conn.on( "established", (e) => {
+      e.should.have.property('ip').equal('127.0.0.1');
+      e.should.have.property('port').equal(7000 );
+      setTimeout( () => conn.stop(), 1000 );
+    })
 
-  //   conn.on( "dropped", (e) => {
-  //     done();
-  //   });
+    conn.on( "dropped", (e) => {
+      done();
+    });
 
-  //   conn.start();
-  // });
+    conn.start();
+  });
 
-  // it('should reconnect 5 times', function(done) {
-  //   this.timeout(10000);
-  //   let dropCount = 0;
-  //   let estCount = 0;
+  it('should reconnect 5 times', function(done) {
+    this.timeout(10000);
+    let dropCount = 0;
+    let estCount = 0;
 
-  //   conn.on( "established", (e) => {
-  //     e.should.have.property('ip').equal('127.0.0.1');
-  //     e.should.have.property('port').equal(7000 );
-	// 		++estCount;
+    conn.on( "established", (e) => {
+      e.should.have.property('ip').equal('127.0.0.1');
+      e.should.have.property('port').equal(7000 );
+			++estCount;
 			
-	// 		console.log( 'active conn established' );
+			console.log( 'active conn established' );
 
-  //     if( estCount < 5 ){
-  //       conn.stop();
-  //       conn.start();
-  //     } else{
-  //       expect(estCount).to.equal(5);
-  //       expect(dropCount).to.equal(4);
-  //       done();
-  //     }
-  //   })
+      if( estCount < 5 ){
+        conn.stop();
+        conn.start();
+      } else{
+        expect(estCount).to.equal(5);
+        expect(dropCount).to.equal(4);
+        done();
+      }
+    })
 
-  //   conn.on( "dropped", (e) => {
-	// 		console.log( 'active conn dropped' );
-  //     ++dropCount;
-  //   });
+    conn.on( "dropped", (e) => {
+			console.log( 'active conn dropped' );
+      ++dropCount;
+    });
 
-  //   conn.start();
-  // });
+    conn.start();
+  });
 
-  // it('should reconnect 3 times and make sure remote entity is alive', function(done) {
-  //   this.timeout(10000);
-  //   let dropCount = 0;
-  //   let estCount = 0;
+  it('should reconnect 3 times and make sure remote entity is alive', function(done) {
+    this.timeout(10000);
+    let dropCount = 0;
+    let estCount = 0;
 
-  //   conn.on( "established", (e) => {
-  //     e.should.have.property('ip').equal('127.0.0.1');
-  //     ++estCount;
+    conn.on( "established", (e) => {
+      e.should.have.property('ip').equal('127.0.0.1');
+      ++estCount;
 
-  //     if( estCount < 3 ){
-  //       conn.stop();
-  //       conn.start();
-  //     } 
-  //   })
+      if( estCount < 3 ){
+        conn.stop();
+        conn.start();
+      } 
+    })
 
-  //   conn.on( "dropped", (e) => {
-  //     ++dropCount;
-  //   });
+    conn.on( "dropped", (e) => {
+      ++dropCount;
+    });
 
-  //   conn.on( "alive", (e) => {
-  //     done();
-  //   });
+    conn.on( "alive", (e) => {
+      done();
+    });
 
-  //   conn.start();
-	// });
+    conn.start();
+	});
 	
-	// it('should reply with select rsp error code if recv extra select req', function(done) {
-  //   this.timeout(10000);
-  //   let count = 0;
+	it('should reply with select rsp error code if recv extra select req', function(done) {
+    this.timeout(10000);
+    let count = 0;
 
-  //   conn.on( "established", (e) => {
-	// 		conn.send( new SelectReq() )
-	// 		++count;
-	// 	})
+    conn.on( "established", (e) => {
+			conn.send( new SelectReq() )
+			++count;
+		})
 
-	// 	conn.on( "error", m => {
-	// 		if( m instanceof BadSelectRspCodeError && 3 == count ){
-	// 			conn.stop();
-	// 			done();
-	// 		}
-	// 	} )
+		conn.on( "error", m => {
+			if( m instanceof BadSelectRspCodeError && 3 == count ){
+				conn.stop();
+				done();
+			}
+		} )
 	
-  //   conn.start();
-  // });
+    conn.start();
+  });
 
-	// it('should refuse all messages before becoming selected', function(done) {
-  //   this.timeout(10000);
+	it('should refuse all messages before becoming selected', function(done) {
+    this.timeout(10000);
 		
-	// 	conn.debug = {
-	// 		doNotSendSelectReq: true
-	// 	};
+		conn.debug = {
+			doNotSendSelectReq: true
+		};
 
-	// 	conn.start();
+		conn.start();
 
-	// 	conn.on( "connected", p => conn.send( DataMessage
-	// 		.builder
-	// 		.device(1)
-	// 		.stream(1)
-	// 		.context(98126)
-	// 		.replyExpected(false)
-	// 		.func(1)
-	// 		.items(
-	// 			DataItem.i8( "", 8007199254740991, 32178918723, -7891273712836 ))
-	// 		.build() ) )
+		conn.on( "connected", p => conn.send( DataMessage
+			.builder
+			.device(1)
+			.stream(1)
+			.context(98126)
+			.replyExpected(false)
+			.func(1)
+			.items(
+				DataItem.i8( "", 8007199254740991, 32178918723, -7891273712836 ))
+			.build() ) )
 		
-	// 	server.on( "error", e => {
-	// 		if( e instanceof ExpectedSelectReqError ){
-	// 			delete conn.debug;
-	// 		}
-	// 	});
+		server.on( "error", e => {
+			if( e instanceof ExpectedSelectReqError ){
+				delete conn.debug;
+			}
+		});
 
-	// 	conn.on( "established", p => done() ) ;
+		conn.on( "established", p => done() ) ;
 
-	// });
+	});
 
-	// it('should refuse garbage select rsp', function(done) {
-  //   //this.timeout(10000);
+	it('should refuse garbage select rsp', function(done) {
+    //this.timeout(10000);
 
-	// 	conn.start();
-	// 	let rsp = new SelectRsp( 1, Message.generateContext(), 12 )
+		conn.start();
+		let rsp = new SelectRsp( 1, Message.generateContext(), 12 )
 
-	// 	conn.on( "established", p => conn.send( rsp ) )
+		conn.on( "established", p => conn.send( rsp ) )
 		
-	// 	conn.on( "recv", e => {
-	// 		if( e instanceof RejectReq && e.context == rsp.context ){
-	// 			done()
-	// 		}
-	// 	});
-	// });
+		conn.on( "recv", e => {
+			if( e instanceof RejectReq && e.context == rsp.context ){
+				done()
+			}
+		});
+	});
 	
-	// it('should refuse garbage replies', function(done) {
-  //   this.timeout(10000);
+	it('should refuse garbage replies', function(done) {
+    this.timeout(10000);
 
-	// 	conn.start();
+		conn.start();
 
-	// 	const m = DataMessage
-	// 		.builder
-	// 		.device(1)
-	// 		.stream(1)
-	// 		.context(98126)
-	// 		.replyExpected(false)
-	// 		.func(2) /*!!!*/
-	// 		.items(
-	// 			DataItem.i8( "", 8007199254740991, 32178918723, -7891273712836 ))
-	// 		.build();
+		const m = DataMessage
+			.builder
+			.device(1)
+			.stream(1)
+			.context(98126)
+			.replyExpected(false)
+			.func(2) /*!!!*/
+			.items(
+				DataItem.i8( "", 8007199254740991, 32178918723, -7891273712836 ))
+			.build();
 
-	// 	conn.on( "established", p => {
-	// 		console.log( 'established' )
-	// 		conn.send( m )
-	// 	} )
+		conn.on( "established", p => {
+			console.log( 'established' )
+			conn.send( m )
+		} )
 		
-	// 	conn.on( "recv", e => {
-	// 		if( e instanceof RejectReq && e.context == m.context ){
-	// 			done()
-	// 		}
-	// 	});
-	// });
+		conn.on( "recv", e => {
+			if( e instanceof RejectReq && e.context == m.context ){
+				done()
+			}
+		});
+	});
 
-	// it('should refuse garbage link test replies', function(done) {
-  //   this.timeout(10000);
+	it('should refuse garbage link test replies', function(done) {
+    this.timeout(10000);
 	
-	// 	conn.start();
+		conn.start();
 
-	// 	const lt = new LinkTestRsp( Message.generateContext() );
+		const lt = new LinkTestRsp( Message.generateContext() );
 
-	// 	conn.on( "established", p => conn.send( lt ))
+		conn.on( "established", p => conn.send( lt ))
 		
-	// 	conn.on( "recv", e => {
-	// 		if( e instanceof RejectReq && e.context == lt.context ){
-	// 			done()
-	// 		}
-	// 	});
+		conn.on( "recv", e => {
+			if( e instanceof RejectReq && e.context == lt.context ){
+				done()
+			}
+		});
 
 		
 
-	// });
+	});
 
 	it('should separate (client->server)', function(done) {
     this.timeout(10000);

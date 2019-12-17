@@ -82,6 +82,7 @@ describe('Communication passive', () => {
 			done();
 		}, 500);
 
+		conn.removeAllListeners();
 		delete conn.debug;
 	})
 
@@ -191,7 +192,7 @@ describe('Communication passive', () => {
 		this.timeout(5000);
 
 		server.on("established", (e) => {
-			setTimeout(() => server.stop(), 1000);
+			setTimeout(() => server.stop(), 100);
 		})
 
 		server.on("dropped", (e) => {
@@ -201,24 +202,24 @@ describe('Communication passive', () => {
 		server.start();
 	});
 
-	// it('should establish physical connection but not selected', function (done) {
-	// 	this.timeout(5000);
+	it('should establish physical connection but not selected', function (done) {
+		this.timeout(5000);
 
-	// 	server.on("timeout", (t, m) => {
-	// 		if (7 === t) {
-	// 			done();
-	// 		}
-	// 	})
+		server.on("timeout", (t, m) => {
+			if (7 === t) {
+				done();
+			}
+		})
 
-	// 	conn.debug = {
-	// 		doNotSendSelectReq: true
-	// 	};
+		conn.debug = {
+			doNotSendSelectReq: true
+		};
 
-	// 	server.start();
-	// });
+		server.start();
+	});
 
 	it('should establish connection after a few attempts (recv t7)', function (done) {
-		this.timeout(10000);
+		this.timeout(12000);
 
 		var index = 0;
 
@@ -500,15 +501,173 @@ describe('Communication passive', () => {
 	});
 
 
+	it('remote entity should recv list of our data messages and reply (conn->server) ', function (done) {
+		this.timeout( 5000 );
 
+		let messages = [ ...createDataMessageList( 10, true )]
+		let replies = [];
+
+		messages.forEach( m => replies.push( createReplyDataMessage(
+			m, ...createRandomItems( m.items.length ) ) ) );
+
+		conn
+			.on("established", (e) => messages.forEach( x => conn.send(x) ))
+			.on( "timeout", (t, m ) => assert.fail( "T3 (no reply)" )  )
+
+		
+		let index2 = 0;
+
+		conn.on("recv", mRecv => {
+			
+			if (mRecv.kind == Message.Type.DataMessage) {
+				// console.log(JSON.stringify(mRecv));
+				// console.log(JSON.stringify(replies[ index2 ]));
+
+				if (mRecv.equals(replies[ index2 ])) {
+					++index2;
+
+					if( index2 == replies.length ){
+						done();
+					}
+				} 
+					
+
+			}
+		})
+
+		let index = 0
+
+		server.on("recv", mRecv => {
+			if (mRecv.kind == Message.Type.DataMessage) {
+				if (mRecv.equals(messages[ index ] ) ) {
+					server.send( replies[ index++ ] )
+				} 
+			}
+		})
+
+		server.start();
+
+	});
+
+	it('remote entity should recv list of our data messages and reply (conn->server send next only after reply) ', function (done) {
+		this.timeout( 5000 );
+
+		let messages = [ ...createDataMessageList( 10, true )]
+		let replies = [];
+		let index = 0;
+
+		messages.forEach( m => replies.push( createReplyDataMessage(
+			m, ...createRandomItems( m.items.length ) ) ) );
+
+		conn
+			.on("established", (e) =>{ conn.send(messages[ index ]);})
+			.on( "timeout", (t, m ) => assert.fail( "T3 (no reply)" )  )
+
+		conn.on("recv", mRecv => {
+			
+			if (mRecv.kind == Message.Type.DataMessage) {
+				// console.log(JSON.stringify(mRecv));
+				// console.log(JSON.stringify(replies[ index2 ]));
+
+				if (mRecv.equals(replies[ index ])) {
+					++index;
+
+					if( index == replies.length ){
+						done();
+					} else{
+						conn.send(messages[ index ])
+					}
+				} 
+					
+
+			}
+		})
+
+		server.on("recv", mRecv => {
+			if (mRecv.kind == Message.Type.DataMessage) {
+				if (mRecv.equals(messages[ index ] ) ) {
+					server.send( replies[ index ] )
+				} 
+			}
+		})
+
+		server.start();
+
+	});
+
+	it('remote entity should recv list of our data messages and reply (conn->server + T3 ) ', function (done) {
+		this.timeout( 5000 );
+
+		let messages = [ ...createDataMessageList( 10, true )]
+		let replies = [];
+
+		var failedReplyIndex = getRandomUInt( 10 );
+
+		messages.forEach( m => replies.push( createReplyDataMessage(
+			m, ...createRandomItems( m.items.length ) ) ) );
+
+		conn
+			.on("established", (e) => messages.forEach( x => conn.send(x) ))
+			.on( "timeout", (t, m ) => {
+				//console.log( index2 + " " + failedReplyIndex );
+				
+				if (m.equals(messages[ failedReplyIndex ]) && index2 >= messages.length - 1 ) {
+					done();
+				}
+			}  )
+
+		
+		let index2 = 0;
+
+		conn.on("recv", mRecv => {
+			if (mRecv.kind == Message.Type.DataMessage) {
+				// console.log(JSON.stringify(mRecv));
+				// console.log(JSON.stringify(replies[ index2 ]));
+				if( index2 == failedReplyIndex ){
+					++index2;
+
+				}
+
+				if (mRecv.equals(replies[ index2 ])) {
+					++index2;
+				}
+					
+
+			}
+		})
+
+		let index = 0
+
+		server.on("recv", mRecv => {
+			if (mRecv.kind == Message.Type.DataMessage) {
+				if (mRecv.equals(messages[ index ] ) ) {
+					if( index != failedReplyIndex ){
+						server.send( replies[ index++ ] )
+					} else {
+						index++;
+					}
+				} 
+
+
+			}
+		})
+
+		server.start();
+
+
+	});
 
 
  });
 
+
+
+	
+
 function createDataMessage(d, s, f, re, ...items) {
 	return DataMessage
 		.builder
-		.device(s)
+		.device(d)
 		.stream(s)
 		.replyExpected(re)
 		.func(f)
@@ -518,7 +677,20 @@ function createDataMessage(d, s, f, re, ...items) {
 		.build();
 }
 
-function createDataMessageList(count) {
+function createReplyDataMessage( m, ...items ){
+	return DataMessage
+		.builder
+		.device(m.device)
+		.stream(m.stream)
+		.replyExpected(false)
+		.func(m.func + 1 )
+		.context( m.context )
+		.items(
+			...items)
+		.build();
+}
+
+function createDataMessageList(count, needReply = false) {
 	var arr = [];
 
 	for( var i = 0; i < count; ++i ){
@@ -531,8 +703,9 @@ function createDataMessageList(count) {
 		f+= ( f%2 == 0 ? 1 : 0 );
 
 		var itemCount = getRandomInt( 1, 100 );
+		//itemCount = 1;
 		
-		arr.push( createDataMessage( 1, s, f, false, ...createRandomItems( itemCount ) ) )
+		arr.push( createDataMessage( 1, s, f, needReply, ...createRandomItems( itemCount ) ) )
 		// var l = list();
 		// console.log( l.toString() );
 		// arr.push( createDataMessage( 1, s, f, false, l ) )

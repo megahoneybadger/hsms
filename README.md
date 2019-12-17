@@ -1,5 +1,6 @@
 
 
+
 ![](https://www.semi.org/themes/custom/semi/logo.svg)
 
 [![Build Status](https://api.travis-ci.com/megahoneybadger/hsms.svg?branch=master)](https://travis-ci.com/megahoneybadger/hsms) [![Coverage Status](https://coveralls.io/repos/github/megahoneybadger/hsms/badge.svg?branch=master)](https://coveralls.io/github/megahoneybadger/hsms?branch=master)
@@ -435,8 +436,8 @@ Lists:
 		DataItem.a( "item-name-9", "very long string", 5 ),
 		DataItem.i2( "item-name-3", 12  ),
 		DataItem.list( "child-1",
-		DataItem.u2( "age", 12  ),
-		DataItem.a( "name", "John Smith", 30  ) )
+			DataItem.u2( "age", 12  ),
+			DataItem.a( "name", "John Smith", 30  ) )
 	 );
 	
 	 console.log( list.toString() );
@@ -506,12 +507,13 @@ Here is the example on how to create your first data message:
 When message building is over we are ready to send it. But before, let's summarize all the steps you have to take to send the message:
 
  - create a configuration object where you specify network and timeout details
- - create a connection based on the configuration, subscribe to  events you need and call a method 'start'
+  - create a connection based on the configuration, subscribe to  events you need and call a method 'start'
  - create a data message with required stream and function numbers, add data items 
  - send the message via 'send' method of the created connection object
 
-And here is the full sample: as soon as two driver gets connected a passive connection sends a data message and does not expect a reply.
+Let's analyze a few examples:
 
+*Example  #1: send a message which does not need a reply.*
 
 	const {
 		DataItem,
@@ -537,7 +539,7 @@ And here is the full sample: as soon as two driver gets connected a passive conn
 		.builder
 		.device( 1 )
 		.stream( 5 )
-		.replyExpected( false)
+		.replyExpected( false /*!!!*/)
 		.func( 1 )
 		.items(
 			DataItem.f4( "temperature", 12.1  ),
@@ -553,18 +555,83 @@ And here is the full sample: as soon as two driver gets connected a passive conn
 		.build());
 
 	server
-		.on("established", p  => server.send( m ));
+		.on("established", p  => server.send( m )); 
 
 	server.start();
 	conn.start();
 
+As soon as two driver instances gets connected a passive connection sends a data message and does not expect a reply.
 
-TODO:
-message callbacks and messages with replies
+*Example  #2: send a message and get a reply.*
+	
+	const {
+		DataItem,
+		DataMessage,
+		Config,
+		Message,
+		ConnectionMode,
+		Connection } = require('hsms-driver')
 
+	const conn = new Connection(Config
+		.builder
+		.ip("127.0.0.1")
+		.port(7000)
+		.mode(ConnectionMode.Active)
+		.build());
 
+	conn
+		.on("established", p  => console.log( `connection established: ${p.ip}:${p.port}` ))
+		.on("dropped", () => console.log(`connection dropped`))
+		.on("timeout", (t, m) => console.log( `client t${t}` ) )
+		.on( "recv", m => {
+			if( m.kind == Message.Type.DataMessage){
+				console.log( `client recv ${m.toLongString()}` );
+				switch( m.toString() ){
+					case "S1F1":
+						conn.send( DataMessage
+							.builder
+							.reply( m )
+							.items(
+								DataItem.a( "name", "bob", 10  ),
+								DataItem.u2( "age", 12 ),
+								DataItem.list( "hobbies", 
+									DataItem.a( "hobby-1", "basketball", 10  ),
+									DataItem.a( "hobby-2", "books", 15  )))
+							.build() )
+						break;
+				}
+			}
+		} );
 
+	let m = DataMessage
+		.builder
+		.device( 1 )
+		.stream( 1 )
+		.func( 1 )
+		.items(
+			DataItem.a( "name", "alice", 10  ),
+			DataItem.u2( "age", 10 ))
+		.build();
 
+	const server = new Connection(Config
+		.builder
+		.ip("127.0.0.1")
+		.port(7000)
+		.mode(ConnectionMode.Passive)
+		.build());
 
+	server
+		.on("established", p  => server.send( m ))
+		.on("timeout", (t, m) => console.log( `server t${t}` ) )
+		.on( "recv", m => {
+			if( m.kind == Message.Type.DataMessage){
+				console.log( `server recv ${m.toLongString()}` );
+			}
+		} );
 
-		
+	server.start();
+	conn.start();
+
+As soon as two drivers instances gets connected a passive connection sends a data message and receives a reply.
+
+TODO: message callback example, control messages etc.
