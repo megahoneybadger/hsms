@@ -56,12 +56,13 @@ class ValidationHelper {
 		return (typeof s === 'string' || s instanceof String);
 	}
 
+	static isFunction(c) {
+		return (typeof c === 'function' || c instanceof Function );
+	}
+
 	static isBoolean(b) {
 		return (typeof b === 'boolean' || b instanceof Boolean );
 	}
-
-
-	
 
 	static isUndefined(f) {
 		return typeof f === "undefined"

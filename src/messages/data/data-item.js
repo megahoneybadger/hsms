@@ -141,10 +141,6 @@ module.exports = (function () {
 				}
 			}
 
-		
-			
-			// todo: list
-
 			return true;
 		}
 

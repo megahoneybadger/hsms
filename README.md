@@ -236,10 +236,12 @@ Physical connection has been established and the driver entered the selected sta
 Connection has been dropped and the driver entered not connected state.
 - *recv*
 New message has been received.
+- *trx-complete*
+Transaction has been closed (i.e. a primary message has been sent and  proper reply has been received ). In case of timeout this event will still be raised with an empty reply and timeout code (e.g. 3 for T3).
 - *timeout*
 Driver fired a control timeout (e.g. connection did not receive a reply).
 - *error*
-Error occured when handling a message.
+Error occurred when handling a message.
 
 Here is the example:
 
@@ -539,7 +541,7 @@ Let's analyze a few examples:
 		.builder
 		.device( 1 )
 		.stream( 5 )
-		.replyExpected( false /*!!!*/)
+		.replyExpected( false)
 		.func( 1 )
 		.items(
 			DataItem.f4( "temperature", 12.1  ),
@@ -560,7 +562,7 @@ Let's analyze a few examples:
 	server.start();
 	conn.start();
 
-As soon as two driver instances gets connected a passive connection sends a data message and does not expect a reply.
+As soon as two driver gets connected a passive connection sends a data message and does not expect a reply.
 
 *Example  #2: send a message and get a reply.*
 	
@@ -632,6 +634,207 @@ As soon as two driver instances gets connected a passive connection sends a data
 	server.start();
 	conn.start();
 
-As soon as two drivers instances gets connected a passive connection sends a data message and receives a reply.
+As soon as two driver instances gets connected a passive connection sends a data message and receives a reply.
 
-TODO: message callback example, control messages etc.
+*Example  #3: send a message but get a timeout  instead of a reply.*
+
+	const {
+    	DataItem,
+    	DataMessage,
+    	Config,
+    	Message,
+    	ConnectionMode,
+    	Connection,
+    	Timers// +++ } = require('hsms-driver')
+    
+    const conn = new Connection(Config
+    	.builder
+    	.ip("127.0.0.1")
+    	.port(7000)
+    	.mode(ConnectionMode.Active)
+    	.build());
+    
+    conn
+    	.on("established", p  => console.log( `connection established: ${p.ip}:${p.port}` ))
+    	.on("dropped", () => console.log(`connection dropped`))
+    	.on("timeout", (t, m) => console.log( `client t${t}` ) )
+    	.on( "recv", m => {
+    		if( m.kind == Message.Type.DataMessage){
+    			console.log( `client recv ${m.toLongString()}` );
+    			console.log( "client does not answer on purpose" );
+    		}
+    	} );
+    
+    
+    const server = new Connection(Config
+    	.builder
+    	.ip("127.0.0.1")
+    	.port(7000)
+    	.timers( new Timers( 2 ) ) // decrease default T3 time
+    	.mode(ConnectionMode.Passive)
+    	.build());
+    
+    server
+    	.on("established", p  =>
+    		server.send( DataMessage
+    			.builder
+    			.device( 1 )
+    			.stream( 1 )
+    			.func( 1 )
+    			.items(
+    				DataItem.a( "name", "alice", 10  ),
+    				DataItem.u2( "age", 10 ))
+    			.build() ))
+    	.on("timeout", (t, m) => console.log( `server t${t};this message caused a problem: ${m.toLongString()}` ) )
+    	.on( "recv", m => {
+    		if( m.kind == Message.Type.DataMessage){
+    			console.log( `server recv ${m.toLongString()}` );
+    		}
+    	} );
+    
+    server.start();
+    conn.start();
+   
+Passive connection sends a message but does not get a reply.  We configured T3 timeout: changed default value to 2 seconds. As a result, two seconds after sending a message a passive connection gets a timeout. Pay attention:
+
+ - By default all data messages expect a reply.
+ - Timeout event provides a not answered message as a parameter 
+ 
+ *Example  #4: transaction complete event.*
+
+	const {
+    	DataItem,
+    	DataMessage,
+    	Config,
+    	Message,
+    	ConnectionMode,
+    	Connection } = require('hsms-driver')
+    	
+    const conn = new Connection(Config
+ 			.builder
+ 			.ip("127.0.0.1")
+ 			.port(7000)
+ 			.mode(ConnectionMode.Active)
+ 			.build());
+
+	conn
+		.on( "recv", m => {
+			if( m.kind == Message.Type.DataMessage){
+				switch( m.toString() ){
+					case "S1F1":
+						conn.send( DataMessage
+							.builder
+							.reply( m )
+							.items(
+								DataItem.a( "name", "bob", 10  ),
+								DataItem.u2( "age", 12 ),
+								DataItem.list( "hobbies", 
+									DataItem.a( "hobby-1", "basketball", 10  ),
+									DataItem.a( "hobby-2", "books", 15  )))
+							.build() )
+						break;
+				}
+			}
+		} );
+	
+	let m = DataMessage
+		.builder
+		.device( 1 )
+		.stream( 1 )
+		.func( 1 )
+		.items(
+			DataItem.a( "name", "alice", 10  ),
+			DataItem.u2( "age", 10 ))
+		.build();
+	
+	const server = new Connection(Config
+		.builder
+		.ip("127.0.0.1")
+		.port(7000)
+		.mode(ConnectionMode.Passive)
+		.build());
+	
+	server
+		.on("established", p  => server.send( m ))
+		.on( "trx-complete", (m, r) => {
+			console.log( `trx complete` )
+			console.log( `sent: ${m.toLongString()}` )
+			console.log( `recv: ${r.toLongString()}` )
+		} );
+	
+	server.start();
+	conn.start();
+	
+ *Example  #5: message complete callback.*
+ 
+	const {
+    	DataItem,
+    	DataMessage,
+    	Config,
+    	Message,
+    	ConnectionMode,
+    	Connection } = require('hsms-driver')
+	
+	const conn = new Connection(Config
+		.builder
+		.ip("127.0.0.1")
+		.port(7000)
+		.mode(ConnectionMode.Active)
+		.build());
+	
+	conn
+		.on( "recv", m => {
+			if( m.kind == Message.Type.DataMessage){
+				switch( m.toString() ){
+					case "S1F1":
+						conn.send( DataMessage
+							.builder
+							.reply( m )
+							.items(
+								DataItem.a( "name", "bob", 10  ),
+								DataItem.u2( "age", 12 ),
+								DataItem.list( "hobbies", 
+									DataItem.a( "hobby-1", "basketball", 10  ),
+									DataItem.a( "hobby-2", "books", 15  )))
+							.build() )
+						break;
+				}
+			}
+		} );
+	
+	let m = DataMessage
+		.builder
+		.device( 1 )
+		.stream( 1 )
+		.func( 1 )
+		.complete( (m, r, tc) => {
+			console.log( `custom message complete handler:` )	
+			console.log( `primary message ${m.toLongString()}` )	
+			console.log( `reply message ${r.toLongString()}` )	
+		} )
+		.items(
+			DataItem.a( "name", "alice", 10  ),
+			DataItem.u2( "age", 10 ))
+		.build();
+	
+	const server = new Connection(Config
+		.builder
+		.ip("127.0.0.1")
+		.port(7000)
+		.mode(ConnectionMode.Passive)
+		.build());
+	
+	server
+		.on("established", p  => server.send( m ));
+	
+	server.start();
+	conn.start();
+	
+As you can see, this example is very  similar to the previous one, but here we are using message's complete handler instead of connection event. 
+
+Pay attention: 
+
+ - Only primary messages may have a complete handler.
+ - If a message does not get a reply, event will still be raised  with an empty reply and timeout code (e.g. 3 for T3). In other words, you may understand that this message caused a timeout.
+
+ 

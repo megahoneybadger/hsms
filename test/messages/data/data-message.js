@@ -43,18 +43,21 @@ describe('Data Message', () => {
 			.device( 1 )
 			.context( 2 )
 			.stream( 3 )
-			.func( 4 )
+			.complete( () => 0 )
+			.func( 3 )
 			.replyExpected( true )
 			.description( "this is a desc" )
 			.build();
 
+			message.should.have.property( 'complete' )
 			message.should.have.property( 'device' ).equal( 1 );
 			message.should.have.property( 'context' ).equal( 2 );
 			message.should.have.property( 'stream' ).equal( 3 );
-			message.should.have.property( 'func' ).equal( 4 );
+			message.should.have.property( 'func' ).equal( 3 );
 			message.should.have.property( 'replyExpected' ).equal( true );
 			message.should.have.property( 'items' ).to.be.instanceof(Array).and.to.be.empty;
 			message.should.have.property( 'description' ).equal( "this is a desc" );
+			message.should.have.property( 'time' );
 	});
 
 	it('should be created with default parameters', () => {
@@ -62,6 +65,7 @@ describe('Data Message', () => {
 			.builder
 			.build();
 
+			message.should.not.have.property( 'complete' );
 			message.should.have.property( 'device' ).equal( 0 );
 			message.should.have.property( 'context' ).equal( 0 );
 			message.should.have.property( 'stream' ).equal( 0 );
@@ -69,6 +73,7 @@ describe('Data Message', () => {
 			message.should.have.property( 'replyExpected' ).equal( true );
 			message.should.have.property( 'description' ).equal( "" );
 			message.should.have.property( 'items' ).to.be.instanceof(Array).and.to.be.empty;
+			message.should.have.property( 'time' );
 	});
 
 	it('should not allow to change the properties', () => {
@@ -89,6 +94,7 @@ describe('Data Message', () => {
 		m.description = [ 1, 2 ];
 		m.items = "wrong array value";
 		m.replyExpected = 123;
+		
 
 		m.should.have.property( 'device' ).equal( 112 );
 		m.should.have.property( 'context' ).equal( 223 );
@@ -106,7 +112,8 @@ describe('Data Message', () => {
 			.context( 223 )
 			.stream( 33 )
 			.replyExpected( "error" )
-			.func( 44 )
+			.func( 43 )
+			.complete( () => 0 )
 			.description( "test1" )
 			.build();
 
@@ -117,13 +124,61 @@ describe('Data Message', () => {
 		delete m.description;
 		delete m.replyExpected;
 		delete m.items;
+		delete m.complete;
+		delete m.time;
+
+		m.should.have.property( 'complete' );
+		m.should.have.property( 'device' ).equal( 112 );
+		m.should.have.property( 'context' ).equal( 223 );
+		m.should.have.property( 'stream' ).equal( 33 );
+		m.should.have.property( 'func' ).equal( 43 );
+		m.should.have.property( 'description' ).equal( "test1" );
+		m.should.have.property( 'replyExpected' ).equal( false );
+		m.should.have.property( 'items' ).to.be.instanceof(Array).and.to.be.empty;
+		m.should.have.property( 'time' );
+	});
+
+	it('should not allow complete for reply messages', () => {
+		const m = DataMessage
+			.builder
+			.device( 112 )
+			.context( 223 )
+			.stream( 33 )
+			.complete( () => console.log( "complete handler" ) )
+			.func( 44 )
+			.description( "test1" )
+			.build();
+
+		m.should.not.have.property( 'complete' )
 
 		m.should.have.property( 'device' ).equal( 112 );
 		m.should.have.property( 'context' ).equal( 223 );
 		m.should.have.property( 'stream' ).equal( 33 );
 		m.should.have.property( 'func' ).equal( 44 );
 		m.should.have.property( 'description' ).equal( "test1" );
-		m.should.have.property( 'replyExpected' ).equal( false );
+		m.should.have.property( 'replyExpected' ).equal( true );
+		m.should.have.property( 'items' ).to.be.instanceof(Array).and.to.be.empty;
+	});
+
+	it('should create  complete for reply messages', () => {
+		const m = DataMessage
+			.builder
+			.device( 112 )
+			.context( 223 )
+			.stream( 33 )
+			.complete( () => console.log( "complete handler" ) )
+			.func( 44 )
+			.description( "test1" )
+			.build();
+
+		m.should.not.have.property( 'complete' )
+
+		m.should.have.property( 'device' ).equal( 112 );
+		m.should.have.property( 'context' ).equal( 223 );
+		m.should.have.property( 'stream' ).equal( 33 );
+		m.should.have.property( 'func' ).equal( 44 );
+		m.should.have.property( 'description' ).equal( "test1" );
+		m.should.have.property( 'replyExpected' ).equal( true );
 		m.should.have.property( 'items' ).to.be.instanceof(Array).and.to.be.empty;
 	});
 	
@@ -830,6 +885,17 @@ describe('Data Message', () => {
 	
     expect(Buffer.compare(encodedArray, expectedArray)).equal(0);
 	});
+
+	it('should throw an exception if passing non function complete', () => {
+    expect(() => {
+			DataMessage
+				.builder
+				.complete("string");
+    })
+    .to.throw(InvalidFormatError);
+	});
+
+	
 
 	//  
 

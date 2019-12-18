@@ -23,6 +23,7 @@ module.exports = (function () {
 			const s = builder.stream();
 			const f = builder.func();
 			const d = builder.description();
+			const c = builder.complete();
 			const re = builder.replyExpected();
 			let context = builder.context();
 			const isPrimary = (0 != (f & 1));
@@ -73,6 +74,18 @@ module.exports = (function () {
 				enumerable: true,
 				configurable: false,
 			});
+
+			if( this.isPrimary ){
+				// Gets message complete callback function.
+				// It will be executed when a connection gets
+				// a reply to this primary message
+				Object.defineProperty(this, "complete", {
+					get: function () { return c; },
+					enumerable: true,
+					configurable: false,
+				});
+			}
+			
 
 		
 		}
@@ -192,7 +205,8 @@ module.exports = (function () {
 				func: 0,
 				description: '',
 				replyExpected: true,
-				items: []
+				items: [],
+				complete: undefined
 			});
 		}
 
@@ -246,6 +260,20 @@ module.exports = (function () {
 			}
 
 			props.get(this).description = d;
+
+			return this;
+		}
+
+		complete(c) {
+			if (validator.isUndefined(c)) {
+				return props.get(this).complete;
+			}
+
+			if( !validator.isFunction( c ) ){
+				throw new InvalidFormatError();
+			}
+
+			props.get(this).complete = c;
 
 			return this;
 		}

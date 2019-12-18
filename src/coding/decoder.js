@@ -347,7 +347,8 @@ module.exports = (function () {
     var m = (e === 0) ? (bits & 0x7fffff)<<1 : (bits & 0x7fffff) | 0x800000;
     var f = sign * m * Math.pow(2, e - 150);
     return f;
-  }  
+	}  
+	
   function decodeF8( b, len ){
     let nominalLen = 8;
 
