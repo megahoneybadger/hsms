@@ -45,61 +45,64 @@ $ npm i hsms-driver
 ```
 Let's assume that you have a remote HSMS entity waiting for incoming connections (if you do not just follow the instructions below)
 
-Now open index.js file and enter the following code:
+Create a new file called index.js and enter the following code:
 
-	const {
-		Config,
-		ConnectionMode,
-		Connection } = require('hsms-driver')
+```javascript
+const {
+  Config,
+  ConnectionMode,
+  Connection } = require('hsms-driver')
 
-    const config = Config
-    	.builder
-    	.ip("192.168.0.1" /*enter the address of a remote HSMS entity*/ ) 
-    	.port(7000 /*enter the port it's listening at*/) 
-    	.mode(ConnectionMode.Active)
-    	.build();
+const config = Config
+  .builder
+  .ip("192.168.0.1" /*enter the address of a remote HSMS entity*/ ) 
+  .port(7000 /*enter the port it's listening at*/) 
+  .mode(ConnectionMode.Active)
+  .build();
     
-    const conn = new Connection(config);
+const conn = new Connection(config);
     
-	conn
-		.on("dropped", () => console.log(`connection dropped`)	)
-		.on("established", p => console.log( "connection established" )	)
-	
-	conn.start();
-	
+conn
+  .on("dropped", () => console.log(`connection dropped`)  )
+  .on("established", p => console.log( "connection established" )  )
+  
+conn.start();
+```
 This app is trying to connect to a remote HSMS entity which is listening  at IP 192.168.0.1 on port 7000. After establishing a connection driver raises "established" event.  
 
 In case if you do not have a working HSMS entity you can use a loopback address and two connection objects:
 
-  	const {
-		Config,
-		ConnectionMode,
-		Connection } = require('hsms-driver')
-		
-    const connA = new Connection(Config
-    	.builder
-    	.ip("127.0.0.1")
-    	.port(7000)
-    	.mode(ConnectionMode.Active)
-    	.build());
-    	
-   	const connP = new Connection(Config
-    	.builder
-    	.ip("127.0.0.1")
-    	.port(7000)
-    	.mode(ConnectionMode.Passive)
-    	.build());
+```javascript
+const {
+  Config,
+  ConnectionMode,
+  Connection } = require('hsms-driver')
     
-	connA 
-		.on("dropped", () => console.log(`connection dropped`)	)
-		.on("established", p => console.log( "connection established" )	)
-    
-	connP 
-		.on("dropped", () => console.log(`client connected`)	)
-		.on("established", p => console.log( "client disconnected" )	)
-	
-	connA.start();
-	connP.start();
+const connA = new Connection(Config
+  .builder
+  .ip("127.0.0.1")
+  .port(7000)
+  .mode(ConnectionMode.Active)
+  .build());
+      
+const connP = new Connection(Config
+  .builder
+  .ip("127.0.0.1")
+  .port(7000)
+  .mode(ConnectionMode.Passive)
+  .build());
+
+connA 
+  .on("dropped", () => console.log(`connection dropped`)  )
+  .on("established", p => console.log( "connection established" )  )
+
+connP 
+  .on("dropped", () => console.log(`client connected`)  )
+  .on("established", p => console.log( "client disconnected" )  )
+
+connA.start();
+connP.start();
+```
 
 In this case the app creates both active and passive connections and make them connect to each other.
 
@@ -109,60 +112,65 @@ The engine of HSMS message exchange is a connection object. In order to create a
 #### Config
 To create a new configuration we should export a config object and set a few required properties.
 
- 	const {
-		Config,
-		ConnectionMode } = require('hsms-driver')
-		
+```javascript
+const {
+  Config,
+  ConnectionMode } = require('hsms-driver')
+```
 First of all we should specify connection mode: active or passive. The passive mode is used when the local entity listens for and accepts a connect procedure initiated by the remote entity. The active mode is used when the connect  procedure is initiated by the local entity.
 
 Here is the example of the configuration for an active connection:
 
-	Config
-		.builder
-		.mode(ConnectionMode.Active)
-		.ip("127.0.0.1"/*IP of a passive remote entity*/)
-		.port(7000 /*port of a passive remote entity*/)
-		.build();
+```javascript
+Config
+  .builder
+  .mode(ConnectionMode.Active)
+  .ip("127.0.0.1"/*IP of a passive remote entity*/)
+  .port(7000 /*port of a passive remote entity*/)
+  .build();
+```
 And this is for the passive one:
 
-	Config
-		.builder
-		.mode(ConnectionMode.Passive)
-		.ip("127.0.0.1"/*IP a local entity should bind to*/)
-		.port(7000 /*port a local entity should listen at*/)
-		.build();
-		
+```javascript
+Config
+  .builder
+  .mode(ConnectionMode.Passive)
+  .ip("127.0.0.1"/*IP a local entity should bind to*/)
+  .port(7000 /*port a local entity should listen at*/)
+  .build();
+```
 In addition, we may specify our device code (also known as system bytes):
 
-	Config
-		.builder
-		// other properties omitted for brevity
-		.device(1 /*this number depends on your situation*/)
-		.build();
-			
+```javascript
+Config
+  .builder
+  // other properties omitted for brevity
+  .device(1 /*this number depends on your situation*/)
+  .build();
+```
 The final thing you may want to specify is control timers. The point is HSMS specification uses a set of internal timers to manage its own state machine. We can tune some aspects by setting proper values. 
 
 Export a required object:
-	
-
-	const {
-		Config,
-		ConnectionMode,
-		Timers } = require('hsms-driver')
-		
+```javascript
+const {
+  Config,
+  ConnectionMode,
+  Timers } = require('hsms-driver')
+```
 and create a new instance the following way (every timeout value is set in seconds):
-
-	Config
-		.builder
-		// other properties omitted for brevity
-		.timers(new Timers(
-			1/*t3*/,
-			1/*t5*/,
-			1/*t6*/,
-			12/*t7*/,
-			2/*t8*/,
-			0/*linked test*/))
-		.build()
+```javascript
+Config
+  .builder
+  // other properties omitted for brevity
+  .timers(new Timers(
+    1/*t3*/,
+    1/*t5*/,
+    1/*t6*/,
+    12/*t7*/,
+    2/*t8*/,
+    0/*linked test*/))
+  .build()
+```
 
 Here is a brief explanation of of every timer:
 
@@ -180,12 +188,13 @@ Maximum time between successive bytes of a single HSMS message which may expire 
 Time between link test messages.
 
 If timeout values are not set or timer object is not set itself default timeout values will be used. For example:
-
-	Config
-		.builder
-		// other properties omitted for brevity
-		.timers(new Timers())
-		.build()
+```javascript
+Config
+  .builder
+  // other properties omitted for brevity
+  .timers(new Timers())
+  .build()
+```
 In this case timeout values will be the following:
 
 |  Timeout | Duration (secs.)  |
@@ -199,36 +208,35 @@ In this case timeout values will be the following:
 
 
 And here is a final sample for connection configuration:
+```javascript
+const {
+  Config,
+  ConnectionMode,
+  Timers } = require('hsms-driver')
 
-    const {
-    	Config,
-    	ConnectionMode,
-     	Timers } = require('hsms-driver')
+const connActive = Config
+  .builder
+  .ip("192.168.154.1")
+  .port(7000)
+  .device(1)
+  // timers not set -> driver will use default values
+  .mode(ConnectionMode.Active)
+  .build());
 
-
-	const connActive = Config
-		.builder
-		.ip("192.168.154.1")
-		.port(7000)
-		.device(1)
-		// timers not set -> driver will use default values
-		.mode(ConnectionMode.Active)
-		.build());
-		
-	const connPassive = Config
-		.builder
-		.ip("192.168.154.1")
-		.port(7000)
-		// device not set -> driver will use 0
-		.timers(new Timers(12, 20, 1, 2, 2, 10))
-		.mode(ConnectionMode.Passive)
-		.build());
-		
+const connPassive = Config
+  .builder
+  .ip("192.168.154.1")
+  .port(7000)
+  // device not set -> driver will use 0
+  .timers(new Timers(12, 20, 1, 2, 2, 10))
+  .mode(ConnectionMode.Passive)
+  .build())
+```
 #### Connection
 The next step is to create a connection object:
-
-	const conn = new Connection(config);
-
+```javascript
+const conn = new Connection(config);
+```
 Connection object supports a few events which are important for the message exchange:
 - *established*
 Physical connection has been established and the driver entered the selected state. This event means that we are ready for HSMS message exchange.
@@ -244,13 +252,12 @@ Driver fired a control timeout (e.g. connection did not receive a reply).
 Error occurred when handling a message.
 
 Here is the example:
-
-	conn
-		.on("established", p  => console.log( `connection established: ${p.ip}:${p.port}` ))
-		.on("dropped", () => console.log(`connection dropped`))
-		.on("recv", m => console.log(`${m.toString()}`))
-		
-	
+```javascript
+conn
+  .on("established", p  => console.log( `connection established: ${p.ip}:${p.port}` ))
+  .on("dropped", () => console.log(`connection dropped`))
+  .on("recv", m => console.log(`${m.toString()}`))
+```
 #### Data Items
 The main exchange unit within HSMS universe is a message. But every message consists of building blocks called data items. Every data item represents a value (or array of values) and data type. The driver supports the following types:
 
@@ -283,14 +290,14 @@ Gets data item's size if exists. Most data items do not support the size: only s
 To create a new data item the driver uses a builder pattern. Every data item is an immutable object: all properties are read-only and if you need to change anything you should create a new item. 
 
 First of  all, to start working with items, you need to add the required types:
-
-	const {
-		Config,
-		ConnectionMode,
-	 	Timers,
-	 	DataItem, // +++,
-	 	ItemFormat // +++ } = require('hsms-driver')
-	 
+```javascript
+const {
+  Config,
+  ConnectionMode,
+  Timers,
+  DataItem, // +++,
+  ItemFormat // +++ } = require('hsms-driver')
+```
 After that you can simply add items you need as shown below:
 
 (I1) 1 byte integer (signed):
@@ -433,39 +440,38 @@ String (pay attention to the size):
 	console.log( a2.size ); // 10
 
 Lists:
-	
-	const list = DataItem.list( "list-1",
-		DataItem.a( "item-name-9", "very long string", 5 ),
-		DataItem.i2( "item-name-3", 12  ),
-		DataItem.list( "child-1",
-			DataItem.u2( "age", 12  ),
-			DataItem.a( "name", "John Smith", 30  ) )
-	 );
-	
-	 console.log( list.toString() );
-	// List list-1
-	//	A<5> item-name-9 [very ]
-	//	I2 item-name-3 [12]
-	//	List child-1
-	//	U2 age [12]
-	//  	A<30> name [John Smith                    ]
-	console.log( list.name ); // list-1
-	console.log( list.format ); // 0 or ItemFormat.List
-	console.log( list.value ); // Array(3) [DataItem, DataItem, DataItem]
-	
+```javascript
+const list = DataItem.list( "list-1",
+  DataItem.a( "item-name-9", "very long string", 5 ),
+  DataItem.i2( "item-name-3", 12  ),
+  DataItem.list( "child-1",
+    DataItem.u2( "age", 12  ),
+    DataItem.a( "name", "John Smith", 30  ) ) );
+
+console.log( list.toString() );
+// List list-1
+//  A<5> item-name-9 [very ]
+//  I2 item-name-3 [12]
+//  List child-1
+//    U2 age [12]
+//    A<30> name [John Smith                    ]
+console.log( list.name ); // list-1
+console.log( list.format ); // 0 or ItemFormat.List
+console.log( list.value ); // Array(3) [DataItem, DataItem, DataItem]
+```
 #### Data Messages
 As was told before the main exchange unit in HSMS is a message. That means if you need to send a data to a remote entity you should create a message, fill it with required data items and send  via driver's API. 
 
 To create a message you need to add the required type:
-
-	const {
-		Config,
-		ConnectionMode,
-	 	Timers,
-	 	DataItem, 
-	 	ItemFormat,
-	 	DataMessage // +++  } = require('hsms-driver')
-
+```javascript
+const {
+  Config,
+  ConnectionMode,
+  Timers,
+  DataItem, 
+  ItemFormat,
+  DataMessage // +++  } = require('hsms-driver')
+```
 The driver uses a builder pattern. Every data message is an immutable object: all properties are read-only and if you need to change anything you should create a new message. 
 
  Every data message has the following properties:
@@ -486,350 +492,351 @@ Gets message's data items.
 Gets a time label used to identify message creation time. 
 
 Here is the example on how to create your first data message:
+```javascript
+let m = DataMessage
+  .builder
+  .device( 1 )
+  .stream( 5 )
+  .replyExpected( false)
+  .func( 1 )
+  .items(
+    DataItem.f4( "temperature", 12.1  ),
+    DataItem.f8( "pressure", 14.53  ),
+    DataItem.a( "description", "this is a long sensor description", 50  )) 
+  .build();
 
-    let m = DataMessage
-   		.builder
-   		.device( 1 )
-   		.stream( 5 )
-   		.replyExpected( false)
-   		.func( 1 )
-   		.items(
-   			DataItem.f4( "temperature", 12.1  ),
-   			DataItem.f8( "pressure", 14.53  ),
-   			DataItem.a( "description", "this is a long sensor description", 50  )) 
-   		.build();
-   		
-	console.log( m.device ); // 1
-	console.log( m.stream ); // 5
-	console.log( m.func ); // 1
-	console.log( m.replyExpected ); // false
-	console.log( m.context ); // 7107 (value generated by the driver)
-	console.log( m.items ); // Array(3) [DataItem, DataItem, DataItem]
-
+console.log( m.device ); // 1
+console.log( m.stream ); // 5
+console.log( m.func ); // 1
+console.log( m.replyExpected ); // false
+console.log( m.context ); // 7107 (value generated by the driver)
+console.log( m.items ); // Array(3) [DataItem, DataItem, DataItem]
+```
 When message building is over we are ready to send it. But before, let's summarize all the steps you have to take to send the message:
 
  - create a configuration object where you specify network and timeout details
-  - create a connection based on the configuration, subscribe to  events you need and call a method 'start'
+ - create a connection based on the configuration, subscribe to  events you need and call a method 'start'
  - create a data message with required stream and function numbers, add data items 
  - send the message via 'send' method of the created connection object
 
 Let's analyze a few examples:
 
 *Example  #1: send a message which does not need a reply.*
+```javascript
+const {
+  DataItem,
+  DataMessage,
+  Config,
+  ConnectionMode,
+  Connection } = require('hsms-driver')
 
-	const {
-		DataItem,
-		DataMessage,
-		Config,
-		ConnectionMode,
-		Connection } = require('hsms-driver')
+const conn = new Connection( Config
+  .builder
+  .ip( "127.0.0.1" )
+  .port( 7000 )
+  .mode( ConnectionMode.Active )
+  .build() );
 
-	const conn = new Connection(Config
-		.builder
-		.ip("127.0.0.1")
-		.port(7000)
-		.mode(ConnectionMode.Active)
-		.build());
+conn
+  .on("established", p  => console.log( `connection established: ${p.ip}:${p.port}` ))
+  .on("dropped", () => console.log(`connection dropped`))
+  .on("recv", m => console.log(m.toLongString() ))
+  .on("timeout", (t, m) => console.log( `t${ t}` ) );
 
-	conn
-		.on("established", p  => console.log( `connection established: ${p.ip}:${p.port}` ))
-		.on("dropped", () => console.log(`connection dropped`))
-		.on("recv", m => console.log( m.toLongString() ))
-		.on("timeout", (t, m) => console.log( `t${t}` ) );
+let m = DataMessage
+  .builder
+  .device( 1 )
+  .stream( 5 )
+  .replyExpected( false )
+  .func( 1 )
+  .items(
+    DataItem.f4( "temperature", 12.1 ),
+    DataItem.f8( "pressure", 14.53 ),
+    DataItem.a( "description", "this is a long sensor description", 50 ) )
+  .build();
 
-	let m = DataMessage
-		.builder
-		.device( 1 )
-		.stream( 5 )
-		.replyExpected( false)
-		.func( 1 )
-		.items(
-			DataItem.f4( "temperature", 12.1  ),
-			DataItem.f8( "pressure", 14.53  ),
-			DataItem.a( "description", "this is a long sensor description", 50  )) 
-		.build();
+const server = new Connection( Config
+  .builder
+  .ip( "127.0.0.1" )
+  .port( 7000 )
+  .mode( ConnectionMode.Passive )
+  .build() );
 
-	const server = new Connection(Config
-		.builder
-		.ip("127.0.0.1")
-		.port(7000)
-		.mode(ConnectionMode.Passive)
-		.build());
+server
+  .on("established", p  => server.send(m )); 
 
-	server
-		.on("established", p  => server.send( m )); 
-
-	server.start();
-	conn.start();
-
+server.start();
+conn.start();
+```
 As soon as two driver gets connected a passive connection sends a data message and does not expect a reply.
 
 *Example  #2: send a message and get a reply.*
-	
-	const {
-		DataItem,
-		DataMessage,
-		Config,
-		Message,
-		ConnectionMode,
-		Connection } = require('hsms-driver')
+```javascript
+const {
+  DataItem,
+  DataMessage,
+  Config,
+  Message,
+  ConnectionMode,
+  Connection } = require('hsms-driver')
 
-	const conn = new Connection(Config
-		.builder
-		.ip("127.0.0.1")
-		.port(7000)
-		.mode(ConnectionMode.Active)
-		.build());
+const conn = new Connection(Config
+  .builder
+  .ip("127.0.0.1")
+  .port(7000)
+  .mode(ConnectionMode.Active)
+  .build());
+   
+conn
+  .on("established", p => console.log(`connection established: ${p.ip}:${p.port}`))
+  .on("dropped", () => console.log(`connection dropped`))
+  .on("timeout", (t, m) => console.log(`client t${t}`))
+  .on("recv", m => {
+    if (m.kind == Message.Type.DataMessage) {
+      console.log(`client recv ${m.toLongString()}`);
+      switch (m.toString()) {
+        case "S1F1":
+          conn.send(DataMessage
+            .builder
+            .reply(m)
+            .items(
+              DataItem.a("name", "bob", 10),
+              DataItem.u2("age", 12),
+              DataItem.list("hobbies",
+                DataItem.a("hobby-1", "basketball", 10),
+                DataItem.a("hobby-2", "books", 15)))
+            .build())
+          break;
+      }
+    }
+  });
 
-	conn
-		.on("established", p  => console.log( `connection established: ${p.ip}:${p.port}` ))
-		.on("dropped", () => console.log(`connection dropped`))
-		.on("timeout", (t, m) => console.log( `client t${t}` ) )
-		.on( "recv", m => {
-			if( m.kind == Message.Type.DataMessage){
-				console.log( `client recv ${m.toLongString()}` );
-				switch( m.toString() ){
-					case "S1F1":
-						conn.send( DataMessage
-							.builder
-							.reply( m )
-							.items(
-								DataItem.a( "name", "bob", 10  ),
-								DataItem.u2( "age", 12 ),
-								DataItem.list( "hobbies", 
-									DataItem.a( "hobby-1", "basketball", 10  ),
-									DataItem.a( "hobby-2", "books", 15  )))
-							.build() )
-						break;
-				}
-			}
-		} );
+let m = DataMessage
+  .builder
+  .device(1)
+  .stream(1)
+  .func(1)
+  .items(
+    DataItem.a("name", "alice", 10),
+    DataItem.u2("age", 10))
+  .build();
 
-	let m = DataMessage
-		.builder
-		.device( 1 )
-		.stream( 1 )
-		.func( 1 )
-		.items(
-			DataItem.a( "name", "alice", 10  ),
-			DataItem.u2( "age", 10 ))
-		.build();
+const server = new Connection(Config
+  .builder
+  .ip("127.0.0.1")
+  .port(7000)
+  .mode(ConnectionMode.Passive)
+  .build());
 
-	const server = new Connection(Config
-		.builder
-		.ip("127.0.0.1")
-		.port(7000)
-		.mode(ConnectionMode.Passive)
-		.build());
+server
+  .on("established", p => server.send(m))
+  .on("timeout", (t, m) => console.log(`server t${t}`))
+  .on("recv", m => {
+    if (m.kind == Message.Type.DataMessage) {
+      console.log(`server recv ${m.toLongString()}`);
+    }
+  });
 
-	server
-		.on("established", p  => server.send( m ))
-		.on("timeout", (t, m) => console.log( `server t${t}` ) )
-		.on( "recv", m => {
-			if( m.kind == Message.Type.DataMessage){
-				console.log( `server recv ${m.toLongString()}` );
-			}
-		} );
-
-	server.start();
-	conn.start();
-
+server.start();
+conn.start();
+```
 As soon as two driver instances gets connected a passive connection sends a data message and receives a reply.
 
 *Example  #3: send a message but get a timeout  instead of a reply.*
+```javascript
+const {
+  DataItem,
+  DataMessage,
+  Config,
+  Message,
+  ConnectionMode,
+  Connection,
+  Timers /*+++*/ } = require('hsms-driver')
+    
+const conn = new Connection(Config
+    .builder
+    .ip("127.0.0.1")
+    .port(7000)
+    .mode(ConnectionMode.Active)
+    .build());
 
-	const {
-    	DataItem,
-    	DataMessage,
-    	Config,
-    	Message,
-    	ConnectionMode,
-    	Connection,
-    	Timers// +++ } = require('hsms-driver')
-    
-    const conn = new Connection(Config
-    	.builder
-    	.ip("127.0.0.1")
-    	.port(7000)
-    	.mode(ConnectionMode.Active)
-    	.build());
-    
-    conn
-    	.on("established", p  => console.log( `connection established: ${p.ip}:${p.port}` ))
-    	.on("dropped", () => console.log(`connection dropped`))
-    	.on("timeout", (t, m) => console.log( `client t${t}` ) )
-    	.on( "recv", m => {
-    		if( m.kind == Message.Type.DataMessage){
-    			console.log( `client recv ${m.toLongString()}` );
-    			console.log( "client does not answer on purpose" );
-    		}
-    	} );
-    
-    
-    const server = new Connection(Config
-    	.builder
-    	.ip("127.0.0.1")
-    	.port(7000)
-    	.timers( new Timers( 2 ) ) // decrease default T3 time
-    	.mode(ConnectionMode.Passive)
-    	.build());
-    
-    server
-    	.on("established", p  =>
-    		server.send( DataMessage
-    			.builder
-    			.device( 1 )
-    			.stream( 1 )
-    			.func( 1 )
-    			.items(
-    				DataItem.a( "name", "alice", 10  ),
-    				DataItem.u2( "age", 10 ))
-    			.build() ))
-    	.on("timeout", (t, m) => console.log( `server t${t};this message caused a problem: ${m.toLongString()}` ) )
-    	.on( "recv", m => {
-    		if( m.kind == Message.Type.DataMessage){
-    			console.log( `server recv ${m.toLongString()}` );
-    		}
-    	} );
-    
-    server.start();
-    conn.start();
-   
+conn
+  .on("established", p => console.log(`connection established: ${p.ip}:${p.port}`))
+  .on("dropped", () => console.log(`connection dropped`))
+  .on("timeout", (t, m) => console.log(`client t${t}`))
+  .on("recv", m => {
+    if (m.kind == Message.Type.DataMessage) {
+      console.log(`client recv ${m.toLongString()}`);
+      console.log("client does not answer on purpose");
+    }
+  });
+
+
+const server = new Connection(Config
+  .builder
+  .ip("127.0.0.1")
+  .port(7000)
+  .timers(new Timers(2)) // decrease default T3 time
+  .mode(ConnectionMode.Passive)
+  .build());
+
+server
+  .on("established", p =>
+    server.send(DataMessage
+      .builder
+      .device(1)
+      .stream(1)
+      .func(1)
+      .items(
+        DataItem.a("name", "alice", 10),
+        DataItem.u2("age", 10))
+      .build()))
+  .on("timeout", (t, m) => console.log(`server t${t};this message caused a problem: ${m.toLongString()}`))
+  .on("recv", m => {
+    if (m.kind == Message.Type.DataMessage) {
+      console.log(`server recv ${m.toLongString()}`);
+    }
+  });
+
+server.start();
+conn.start();
+```
 Passive connection sends a message but does not get a reply.  We configured T3 timeout: changed default value to 2 seconds. As a result, two seconds after sending a message a passive connection gets a timeout. Pay attention:
 
  - By default all data messages expect a reply.
  - Timeout event provides a not answered message as a parameter 
  
  *Example  #4: transaction complete event.*
+```javascript
+const {
+  DataItem,
+  DataMessage,
+  Config,
+  Message,
+  ConnectionMode,
+  Connection } = require('hsms-driver')
+      
+const conn = new Connection(Config
+  .builder
+  .ip("127.0.0.1")
+  .port(7000)
+  .mode(ConnectionMode.Active)
+  .build());
 
-	const {
-    	DataItem,
-    	DataMessage,
-    	Config,
-    	Message,
-    	ConnectionMode,
-    	Connection } = require('hsms-driver')
-    	
-    const conn = new Connection(Config
- 			.builder
- 			.ip("127.0.0.1")
- 			.port(7000)
- 			.mode(ConnectionMode.Active)
- 			.build());
-
-	conn
-		.on( "recv", m => {
-			if( m.kind == Message.Type.DataMessage){
-				switch( m.toString() ){
-					case "S1F1":
-						conn.send( DataMessage
-							.builder
-							.reply( m )
-							.items(
-								DataItem.a( "name", "bob", 10  ),
-								DataItem.u2( "age", 12 ),
-								DataItem.list( "hobbies", 
-									DataItem.a( "hobby-1", "basketball", 10  ),
-									DataItem.a( "hobby-2", "books", 15  )))
-							.build() )
-						break;
-				}
-			}
-		} );
-	
-	let m = DataMessage
-		.builder
-		.device( 1 )
-		.stream( 1 )
-		.func( 1 )
-		.items(
-			DataItem.a( "name", "alice", 10  ),
-			DataItem.u2( "age", 10 ))
-		.build();
-	
-	const server = new Connection(Config
-		.builder
-		.ip("127.0.0.1")
-		.port(7000)
-		.mode(ConnectionMode.Passive)
-		.build());
-	
-	server
-		.on("established", p  => server.send( m ))
-		.on( "trx-complete", (m, r) => {
-			console.log( `trx complete` )
-			console.log( `sent: ${m.toLongString()}` )
-			console.log( `recv: ${r.toLongString()}` )
-		} );
-	
-	server.start();
-	conn.start();
-	
+conn
+  .on( "recv", m => {
+    if( m.kind == Message.Type.DataMessage){
+      switch( m.toString() ){
+        case "S1F1":
+          conn.send( DataMessage
+            .builder
+            .reply( m )
+            .items(
+              DataItem.a( "name", "bob", 10  ),
+              DataItem.u2( "age", 12 ),
+              DataItem.list( "hobbies", 
+                DataItem.a( "hobby-1", "basketball", 10  ),
+                DataItem.a( "hobby-2", "books", 15  )))
+            .build() )
+          break;
+      }
+    }
+  } );
+  
+let m = DataMessage
+  .builder
+  .device( 1 )
+  .stream( 1 )
+  .func( 1 )
+  .items(
+    DataItem.a( "name", "alice", 10  ),
+    DataItem.u2( "age", 10 ))
+  .build();
+  
+const server = new Connection(Config
+  .builder
+  .ip("127.0.0.1")
+  .port(7000)
+  .mode(ConnectionMode.Passive)
+  .build());
+  
+server
+  .on("established", p  => server.send( m ))
+  .on( "trx-complete", (m, r) => {
+    console.log( `trx complete` )
+    console.log( `sent: ${m.toLongString()}` )
+    console.log( `recv: ${r.toLongString()}` )
+  } );
+  
+server.start();
+conn.start();
+```
  *Example  #5: message complete callback.*
  
-	const {
-    	DataItem,
-    	DataMessage,
-    	Config,
-    	Message,
-    	ConnectionMode,
-    	Connection } = require('hsms-driver')
-	
-	const conn = new Connection(Config
-		.builder
-		.ip("127.0.0.1")
-		.port(7000)
-		.mode(ConnectionMode.Active)
-		.build());
-	
-	conn
-		.on( "recv", m => {
-			if( m.kind == Message.Type.DataMessage){
-				switch( m.toString() ){
-					case "S1F1":
-						conn.send( DataMessage
-							.builder
-							.reply( m )
-							.items(
-								DataItem.a( "name", "bob", 10  ),
-								DataItem.u2( "age", 12 ),
-								DataItem.list( "hobbies", 
-									DataItem.a( "hobby-1", "basketball", 10  ),
-									DataItem.a( "hobby-2", "books", 15  )))
-							.build() )
-						break;
-				}
-			}
-		} );
-	
-	let m = DataMessage
-		.builder
-		.device( 1 )
-		.stream( 1 )
-		.func( 1 )
-		.complete( (m, r, tc) => {
-			console.log( `custom message complete handler:` )	
-			console.log( `primary message ${m.toLongString()}` )	
-			console.log( `reply message ${r.toLongString()}` )	
-		} )
-		.items(
-			DataItem.a( "name", "alice", 10  ),
-			DataItem.u2( "age", 10 ))
-		.build();
-	
-	const server = new Connection(Config
-		.builder
-		.ip("127.0.0.1")
-		.port(7000)
-		.mode(ConnectionMode.Passive)
-		.build());
-	
-	server
-		.on("established", p  => server.send( m ));
-	
-	server.start();
-	conn.start();
-	
+```javascript
+const {
+  DataItem,
+  DataMessage,
+  Config,
+  Message,
+  ConnectionMode,
+  Connection } = require('hsms-driver')
+
+const conn = new Connection(Config
+  .builder
+  .ip("127.0.0.1")
+  .port(7000)
+  .mode(ConnectionMode.Active)
+  .build());
+
+conn
+  .on("recv", m => {
+    if (m.kind == Message.Type.DataMessage) {
+      switch (m.toString()) {
+        case "S1F1":
+          conn.send(DataMessage
+            .builder
+            .reply(m)
+            .items(
+              DataItem.a("name", "bob", 10),
+              DataItem.u2("age", 12),
+              DataItem.list("hobbies",
+                DataItem.a("hobby-1", "basketball", 10),
+                DataItem.a("hobby-2", "books", 15)))
+            .build())
+          break;
+      }
+    }
+  });
+
+let m = DataMessage
+  .builder
+  .device(1)
+  .stream(1)
+  .func(1)
+  .complete((m, r, tc) => {
+    console.log(`custom message complete handler:`)
+    console.log(`primary message ${m.toLongString()}`)
+    console.log(`reply message ${r.toLongString()}`)
+  })
+  .items(
+    DataItem.a("name", "alice", 10),
+    DataItem.u2("age", 10))
+  .build();
+
+const server = new Connection(Config
+  .builder
+  .ip("127.0.0.1")
+  .port(7000)
+  .mode(ConnectionMode.Passive)
+  .build());
+
+server
+  .on("established", p => server.send(m));
+
+server.start();
+conn.start();
+```
 As you can see, this example is very  similar to the previous one, but here we are using message's complete handler instead of connection event. 
 
 Pay attention: 
