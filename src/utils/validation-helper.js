@@ -56,6 +56,10 @@ class ValidationHelper {
 		return (typeof s === 'string' || s instanceof String);
 	}
 
+	static isNumber(n) {
+		return (typeof n === 'number' || n instanceof Number);
+	}
+
 	static isFunction(c) {
 		return (typeof c === 'function' || c instanceof Function );
 	}
@@ -154,10 +158,12 @@ class ValidationHelper {
 						res = value;
 					}
 
-					const psv = parseFloat(value);
-
-					if (!isNaN(psv) && isFinite(psv)) {
-						res = psv.toString();
+					if (ValidationHelper.isNumber(value)) {
+						const psv = parseFloat(value);
+	
+						if (!isNaN(psv) && isFinite(psv)) {
+							res = psv.toString();
+						}
 					}
 
 					if (!value) {
