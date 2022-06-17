@@ -399,6 +399,11 @@ module.exports = (function () {
     b.writeUInt8(item.format | 1);
     
     switch (item.format) {
+			case ItemFormat.Bool:
+				b.writeUInt8(1); // length
+				b.writeUInt8(item.value ? 1 : 0 );
+				break;
+
       case ItemFormat.U1:
         b.writeUInt8(1); // length
         b.writeUInt8(item.value);
@@ -485,6 +490,10 @@ module.exports = (function () {
 
     for( let i = 0; i < item.value.length; ++i ){
       switch (item.format) {
+				case ItemFormat.Bool:
+          b.writeUInt8( item.value[ i ] ? 1 : 0 );
+          break;
+
         case ItemFormat.U1:
           b.writeUInt8( item.value[ i ] );
           break;
@@ -531,6 +540,7 @@ module.exports = (function () {
 	
 	function getValueBytesCount( item ){
     switch (item.format) {
+			case ItemFormat.Bool:
       case ItemFormat.U1:
       case ItemFormat.I1:
        return 1;

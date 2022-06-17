@@ -105,6 +105,10 @@ class ValidationHelper {
 			if (!isNaN(piv)) {
 				res = piv;
 			}
+
+			if (typeof value == "boolean") {
+				res = value ? 1 : 0;
+			}
 		}
 
 		if (ItemFormat.isFloat(format)) {
@@ -116,6 +120,10 @@ class ValidationHelper {
 
 		try {
 			switch (format) {
+				case ItemFormat.Bool:
+					res = value ? true : false; // ?? 
+					break;
+
 				case ItemFormat.I1:
 					res = ValidationHelper.getByteInRange(res);
 					break;

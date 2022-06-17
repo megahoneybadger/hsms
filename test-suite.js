@@ -5,34 +5,37 @@ const {
 	Config,
 	Message,
 	ConnectionMode,
-	Connection } = require('./src/hsms')
+	Connection, 
+	ItemFormat} = require('./src/hsms')
 
-	const m1 = DataMessage
-			.builder
-			.device( 112 )
-			.context( 223 )
-			.stream( 33 )
-			.complete( () => console.log( "complete handler" ) )
-			.func( 44 )
-			.description( "test1" )
-			.build();
+	const item = DataItem
+		.builder
+		// .size( 123 )
+		// .value( false )
+		.format( ItemFormat.Bool )
+		.value( null )
+		.build();
 
+	console.log( item.toString() );
 
 	const conn = new Connection(Config
 		.builder
 		.ip("127.0.0.1")
-		.port(7000)
+		.port(8000)
 		.mode(ConnectionMode.Active)
 		.build());
-	
+
 	conn
 		.on( "recv", m => {
 			if( m.kind == Message.Type.DataMessage){
 				switch( m.toString() ){
-					case "S1F1":
+					case "S1F17":
+						//console.log( m.toLongString() );
+
 						conn.send( DataMessage
 							.builder
 							.reply( m )
+							.device( 1 )
 							.items(
 								DataItem.a( "name", "bob", 10  ),
 								DataItem.u2( "age", 12 ),
@@ -45,30 +48,26 @@ const {
 			}
 		} );
 	
-	let m = DataMessage
-		.builder
-		.device( 1 )
-		.stream( 1 )
-		.func( 1 )
-		.complete( (m, r, tc) => {
-			console.log( `custom message complete handler:` )	
-			console.log( `primary message ${m.toLongString()}` )	
-			console.log( `reply message ${r.toLongString()}` )	
-		} )
-		.items(
-			DataItem.a( "name", "alice", 10  ),
-			DataItem.u2( "age", 10 ))
-		.build();
+	// let m1 = DataMessage
+	// 	.builder
+	// 	.device( 1 )
+	// 	.stream( 1 )
+	// 	.func( 7 )
+	// 	.complete( (m, r, tc) => {
+	// 		console.log( `custom message complete handler:` )	
+	// 		console.log( `primary message ${m.toLongString()}` )	
+	// 		console.log( `reply message ${r.toLongString()}` )	
+	// 	} )
+	// 	.items(
+	// 		//DataItem.a( "name", "alice", 10  ),
+	// 		DataItem.bool( "funny", true ))
+	// 	.build();
+
+
+	conn
+		.on( "connected", m => {
+			console.log( "connected" );
+			//conn.send( m1 );
+		} );
 	
-	const server = new Connection(Config
-		.builder
-		.ip("127.0.0.1")
-		.port(7000)
-		.mode(ConnectionMode.Passive)
-		.build());
-	
-	server
-		.on("established", p  => server.send( m ));
-	
-	server.start();
 	conn.start();

@@ -68,10 +68,24 @@ module.exports = (function () {
           return false;
       }
 		},
+
+		isBoolean(n) {
+      switch (n) {
+				case ItemFormat.Bool:
+          return true;
+
+        default:
+          return false;
+      }
+		},
 		
 		default( n, size = 0 ){
 			if( this.isInteger( n ) || this.isFloat( n )){
 				return 0;
+			}
+
+			if( this.isBoolean( n ) ){
+				return false;
 			}
 
 			if( this.isString( n ) ){

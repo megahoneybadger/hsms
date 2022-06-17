@@ -159,6 +159,14 @@ module.exports = (function () {
         .build();
 		}
 		/**
+		 * Creates Bool data item.
+		 * @param {String} name Item name.
+		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.
+		 */
+		 static bool(name = "", ...values) {
+      return DataItem.numeric(ItemFormat.Bool, name, ...values);
+		}
+		/**
 		 * Creates I1 data item.
 		 * @param {String} name Item name.
 		 * @param  {...any} values Item value(s) for initialization. Single numeric value or numeric array can be passed.

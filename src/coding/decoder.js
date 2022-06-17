@@ -134,6 +134,9 @@ module.exports = (function () {
       case ItemFormat.List:
         return decodeList( b, len );
 
+      case ItemFormat.Bool:
+        return decodeBool( b, len );
+
       case ItemFormat.I1:
         return decodeI1( b, len );
 
@@ -174,6 +177,23 @@ module.exports = (function () {
     }
 
     return DataItem.list( "", ...items )
+  }
+
+  function decodeBool( b, len ){
+    let nominalLen = 1;
+
+    if( nominalLen === len ){
+      return DataItem.bool( '', b.readUint8() > 0  );
+    } else {
+      var count = len / nominalLen;
+      var arr = [];
+
+      for( let i = 0; i < count; ++i ){
+        arr.push( b.readUint8() > 0 );
+      }
+
+      return DataItem.bool( '', ...arr );
+    }
   }
 
   function decodeI1( b, len ){
