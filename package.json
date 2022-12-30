@@ -20,7 +20,7 @@
     "coveralls": "^3.0.9",
     "eslint": "^6.5.1",
     "eslint-config-strongloop": "^2.1.0",
-    "mocha": "^6.2.0",
+    "mocha": "^10.2.0",
     "nyc": "^14.1.1",
     "prettier": "1.18.2",
     "sinon": "^7.5.0",
