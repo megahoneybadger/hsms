@@ -24,8 +24,8 @@
     "nyc": "^14.1.1",
     "prettier": "1.18.2",
     "sinon": "^7.5.0",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10"
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
   },
   "repository": {
     "type": "git",
